@@ -2,24 +2,37 @@ package com.blockvote.controllers;
 
 import com.blockvote.os.OsInteraction;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.blockvote.os.Commons.CHAIN_ID;
 import static java.lang.Long.parseLong;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static javafx.collections.FXCollections.observableArrayList;
 
 public class AppPreloaderController {
 
     @FXML
-    public ListView<String> accountsListView;
+    private Button logInButton;
+    @FXML
+    private ListView<String> accountsListView;
+    @FXML
+    private Button createNewAccButton;
 
     private OsInteraction osInteraction;
+    private Map<String, File> accountFilesMap = new HashMap<>();
 
     public AppPreloaderController(OsInteraction osInteraction) {
         this.osInteraction = osInteraction;
@@ -70,7 +83,29 @@ public class AppPreloaderController {
     }
 
     private void loadAvailableAccountWallets() {
-        List<String> accounts = osInteraction.loadAvailableAccounts();
-        accountsListView.setItems(observableArrayList(accounts));
+        List<File> accounts = osInteraction.loadAvailableAccounts();
+        if (accounts.size() != 0) {
+            accountFilesMap.putAll(accounts.stream().collect(toMap(f -> formatAddressFromKeystoreFileName(f.getName()),
+                    identity())));
+            accountsListView.setVisible(true);
+            accountsListView.setItems(observableArrayList(accounts.stream().map(f -> {
+                return formatAddressFromKeystoreFileName(f.getName());
+            }).collect(toList())));
+        } else {
+            createNewAccButton.setVisible(true);
+        }
+    }
+
+    private String formatAddressFromKeystoreFileName(String fileName) {
+        String[] parts = fileName.split("--");
+        return (parts[parts.length - 1]);
+    }
+
+    @FXML
+    public void selectAddressToLogIn(MouseEvent mouseEvent) {
+        String selectedAddress = accountsListView.getSelectionModel().getSelectedItem();
+        if (selectedAddress != null) {
+            logInButton.setDisable(false);
+        }
     }
 }

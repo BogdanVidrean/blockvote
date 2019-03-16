@@ -8,8 +8,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
-import static javafx.stage.StageStyle.UNDECORATED;
-
 @ComponentScan(basePackages = {"configuration"})
 public class Main extends Application {
 
@@ -21,7 +19,6 @@ public class Main extends Application {
         final ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
         final Scene preloaderScene = (Scene) applicationContext.getBean("appPreloaderScene");
         primaryStage.setScene(preloaderScene);
-        primaryStage.initStyle(UNDECORATED);
         primaryStage.show();
     }
 }

@@ -12,6 +12,7 @@ import static com.blockvote.os.Commons.RPC_PORT;
 import static java.lang.String.valueOf;
 import static java.lang.System.getProperty;
 import static java.nio.file.Paths.get;
+import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
@@ -72,22 +73,13 @@ public class UnixInteraction implements OsInteraction {
     }
 
     @Override
-    public List<String> loadAvailableAccounts() {
-        List<String> result = new ArrayList<>();
+    public List<File> loadAvailableAccounts() {
         File keystoreDirectory = get(KEYSTORE_PATH).toFile();
         if (keystoreDirectory.isDirectory()) {
             File[] files = keystoreDirectory.listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    if (f.isFile()) {
-                        String fileName = f.getName();
-                        String[] parts = fileName.split("--");
-                        result.add(parts[parts.length - 1]);
-                    }
-                }
-            }
+            return (files != null) ? asList(files) : new ArrayList<>();
         }
-        return result;
+        return new ArrayList<>();
     }
 
 

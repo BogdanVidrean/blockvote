@@ -1,5 +1,6 @@
 package com.blockvote.os;
 
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +23,7 @@ public class WindowsInteraction implements OsInteraction {
     }
 
     @Override
-    public List<String> loadAvailableAccounts() {
+    public List<File> loadAvailableAccounts() {
         return null;
     }
 }
