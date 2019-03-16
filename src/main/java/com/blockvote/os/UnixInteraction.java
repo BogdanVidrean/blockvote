@@ -2,12 +2,13 @@ package com.blockvote.os;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static com.blockvote.os.Commons.DEFAULT_PORT;
 import static com.blockvote.os.Commons.NETWORK_ID;
 import static com.blockvote.os.Commons.RPC_PORT;
-import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.lang.System.getProperty;
 import static java.nio.file.Paths.get;
@@ -22,12 +23,14 @@ public class UnixInteraction implements OsInteraction {
             APPDATA_APPLICATION_FOLDER_NAME)
             .toAbsolutePath()
             .toString();
-    private static final String NODE_PATH = format("%s/node", APPDATA_PATH);
+    private static final String NODE_PATH = get(APPDATA_PATH, "node")
+            .toAbsolutePath().toString();
     private static final String GETH_PATH = get("src", "main", "resources", "geth_client")
             .toAbsolutePath().toString();
     private static final String GENESIS_PATH = get("src", "main", "resources", "genesis.json")
             .toAbsolutePath().toString();
-
+    private static final String KEYSTORE_PATH = get(NODE_PATH, "keystore")
+            .toAbsolutePath().toString();
 
     @Override
     public Optional<Process> startLocalNode() {
@@ -66,6 +69,25 @@ public class UnixInteraction implements OsInteraction {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public List<String> loadAvailableAccounts() {
+        List<String> result = new ArrayList<>();
+        File keystoreDirectory = get(KEYSTORE_PATH).toFile();
+        if (keystoreDirectory.isDirectory()) {
+            File[] files = keystoreDirectory.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (f.isFile()) {
+                        String fileName = f.getName();
+                        String[] parts = fileName.split("--");
+                        result.add(parts[parts.length - 1]);
+                    }
+                }
+            }
+        }
+        return result;
     }
 
 

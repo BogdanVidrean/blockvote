@@ -1,5 +1,6 @@
 package com.blockvote.os;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface OsInteraction {
@@ -11,4 +12,6 @@ public interface OsInteraction {
     void createLocalNode();
 
     void deleteAppDataFolder();
+
+    List<String> loadAvailableAccounts();
 }
