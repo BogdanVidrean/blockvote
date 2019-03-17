@@ -2,9 +2,14 @@ package com.blockvote.controllers;
 
 import com.blockvote.os.OsInteraction;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
+import org.web3j.crypto.CipherException;
+import org.web3j.crypto.Credentials;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,9 +26,13 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static javafx.collections.FXCollections.observableArrayList;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.web3j.crypto.WalletUtils.loadCredentials;
 
 public class AppPreloaderController {
 
+    @FXML
+    private PasswordField passwordField;
     @FXML
     private Button logInButton;
     @FXML
@@ -31,11 +40,19 @@ public class AppPreloaderController {
     @FXML
     private Button createNewAccButton;
 
+    private Stage primaryStage;
+    private Scene mainPageScene;
     private OsInteraction osInteraction;
     private Map<String, File> accountFilesMap = new HashMap<>();
 
-    public AppPreloaderController(OsInteraction osInteraction) {
+    public AppPreloaderController(OsInteraction osInteraction,
+                                  Scene mainPageScene) {
         this.osInteraction = osInteraction;
+        this.mainPageScene = mainPageScene;
+    }
+
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
     }
 
     @FXML
@@ -88,9 +105,7 @@ public class AppPreloaderController {
             accountFilesMap.putAll(accounts.stream().collect(toMap(f -> formatAddressFromKeystoreFileName(f.getName()),
                     identity())));
             accountsListView.setVisible(true);
-            accountsListView.setItems(observableArrayList(accounts.stream().map(f -> {
-                return formatAddressFromKeystoreFileName(f.getName());
-            }).collect(toList())));
+            accountsListView.setItems(observableArrayList(accounts.stream().map(f -> formatAddressFromKeystoreFileName(f.getName())).collect(toList())));
         } else {
             createNewAccButton.setVisible(true);
         }
@@ -106,6 +121,23 @@ public class AppPreloaderController {
         String selectedAddress = accountsListView.getSelectionModel().getSelectedItem();
         if (selectedAddress != null) {
             logInButton.setDisable(false);
+
+            passwordField.setDisable(false);
+            passwordField.setVisible(true);
+        }
+    }
+
+    @FXML
+    public void logIn(MouseEvent mouseEvent) {
+        String password = passwordField.getText();
+        String selectedAddress = accountsListView.getSelectionModel().getSelectedItem();
+        if (!isEmpty(password) && (selectedAddress != null)) {
+            try {
+                final Credentials credentials = loadCredentials(password, accountFilesMap.get(selectedAddress));
+                primaryStage.setScene(mainPageScene);
+            } catch (IOException | CipherException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

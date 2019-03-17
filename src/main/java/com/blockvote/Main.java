@@ -1,6 +1,7 @@
 package com.blockvote;
 
 import com.blockvote.configuration.ApplicationConfiguration;
+import com.blockvote.controllers.AppPreloaderController;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -18,6 +19,8 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         final ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
         final Scene preloaderScene = (Scene) applicationContext.getBean("appPreloaderScene");
+        final AppPreloaderController appPreloaderController = applicationContext.getBean(AppPreloaderController.class);
+        appPreloaderController.setPrimaryStage(primaryStage);
         primaryStage.setScene(preloaderScene);
         primaryStage.show();
     }

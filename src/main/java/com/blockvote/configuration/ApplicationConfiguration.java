@@ -5,6 +5,7 @@ import com.blockvote.controllers.MainPageController;
 import com.blockvote.os.OsInteraction;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,8 +29,9 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public AppPreloaderController appPreloaderController(OsInteraction osInteraction) {
-        return new AppPreloaderController(osInteraction);
+    public AppPreloaderController appPreloaderController(OsInteraction osInteraction,
+                                                         @Qualifier("mainPageScene") Scene mainPageScene) {
+        return new AppPreloaderController(osInteraction, mainPageScene);
     }
 
     @Bean(name = "mainPageScene")
