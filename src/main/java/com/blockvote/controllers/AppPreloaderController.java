@@ -26,6 +26,7 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static javafx.collections.FXCollections.observableArrayList;
+import static javafx.stage.Modality.APPLICATION_MODAL;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.web3j.crypto.WalletUtils.loadCredentials;
 
@@ -42,13 +43,19 @@ public class AppPreloaderController {
 
     private Stage primaryStage;
     private Scene mainPageScene;
+    private Scene createAccountScene;
     private OsInteraction osInteraction;
+    private CreateAccountController createAccountController;
     private Map<String, File> accountFilesMap = new HashMap<>();
 
     public AppPreloaderController(OsInteraction osInteraction,
-                                  Scene mainPageScene) {
+                                  Scene mainPageScene,
+                                  Scene createAccountScene,
+                                  CreateAccountController createAccountController) {
         this.osInteraction = osInteraction;
         this.mainPageScene = mainPageScene;
+        this.createAccountScene = createAccountScene;
+        this.createAccountController = createAccountController;
     }
 
     public void setPrimaryStage(Stage primaryStage) {
@@ -139,5 +146,17 @@ public class AppPreloaderController {
                 e.printStackTrace();
             }
         }
+    }
+
+    @FXML
+    public void showPasswordInsertModal(MouseEvent mouseEvent) {
+        Stage createAccountPasswordModal = new Stage();
+        createAccountPasswordModal.initOwner(primaryStage);
+        createAccountPasswordModal.initModality(APPLICATION_MODAL);
+        createAccountPasswordModal.setScene(createAccountScene);
+        createAccountPasswordModal.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - createAccountPasswordModal.getWidth() / 2);
+        createAccountPasswordModal.setY(primaryStage.getY() + primaryStage.getHeight() / 2 - createAccountPasswordModal.getHeight() / 2);
+        createAccountController.setCreateAccountStage(createAccountPasswordModal);
+        createAccountPasswordModal.showAndWait();
     }
 }

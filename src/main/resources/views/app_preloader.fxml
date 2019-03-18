@@ -34,7 +34,8 @@
                            </VBox.margin>
                         </PasswordField>
                         <Button fx:id="createNewAccButton" alignment="CENTER" mnemonicParsing="false"
-                                text="CREATE NEW ACCOUNT" textAlignment="CENTER">
+                                onMousePressed="#showPasswordInsertModal" text="CREATE NEW ACCOUNT"
+                                textAlignment="CENTER">
                            <font>
                               <Font size="18.0"/>
                            </font>

@@ -1,6 +1,7 @@
 package com.blockvote.configuration;
 
 import com.blockvote.controllers.AppPreloaderController;
+import com.blockvote.controllers.CreateAccountController;
 import com.blockvote.controllers.MainPageController;
 import com.blockvote.os.OsInteraction;
 import javafx.fxml.FXMLLoader;
@@ -29,9 +30,16 @@ public class ApplicationConfiguration {
     }
 
     @Bean
+    public CreateAccountController createAccountController() {
+        return new CreateAccountController();
+    }
+
+    @Bean
     public AppPreloaderController appPreloaderController(OsInteraction osInteraction,
-                                                         @Qualifier("mainPageScene") Scene mainPageScene) {
-        return new AppPreloaderController(osInteraction, mainPageScene);
+                                                         @Qualifier("mainPageScene") Scene mainPageScene,
+                                                         @Qualifier("createAccountScene") Scene createAccountScene,
+                                                         CreateAccountController createAccountController) {
+        return new AppPreloaderController(osInteraction, mainPageScene, createAccountScene, createAccountController);
     }
 
     @Bean(name = "mainPageScene")
@@ -52,6 +60,18 @@ public class ApplicationConfiguration {
         appPreloader.setControllerFactory(param -> appPreloaderController);
         try {
             return new Scene(appPreloader.load());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Bean(name = "createAccountScene")
+    public Scene createAccountScene(CreateAccountController createAccountController) {
+        final FXMLLoader createAccountModal = new FXMLLoader(getClass().getResource("/views/create_account_modal.fxml"));
+        createAccountModal.setControllerFactory(param -> createAccountController);
+        try {
+            return new Scene(createAccountModal.load());
         } catch (IOException e) {
             e.printStackTrace();
         }
