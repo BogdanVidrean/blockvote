@@ -18,12 +18,17 @@ public class WindowsInteraction implements OsInteraction {
     }
 
     @Override
-    public void deleteAppDataFolder() {
+    public void deleteNodeFolder() {
 
     }
 
     @Override
     public List<File> loadAvailableAccounts() {
         return null;
+    }
+
+    @Override
+    public void copyGethToDisk() {
+
     }
 }
