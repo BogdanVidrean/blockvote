@@ -99,6 +99,9 @@ public class AppPreloaderController {
                     actualChainId = parseLong(chainIDString);
                     found = true;
                 }
+                if (line.toLowerCase().contains("datadir already used by another process")) {
+                    return true;
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
