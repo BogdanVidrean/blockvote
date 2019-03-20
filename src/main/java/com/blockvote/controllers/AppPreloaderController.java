@@ -73,7 +73,16 @@ public class AppPreloaderController {
             }
             loadAvailableAccountWallets();
         } else {
-            // TODO: Probably retry
+            osInteraction.copyGethToDisk();
+            gethProcessOptional = osInteraction.startLocalNode();
+            if (gethProcessOptional.isPresent()) {
+                Process gethProcess = gethProcessOptional.get();
+                boolean isCurrentNodeValid = validateCurrentNode(gethProcess);
+                if (!isCurrentNodeValid) {
+                    recreateCorrectNode(gethProcess);
+                }
+                loadAvailableAccountWallets();
+            }
         }
     }
 
@@ -90,6 +99,9 @@ public class AppPreloaderController {
                     actualChainId = parseLong(chainIDString);
                     found = true;
                 }
+                if (line.toLowerCase().contains("datadir already used by another process")) {
+                    return true;
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -101,7 +113,7 @@ public class AppPreloaderController {
         while (gethProcess.isAlive()) {
             gethProcess.destroy();
         }
-        osInteraction.deleteAppDataFolder();
+        osInteraction.deleteNodeFolder();
         osInteraction.createLocalNode();
         osInteraction.startLocalNode();
     }

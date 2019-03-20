@@ -12,7 +12,9 @@ public interface OsInteraction {
 
     void createLocalNode();
 
-    void deleteAppDataFolder();
+    void deleteNodeFolder();
 
     List<File> loadAvailableAccounts();
+
+    void copyGethToDisk();
 }

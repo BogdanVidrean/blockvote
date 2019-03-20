@@ -2,35 +2,43 @@ package com.blockvote.os;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
-import static com.blockvote.os.Commons.APPDATA_PATH;
+import static com.blockvote.os.Commons.BOOTNODE;
 import static com.blockvote.os.Commons.DEFAULT_PORT;
-import static com.blockvote.os.Commons.GENESIS_PATH;
-import static com.blockvote.os.Commons.GETH_PATH;
+import static com.blockvote.os.Commons.GENESIS_DISK_LOCATION;
+import static com.blockvote.os.Commons.GETH_DISK_LOCATION;
 import static com.blockvote.os.Commons.KEYSTORE_PATH;
 import static com.blockvote.os.Commons.NETWORK_ID;
 import static com.blockvote.os.Commons.NODE_PATH;
 import static com.blockvote.os.Commons.RPC_PORT;
 import static java.lang.String.valueOf;
+import static java.nio.file.Files.setPosixFilePermissions;
 import static java.nio.file.Paths.get;
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 
 public class UnixInteraction implements OsInteraction {
 
     @Override
     public Optional<Process> startLocalNode() {
-        String[] args = new String[]{"./geth", "--datadir", NODE_PATH, "--networkid", valueOf(NETWORK_ID),
-                "--ipcdisable", "--port", valueOf(DEFAULT_PORT), "--rpc", "--rpcapi",
+        String[] args = new String[]{"./geth", "--datadir", NODE_PATH,
+                "--bootnodes", BOOTNODE,
+                "--networkid", valueOf(NETWORK_ID), "--ipcdisable", "--port", valueOf(DEFAULT_PORT), "--rpc", "--rpcapi",
                 "\"eth,web3,personal,net,miner,admin,debug\"", "--rpcport", valueOf(RPC_PORT)};
         ProcessBuilder builder = new ProcessBuilder();
         builder.command(args);
-        builder.directory(get(GETH_PATH).toFile());
+        builder.directory(get(GETH_DISK_LOCATION).toFile());
         try {
             return of(builder.start());
         } catch (IOException e) {
@@ -41,11 +49,14 @@ public class UnixInteraction implements OsInteraction {
 
     @Override
     public void createLocalNode() {
-        String[] args = new String[]{"./geth", "--datadir", NODE_PATH, "init", GENESIS_PATH};
-        ProcessBuilder builder = new ProcessBuilder();
-        builder.command(args);
-        builder.directory(get(GETH_PATH).toFile());
+        InputStream source = getClass().getResourceAsStream("/genesis.json");
+        Path destination = get(GENESIS_DISK_LOCATION);
         try {
+            copyInputStreamToFile(source, destination.toFile());
+            String[] args = new String[]{"./geth", "--datadir", NODE_PATH, "init", GENESIS_DISK_LOCATION};
+            ProcessBuilder builder = new ProcessBuilder();
+            builder.command(args);
+            builder.directory(get(GETH_DISK_LOCATION).toFile());
             Process process = builder.start();
             process.waitFor();
         } catch (IOException | InterruptedException e) {
@@ -54,9 +65,9 @@ public class UnixInteraction implements OsInteraction {
     }
 
     @Override
-    public void deleteAppDataFolder() {
+    public void deleteNodeFolder() {
         try {
-            deleteDirectory(new File(APPDATA_PATH));
+            deleteDirectory(new File(NODE_PATH));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -73,4 +84,16 @@ public class UnixInteraction implements OsInteraction {
     }
 
 
+    @Override
+    public void copyGethToDisk() {
+        try {
+            InputStream source = getClass().getResourceAsStream("/geth_client/geth");
+            Path destination = get(GETH_DISK_LOCATION, "geth");
+            copyInputStreamToFile(source, destination.toFile());
+            Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rwxr-xr-x");
+            setPosixFilePermissions(get(destination.toUri()), permissions);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
