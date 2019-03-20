@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.blockvote.os.Commons.BOOTNODE;
 import static com.blockvote.os.Commons.DEFAULT_PORT;
 import static com.blockvote.os.Commons.GENESIS_DISK_LOCATION;
 import static com.blockvote.os.Commons.GETH_DISK_LOCATION;
@@ -31,8 +32,9 @@ public class UnixInteraction implements OsInteraction {
 
     @Override
     public Optional<Process> startLocalNode() {
-        String[] args = new String[]{"./geth", "--datadir", NODE_PATH, "--networkid", valueOf(NETWORK_ID),
-                "--ipcdisable", "--port", valueOf(DEFAULT_PORT), "--rpc", "--rpcapi",
+        String[] args = new String[]{"./geth", "--datadir", NODE_PATH,
+                "--bootnodes", BOOTNODE,
+                "--networkid", valueOf(NETWORK_ID), "--ipcdisable", "--port", valueOf(DEFAULT_PORT), "--rpc", "--rpcapi",
                 "\"eth,web3,personal,net,miner,admin,debug\"", "--rpcport", valueOf(RPC_PORT)};
         ProcessBuilder builder = new ProcessBuilder();
         builder.command(args);
