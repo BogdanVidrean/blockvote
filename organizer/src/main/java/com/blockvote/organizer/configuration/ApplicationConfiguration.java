@@ -1,5 +1,6 @@
 package com.blockvote.organizer.configuration;
 
+import com.blockvote.core.bootstrap.BootstrapMediator;
 import com.blockvote.core.os.OsInteraction;
 import com.blockvote.organizer.controllers.AppPreloaderController;
 import com.blockvote.organizer.controllers.CreateAccountController;
@@ -25,6 +26,11 @@ public class ApplicationConfiguration {
     }
 
     @Bean
+    public BootstrapMediator bootstrapMediator(OsInteraction osInteraction) {
+        return new BootstrapMediator(osInteraction);
+    }
+
+    @Bean
     public MainPageController mainPageController() {
         return new MainPageController();
     }
@@ -39,8 +45,10 @@ public class ApplicationConfiguration {
                                                          @Qualifier("mainPageScene") Scene mainPageScene,
                                                          @Qualifier("createAccountScene") Scene createAccountScene,
                                                          CreateAccountController createAccountController,
-                                                         MainPageController mainPageController) {
-        return new AppPreloaderController(osInteraction, mainPageScene, createAccountScene, createAccountController, mainPageController);
+                                                         MainPageController mainPageController,
+                                                         BootstrapMediator bootstrapMediator) {
+        return new AppPreloaderController(osInteraction, mainPageScene, createAccountScene, createAccountController,
+                mainPageController, bootstrapMediator);
     }
 
     @Bean(name = "mainPageScene")

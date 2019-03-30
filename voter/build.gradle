@@ -64,7 +64,7 @@ task javaPackager(type: Exec, dependsOn: assemble) {
             '-native', 'image',
             '-outdir', "${buildDir}/distribution",
             '-outfile', project.name,
-            '-srcfiles', "${buildDir}/libs/blockvote-1.0-SNAPSHOT.jar",
+            '-srcfiles', "${buildDir}/libs/voter-1.0-SNAPSHOT.jar",
             '-srcdir', ".",
             '-appclass', mainClass
     ]

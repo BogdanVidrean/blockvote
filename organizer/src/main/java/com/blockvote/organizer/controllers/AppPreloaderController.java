@@ -1,5 +1,7 @@
 package com.blockvote.organizer.controllers;
 
+import com.blockvote.core.bootstrap.BootstrapMediator;
+import com.blockvote.core.exceptions.BootstrapException;
 import com.blockvote.core.os.OsInteraction;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -14,18 +16,13 @@ import org.web3j.protocol.admin.Admin;
 import org.web3j.protocol.admin.methods.response.PersonalUnlockAccount;
 import org.web3j.protocol.http.HttpService;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import static com.blockvote.core.os.Commons.CHAIN_ID;
 import static com.blockvote.core.os.Commons.RPC_PORT;
-import static java.lang.Long.parseLong;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -51,18 +48,20 @@ public class AppPreloaderController {
     private OsInteraction osInteraction;
     private CreateAccountController createAccountController;
     private MainPageController mainPageController;
+    private BootstrapMediator bootstrapMediator;
     private Map<String, File> accountFilesMap = new HashMap<>();
 
     public AppPreloaderController(OsInteraction osInteraction,
                                   Scene mainPageScene,
                                   Scene createAccountScene,
                                   CreateAccountController createAccountController,
-                                  MainPageController mainPageController) {
+                                  MainPageController mainPageController, BootstrapMediator bootstrapMediator) {
         this.osInteraction = osInteraction;
         this.mainPageScene = mainPageScene;
         this.createAccountScene = createAccountScene;
         this.createAccountController = createAccountController;
         this.mainPageController = mainPageController;
+        this.bootstrapMediator = bootstrapMediator;
     }
 
     public void setPrimaryStage(Stage primaryStage) {
@@ -71,58 +70,13 @@ public class AppPreloaderController {
 
     @FXML
     public void initialize() {
-        Optional<Process> gethProcessOptional = osInteraction.startLocalNode();
-        if (gethProcessOptional.isPresent()) {
-            Process gethProcess = gethProcessOptional.get();
-            boolean isCurrentNodeValid = validateCurrentNode(gethProcess);
-            if (!isCurrentNodeValid) {
-                recreateCorrectNode(gethProcess);
-            }
-            loadAvailableAccountWallets();
-        } else {
-            osInteraction.copyGethToDisk();
-            gethProcessOptional = osInteraction.startLocalNode();
-            if (gethProcessOptional.isPresent()) {
-                Process gethProcess = gethProcessOptional.get();
-                boolean isCurrentNodeValid = validateCurrentNode(gethProcess);
-                if (!isCurrentNodeValid) {
-                    recreateCorrectNode(gethProcess);
-                }
-                loadAvailableAccountWallets();
-            }
-        }
-    }
-
-    private boolean validateCurrentNode(Process gethProcess) {
-        BufferedReader in = new BufferedReader(new InputStreamReader(gethProcess.getErrorStream()));
-        String line;
-        boolean found = false;
-        long actualChainId = 0;
         try {
-            while (((line = in.readLine()) != null) && !found) {
-                if (line.contains("ChainID:")) {
-                    String chainIDString = line.substring(line.indexOf("ChainID") + 8, line.indexOf("Homestead"));
-                    chainIDString = chainIDString.replaceAll(" ", "");
-                    actualChainId = parseLong(chainIDString);
-                    found = true;
-                }
-                if (line.toLowerCase().contains("datadir already used by another process")) {
-                    return true;
-                }
-            }
-        } catch (IOException e) {
+            bootstrapMediator.bootstrap();
+            loadAvailableAccountWallets();
+        } catch (BootstrapException e) {
+            // TODO: Some retry mechanism or sth else
             e.printStackTrace();
         }
-        return actualChainId == CHAIN_ID;
-    }
-
-    private void recreateCorrectNode(Process gethProcess) {
-        while (gethProcess.isAlive()) {
-            gethProcess.destroy();
-        }
-        osInteraction.deleteNodeFolder();
-        osInteraction.createLocalNode();
-        osInteraction.startLocalNode();
     }
 
     private void loadAvailableAccountWallets() {
