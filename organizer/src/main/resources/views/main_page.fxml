@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="900.0" prefWidth="1200.0"
+            stylesheets="@../css/main_page.css" xmlns="http://javafx.com/javafx/10.0.1"
+            fx:controller="com.blockvote.organizer.controllers.MainPageController">
+    <children>
+        <VBox alignment="CENTER" layoutX="345.0" layoutY="20.0" prefHeight="900.0" prefWidth="1200.0"
+              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+              AnchorPane.topAnchor="0.0">
+            <children>
+                <Button mnemonicParsing="false" onMousePressed="#deployContract" prefHeight="157.0" prefWidth="309.0"
+                        text="DEPLOY">
+                    <font>
+                        <Font size="48.0"/>
+                    </font>
+                </Button>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

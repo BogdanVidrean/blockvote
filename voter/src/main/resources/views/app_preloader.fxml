@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="900.0"
+            xmlns="http://javafx.com/javafx/8.0.202"
+            fx:controller="com.blockvote.voter.controllers.AppPreloaderController">
+   <children>
+      <VBox alignment="CENTER" prefHeight="600.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0"
+            AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <ListView fx:id="accountsListView" minWidth="500.0" onMousePressed="#selectAddressToLogIn"
+                            visible="false">
+                     <HBox.margin>
+                        <Insets/>
+                     </HBox.margin>
+                  </ListView>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <VBox alignment="CENTER">
+                     <children>
+                        <PasswordField fx:id="passwordField" disable="true" visible="false">
+                           <VBox.margin>
+                              <Insets bottom="10.0"/>
+                           </VBox.margin>
+                        </PasswordField>
+                        <Button fx:id="createNewAccButton" alignment="CENTER" mnemonicParsing="false"
+                                onMousePressed="#showPasswordInsertModal" text="CREATE NEW ACCOUNT"
+                                textAlignment="CENTER">
+                           <font>
+                              <Font size="18.0"/>
+                           </font>
+                        </Button>
+                        <Button fx:id="logInButton" disable="true" mnemonicParsing="false" onMousePressed="#logIn"
+                                text="LOG IN">
+                           <font>
+                              <Font size="18.0"/>
+                           </font>
+                           <VBox.margin>
+                              <Insets top="10.0"/>
+                           </VBox.margin>
+                        </Button>
+                     </children>
+                  </VBox>
+               </children>
+               <VBox.margin>
+                  <Insets top="20.0"/>
+               </VBox.margin>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
