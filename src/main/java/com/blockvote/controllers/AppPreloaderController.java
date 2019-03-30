@@ -46,16 +46,19 @@ public class AppPreloaderController {
     private Scene createAccountScene;
     private OsInteraction osInteraction;
     private CreateAccountController createAccountController;
+    private MainPageController mainPageController;
     private Map<String, File> accountFilesMap = new HashMap<>();
 
     public AppPreloaderController(OsInteraction osInteraction,
                                   Scene mainPageScene,
                                   Scene createAccountScene,
-                                  CreateAccountController createAccountController) {
+                                  CreateAccountController createAccountController,
+                                  MainPageController mainPageController) {
         this.osInteraction = osInteraction;
         this.mainPageScene = mainPageScene;
         this.createAccountScene = createAccountScene;
         this.createAccountController = createAccountController;
+        this.mainPageController = mainPageController;
     }
 
     public void setPrimaryStage(Stage primaryStage) {
@@ -153,6 +156,7 @@ public class AppPreloaderController {
         if (!isEmpty(password) && (selectedAddress != null)) {
             try {
                 final Credentials credentials = loadCredentials(password, accountFilesMap.get(selectedAddress));
+                mainPageController.setCredentials(credentials);
                 primaryStage.setScene(mainPageScene);
             } catch (IOException | CipherException e) {
                 e.printStackTrace();

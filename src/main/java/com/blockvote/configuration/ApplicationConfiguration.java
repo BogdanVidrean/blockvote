@@ -38,8 +38,9 @@ public class ApplicationConfiguration {
     public AppPreloaderController appPreloaderController(OsInteraction osInteraction,
                                                          @Qualifier("mainPageScene") Scene mainPageScene,
                                                          @Qualifier("createAccountScene") Scene createAccountScene,
-                                                         CreateAccountController createAccountController) {
-        return new AppPreloaderController(osInteraction, mainPageScene, createAccountScene, createAccountController);
+                                                         CreateAccountController createAccountController,
+                                                         MainPageController mainPageController) {
+        return new AppPreloaderController(osInteraction, mainPageScene, createAccountScene, createAccountController, mainPageController);
     }
 
     @Bean(name = "mainPageScene")
