@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" id="rootAnchorPane" prefHeight="800.0" prefWidth="1000.0"
             stylesheets="@../css/app_preloader.css" xmlns="http://javafx.com/javafx/10.0.1"
             fx:controller="com.blockvote.voter.controllers.AppPreloaderController">
@@ -29,38 +30,66 @@
          <bottom>
             <HBox alignment="CENTER" BorderPane.alignment="CENTER">
                <children>
-                  <VBox alignment="CENTER">
+                  <VBox id="bottomContainer" alignment="CENTER" minWidth="700.0">
                      <children>
                         <Label id="hiThereText" text="Hi there! Choose your wallet:" textFill="WHITE"/>
-                        <ListView fx:id="accountsListView" minWidth="500.0" onMousePressed="#selectAddressToLogIn"
-                                  prefHeight="110.0" visible="false">
+                        <ListView fx:id="accountsListView" minWidth="500.0" prefHeight="110.0" visible="false">
                            <VBox.margin>
-                              <Insets bottom="20.0"/>
+                              <Insets bottom="10.0"/>
                            </VBox.margin>
                         </ListView>
-                        <PasswordField fx:id="passwordField" disable="true" maxWidth="250.0" visible="false">
+                        <PasswordField id="passwordField" fx:id="passwordField" maxWidth="250.0" promptText="PASSWORD">
                            <VBox.margin>
                               <Insets bottom="20.0"/>
                            </VBox.margin>
+                           <font>
+                              <Font name="System Bold" size="14.0"/>
+                           </font>
                         </PasswordField>
-                        <Button fx:id="logInButton" alignment="CENTER" contentDisplay="TOP" disable="true"
-                                mnemonicParsing="false" onMousePressed="#logIn" prefHeight="35.0" prefWidth="242.0"
-                                text="LOG IN">
+                        <Button fx:id="logInButton" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false"
+                                onMousePressed="#logIn" prefHeight="35.0" prefWidth="242.0" text="LOG IN">
                            <font>
                               <Font size="18.0"/>
                            </font>
                         </Button>
+                        <HBox fx:id="createHelpContainer" alignment="CENTER">
+                           <children>
+                              <HBox alignment="BOTTOM_LEFT" prefWidth="350.0">
+                                 <children>
+                                    <Text fill="WHITE" onMousePressed="#showCreateWalletModal" strokeType="OUTSIDE"
+                                          strokeWidth="0.0" styleClass="udnerlinedText" text="CREATE WALLET">
+                                       <font>
+                                          <Font name="System Bold" size="14.0"/>
+                                       </font>
+                                    </Text>
+                                 </children>
+                              </HBox>
+                              <HBox alignment="BOTTOM_RIGHT" prefWidth="350.0">
+                                 <children>
+                                    <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0"
+                                          styleClass="udnerlinedText" text="HELP">
+                                       <font>
+                                          <Font size="14.0"/>
+                                       </font>
+                                    </Text>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
                      </children>
                      <opaqueInsets>
                         <Insets/>
                      </opaqueInsets>
+                     <padding>
+                        <Insets bottom="10.0" left="20.0" right="20.0"/>
+                     </padding>
                   </VBox>
                </children>
                <opaqueInsets>
                   <Insets/>
                </opaqueInsets>
                <BorderPane.margin>
-                  <Insets bottom="20.0"/>
+                  <Insets bottom="10.0"/>
                </BorderPane.margin>
             </HBox>
          </bottom>

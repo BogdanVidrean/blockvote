@@ -94,17 +94,6 @@ public class AppPreloaderController {
     }
 
     @FXML
-    public void selectAddressToLogIn(MouseEvent mouseEvent) {
-        String selectedAddress = accountsListView.getSelectionModel().getSelectedItem();
-        if (selectedAddress != null) {
-            logInButton.setDisable(false);
-
-            passwordField.setDisable(false);
-            passwordField.setVisible(true);
-        }
-    }
-
-    @FXML
     public void logIn(MouseEvent mouseEvent) {
         String password = passwordField.getText();
         String selectedAddress = accountsListView.getSelectionModel().getSelectedItem();
@@ -120,7 +109,7 @@ public class AppPreloaderController {
     }
 
     @FXML
-    public void showPasswordInsertModal(MouseEvent mouseEvent) {
+    public void showCreateWalletModal(MouseEvent mouseEvent) {
         Stage createAccountPasswordModal = new Stage();
         createAccountPasswordModal.initOwner(primaryStage);
         createAccountPasswordModal.initModality(APPLICATION_MODAL);

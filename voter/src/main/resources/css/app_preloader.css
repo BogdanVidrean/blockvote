@@ -15,21 +15,14 @@
 }
 
 .list-view {
-    -fx-background-color: transparent;
-    -fx-border-color: white;
+    -fx-background-color: #3fe4ff;
+    -fx-background-radius: 10;
+    /*-fx-border-color: white;*/
     -fx-border-radius: 10;
 }
 
-/*.list-cell:even { !* <=== changed to even *!*/
-/*    -fx-background-color: #3fe4ff;*/
-/*}*/
-
-/*.list-cell:odd { !* <=== changed to even *!*/
-/*    -fx-background-color: white;*/
-/*}*/
-
 .list-cell:filled:hover {
-    -fx-background-color: #3fe4ff;
+    -fx-background-color: #74f8f8;
     -fx-text-fill: white;
 }
 
@@ -108,4 +101,33 @@
     -fx-background-insets: 5px;
     -fx-border-color: white;
     -fx-text-fill: white;
+}
+
+.button:hover {
+    -fx-background-color: white;
+    -fx-text-fill: #3fe4ff;
+    -fx-cursor: hand;
+}
+
+#bottomContainer {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 5;
+    -fx-border-radius: 10;
+}
+
+.udnerlinedText:hover {
+    -fx-border-color: white;
+    -fx-border-width: 0 0 1 0;
+    -fx-underline: true;
+    -fx-cursor: hand;
+    -fx-padding: 0 0 -1 0;
+}
+
+.password-field {
+    -fx-border-color: white;
+    -fx-border-width: 0 0 1 0;
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: white;
 }
