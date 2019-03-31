@@ -12,6 +12,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
@@ -34,6 +35,8 @@ import static org.web3j.crypto.WalletUtils.loadCredentials;
 
 public class AppPreloaderController {
 
+    @FXML
+    private Text errorMsg;
     @FXML
     private AnchorPane rootAnchorPane;
     @FXML
@@ -104,14 +107,22 @@ public class AppPreloaderController {
     public void logIn(MouseEvent mouseEvent) {
         String password = passwordField.getText();
         String selectedAddress = accountsListView.getSelectionModel().getSelectedItem();
-        if (!isEmpty(password) && (selectedAddress != null)) {
-            try {
-                final Credentials credentials = loadCredentials(password, accountFilesMap.get(selectedAddress));
-                mainPageController.setCredentials(credentials);
-                primaryStage.setScene(mainPageScene);
-            } catch (IOException | CipherException e) {
-                e.printStackTrace();
+        if (selectedAddress != null) {
+            if (!isEmpty(password)) {
+                try {
+                    final Credentials credentials = loadCredentials(password, accountFilesMap.get(selectedAddress));
+                    mainPageController.setCredentials(credentials);
+                    primaryStage.setScene(mainPageScene);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (CipherException e) {
+                    errorMsg.setText("The password is not correct.");
+                }
+            } else {
+                errorMsg.setText("No password provided.");
             }
+        } else {
+            errorMsg.setText("No wallet address selected.");
         }
     }
 

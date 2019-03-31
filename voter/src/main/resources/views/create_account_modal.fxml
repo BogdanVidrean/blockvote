@@ -8,6 +8,8 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" id="rootAnchorPane" prefHeight="400.0" prefWidth="300.0"
             stylesheets="@../css/create_account.css" xmlns="http://javafx.com/javafx/10.0.1"
             fx:controller="com.blockvote.voter.controllers.CreateAccountController">
@@ -21,7 +23,7 @@
                         <Image url="@../images/logo.png"/>
                     </image>
                     <VBox.margin>
-                        <Insets bottom="20.0"/>
+                        <Insets bottom="30.0"/>
                     </VBox.margin>
                 </ImageView>
                 <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
@@ -47,6 +49,14 @@
                             </VBox.margin>
                         </PasswordField>
                         <Button mnemonicParsing="false" onMousePressed="#createAccount" text="CREATE"/>
+                        <Text id="errorMsg" fx:id="errorMsg" fill="#dd2d2d" strokeType="OUTSIDE" strokeWidth="0.0">
+                            <VBox.margin>
+                                <Insets top="20.0"/>
+                            </VBox.margin>
+                            <font>
+                                <Font name="System Bold" size="14.0"/>
+                            </font>
+                        </Text>
                     </children>
                 </VBox>
             </children>

@@ -19,14 +19,6 @@
    <children>
       <BorderPane prefHeight="800.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                   AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <top>
-            <ImageView fitHeight="194.0" fitWidth="538.0" pickOnBounds="true" preserveRatio="true"
-                       BorderPane.alignment="CENTER">
-               <image>
-                  <Image url="@../images/logo.png"/>
-               </image>
-            </ImageView>
-         </top>
          <bottom>
             <HBox alignment="CENTER" BorderPane.alignment="CENTER">
                <children>
@@ -93,6 +85,25 @@
                </BorderPane.margin>
             </HBox>
          </bottom>
+         <top>
+            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+               <children>
+                  <ImageView fitHeight="194.0" fitWidth="538.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/logo.png"/>
+                     </image>
+                     <VBox.margin>
+                        <Insets bottom="40.0"/>
+                     </VBox.margin>
+                  </ImageView>
+                  <Text fx:id="errorMsg" fill="#d71e1e" strokeType="OUTSIDE" strokeWidth="0.0">
+                     <font>
+                        <Font size="14.0"/>
+                     </font>
+                  </Text>
+               </children>
+            </VBox>
+         </top>
       </BorderPane>
    </children>
 </AnchorPane>

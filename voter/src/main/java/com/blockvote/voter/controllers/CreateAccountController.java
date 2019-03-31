@@ -3,8 +3,8 @@ package com.blockvote.voter.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.apache.commons.lang3.StringUtils;
 import org.web3j.crypto.CipherException;
 
 import java.io.IOException;
@@ -21,6 +21,8 @@ import static org.web3j.crypto.WalletUtils.generateNewWalletFile;
 
 public class CreateAccountController extends Observable {
 
+    @FXML
+    private Text errorMsg;
     @FXML
     private PasswordField passwordAgainField;
     @FXML
@@ -40,7 +42,7 @@ public class CreateAccountController extends Observable {
 
     public void setCreateAccountStage(Stage createAccountStage) {
         this.createAccountStage = createAccountStage;
-//        clearFields();
+        clearFields();
         createAccountStage.setOnCloseRequest(event -> closeCallback.run());
     }
 
@@ -53,7 +55,7 @@ public class CreateAccountController extends Observable {
         String password = passwordField.getText();
         String passwordAgain = passwordAgainField.getText();
         if (!isEmpty(password) && !isEmpty(passwordAgain)) {
-            if (StringUtils.equals(password, passwordAgain)) {
+            if (password.equals(passwordAgain)) {
                 try {
                     String s = generateNewWalletFile(password, get(KEYSTORE_PATH).toFile());
                     accountCreationCallback.accept(s);
@@ -62,12 +64,17 @@ public class CreateAccountController extends Observable {
                 } catch (CipherException | InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchProviderException | IOException e) {
                     e.printStackTrace();
                 }
+            } else {
+                errorMsg.setText("Passwords don't match.");
             }
+        } else {
+            errorMsg.setText("All fields are mandatory.");
         }
     }
 
     private void clearFields() {
         passwordField.setText("");
         passwordAgainField.setText("");
+        errorMsg.setText("");
     }
 }
