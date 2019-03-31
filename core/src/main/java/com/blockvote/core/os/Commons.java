@@ -32,4 +32,6 @@ public abstract class Commons {
             .toAbsolutePath().toString();
     public static final String GENESIS_DISK_LOCATION = get(APPDATA_PATH, "genesis.json")
             .toAbsolutePath().toString();
+    public static final String ALIASES_FILE_PATH = get(NODE_PATH, "aliases.properties")
+            .toAbsolutePath().toString();
 }
