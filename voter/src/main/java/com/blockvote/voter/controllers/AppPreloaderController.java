@@ -8,7 +8,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
@@ -29,6 +31,8 @@ import static org.web3j.crypto.WalletUtils.loadCredentials;
 
 public class AppPreloaderController {
 
+    @FXML
+    private AnchorPane rootAnchorPane;
     @FXML
     private PasswordField passwordField;
     @FXML
@@ -114,9 +118,9 @@ public class AppPreloaderController {
         createAccountPasswordModal.initOwner(primaryStage);
         createAccountPasswordModal.initModality(APPLICATION_MODAL);
         createAccountPasswordModal.setScene(createAccountScene);
-        createAccountPasswordModal.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - createAccountPasswordModal.getWidth() / 2);
-        createAccountPasswordModal.setY(primaryStage.getY() + primaryStage.getHeight() / 2 - createAccountPasswordModal.getHeight() / 2);
         createAccountController.setCreateAccountStage(createAccountPasswordModal);
+        GaussianBlur gaussianBlur = new GaussianBlur(10000);
+        rootAnchorPane.setEffect(gaussianBlur);
         createAccountPasswordModal.showAndWait();
     }
 }

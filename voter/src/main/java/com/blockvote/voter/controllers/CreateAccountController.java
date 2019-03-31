@@ -29,11 +29,13 @@ public class CreateAccountController extends Observable {
 
     public void setCreateAccountStage(Stage createAccountStage) {
         this.createAccountStage = createAccountStage;
+        createAccountStage.setOnHiding(event -> {
+
+        });
     }
 
     @FXML
     public void initialize() {
-
     }
 
     @FXML
@@ -43,13 +45,17 @@ public class CreateAccountController extends Observable {
         if (!isEmpty(password) && !isEmpty(passwordAgain)) {
             if (StringUtils.equals(password, passwordAgain)) {
                 try {
-                    // TODO: It creates the file with the .json extension. I must check whether it affects the behavior
-                    generateNewWalletFile(password, get(KEYSTORE_PATH).toFile());
+                    String s = generateNewWalletFile(password, get(KEYSTORE_PATH).toFile());
                     createAccountStage.close();
                 } catch (CipherException | InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchProviderException | IOException e) {
                     e.printStackTrace();
                 }
             }
         }
+    }
+
+    private void clearFields() {
+        passwordField.setText("");
+        passwordAgainField.setText("");
     }
 }

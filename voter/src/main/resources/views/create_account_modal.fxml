@@ -1,23 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="400.0" prefWidth="300.0"
-            xmlns="http://javafx.com/javafx/8.0.202"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" id="rootAnchorPane" prefHeight="400.0" prefWidth="300.0"
+            stylesheets="@../css/create_account.css" xmlns="http://javafx.com/javafx/10.0.1"
             fx:controller="com.blockvote.voter.controllers.CreateAccountController">
     <children>
-        <VBox alignment="CENTER" layoutX="114.0" layoutY="39.0" prefHeight="400.0" prefWidth="300.0"
+        <VBox alignment="TOP_CENTER" layoutX="114.0" layoutY="39.0" prefHeight="400.0" prefWidth="300.0"
               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
               AnchorPane.topAnchor="0.0">
             <children>
-                <Label text="PASSWORD"/>
-                <PasswordField fx:id="passwordField"/>
-                <Label text="REPEAT PASSWORD"/>
-                <PasswordField fx:id="passwordAgainField"/>
-                <Button mnemonicParsing="false" onMousePressed="#createAccount" text="CREATE"/>
+                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/logo.png"/>
+                    </image>
+                    <VBox.margin>
+                        <Insets bottom="20.0"/>
+                    </VBox.margin>
+                </ImageView>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                    <children>
+                        <Label styleClass="text" text="PASSWORD">
+                            <VBox.margin>
+                                <Insets bottom="5.0"/>
+                            </VBox.margin>
+                        </Label>
+                        <PasswordField fx:id="passwordField" maxWidth="200.0">
+                            <VBox.margin>
+                                <Insets bottom="10.0"/>
+                            </VBox.margin>
+                        </PasswordField>
+                        <Label styleClass="text" text="REPEAT PASSWORD">
+                            <VBox.margin>
+                                <Insets bottom="5.0"/>
+                            </VBox.margin>
+                        </Label>
+                        <PasswordField fx:id="passwordAgainField" maxWidth="200.0">
+                            <VBox.margin>
+                                <Insets bottom="20.0"/>
+                            </VBox.margin>
+                        </PasswordField>
+                        <Button mnemonicParsing="false" onMousePressed="#createAccount" text="CREATE"/>
+                    </children>
+                </VBox>
             </children>
         </VBox>
     </children>
