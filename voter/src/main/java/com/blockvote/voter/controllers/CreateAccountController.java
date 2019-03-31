@@ -12,6 +12,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.Observable;
+import java.util.function.Consumer;
 
 import static com.blockvote.core.os.Commons.KEYSTORE_PATH;
 import static java.nio.file.Paths.get;
@@ -26,12 +27,21 @@ public class CreateAccountController extends Observable {
     private PasswordField passwordField;
 
     private Stage createAccountStage;
+    private Runnable closeCallback;
+    private Consumer<String> accountCreationCallback;
+
+    public void setCloseCallback(Runnable closeCallback) {
+        this.closeCallback = closeCallback;
+    }
+
+    public void setAccountCreationCallback(Consumer<String> accountCreationCallback) {
+        this.accountCreationCallback = accountCreationCallback;
+    }
 
     public void setCreateAccountStage(Stage createAccountStage) {
         this.createAccountStage = createAccountStage;
-        createAccountStage.setOnHiding(event -> {
-
-        });
+//        clearFields();
+        createAccountStage.setOnCloseRequest(event -> closeCallback.run());
     }
 
     @FXML
@@ -46,6 +56,8 @@ public class CreateAccountController extends Observable {
             if (StringUtils.equals(password, passwordAgain)) {
                 try {
                     String s = generateNewWalletFile(password, get(KEYSTORE_PATH).toFile());
+                    accountCreationCallback.accept(s);
+                    clearFields();
                     createAccountStage.close();
                 } catch (CipherException | InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchProviderException | IOException e) {
                     e.printStackTrace();

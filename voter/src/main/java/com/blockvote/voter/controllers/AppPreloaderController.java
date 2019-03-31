@@ -3,6 +3,7 @@ package com.blockvote.voter.controllers;
 import com.blockvote.core.bootstrap.BootstrapMediator;
 import com.blockvote.core.exceptions.BootstrapException;
 import com.blockvote.core.os.OsInteraction;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -17,10 +18,12 @@ import org.web3j.crypto.Credentials;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.blockvote.core.os.Commons.KEYSTORE_PATH;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -50,6 +53,7 @@ public class AppPreloaderController {
     private MainPageController mainPageController;
     private BootstrapMediator bootstrapMediator;
     private Map<String, File> accountFilesMap = new HashMap<>();
+    private ObservableList<String> accountsObsList = observableArrayList();
 
     public AppPreloaderController(OsInteraction osInteraction,
                                   Scene mainPageScene,
@@ -86,15 +90,14 @@ public class AppPreloaderController {
             accountFilesMap.putAll(accounts.stream().collect(toMap(f -> formatAddressFromKeystoreFileName(f.getName()),
                     identity())));
             accountsListView.setVisible(true);
-            accountsListView.setItems(observableArrayList(accounts.stream().map(f -> formatAddressFromKeystoreFileName(f.getName())).collect(toList())));
-        } else {
-            createNewAccButton.setVisible(true);
+            accountsObsList.addAll(accounts.stream().map(f -> formatAddressFromKeystoreFileName(f.getName())).collect(toList()));
+            accountsListView.setItems(accountsObsList);
         }
     }
 
     private String formatAddressFromKeystoreFileName(String fileName) {
         String[] parts = fileName.split("--");
-        return (parts[parts.length - 1]);
+        return (parts[parts.length - 1]).replaceAll(".json", "");
     }
 
     @FXML
@@ -118,7 +121,17 @@ public class AppPreloaderController {
         createAccountPasswordModal.initOwner(primaryStage);
         createAccountPasswordModal.initModality(APPLICATION_MODAL);
         createAccountPasswordModal.setScene(createAccountScene);
+
         createAccountController.setCreateAccountStage(createAccountPasswordModal);
+        createAccountController.setCloseCallback(() -> rootAnchorPane.setEffect(null));
+        createAccountController.setAccountCreationCallback(newAddressFileName -> {
+            File newWalletFile = Paths.get(KEYSTORE_PATH, newAddressFileName).toFile();
+            accountFilesMap.put(formatAddressFromKeystoreFileName(newAddressFileName), newWalletFile);
+            accountsObsList.add(formatAddressFromKeystoreFileName(newAddressFileName));
+            accountsListView.refresh();
+            rootAnchorPane.setEffect(null);
+        });
+
         GaussianBlur gaussianBlur = new GaussianBlur(10000);
         rootAnchorPane.setEffect(gaussianBlur);
         createAccountPasswordModal.showAndWait();
