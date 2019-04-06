@@ -28,7 +28,7 @@ contract Election {
 
     modifier personAbleToVote(uint8 candidateId) {
         require(voters[msg.sender] == 1, "Person is not registered for this vote or already voted.");
-        require(!candidates[candidateId].isValue, "Candidate not found.");
+        require(candidates[candidateId].isValue, "Candidate not found.");
         _;
     }
     
