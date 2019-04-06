@@ -14,7 +14,7 @@ public abstract class Commons {
                     "a81eb279726a13f6f513932f63f4cae2d5f30e25f0e811df17ab@100.114.25.143:30308";
     //    public static final String CONTRACT_ADDRESS = "0x8fb55924b14b1aed46b952310c212a6a173a6a1b";
     //  Derp test with address book or sth like that
-    public static final String CONTRACT_ADDRESS = "0xe060b5a2796959a94eace09ef7528fb92add1531";
+    public static final String CONTRACT_ADDRESS = "0x50418c581dabaaef7d358e819a2e16eccc174119";
     public static final String APPDATA_APPLICATION_FOLDER_NAME = "blockvote";
     public static final String APPDATA_PATH = get(getProperty("user.home"), "Library", "Application Support",
             APPDATA_APPLICATION_FOLDER_NAME)
