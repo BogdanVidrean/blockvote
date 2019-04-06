@@ -143,7 +143,7 @@ public class AppPreloaderController {
             rootAnchorPane.setEffect(null);
         });
 
-        GaussianBlur gaussianBlur = new GaussianBlur(10000);
+        GaussianBlur gaussianBlur = new GaussianBlur();
         rootAnchorPane.setEffect(gaussianBlur);
         createAccountPasswordModal.showAndWait();
     }
