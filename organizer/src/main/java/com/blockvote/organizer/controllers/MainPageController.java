@@ -12,7 +12,7 @@ import static com.blockvote.core.os.Commons.RPC_PORT;
 
 public class MainPageController {
 
-    private Credentials currentUserCredentials;
+    private Credentials credentials;
 
     @FXML
     public void initialize() {
@@ -24,14 +24,14 @@ public class MainPageController {
     private void deployContract(MouseEvent mouseEvent) {
         Web3j web3j = Web3j.build(new HttpService("http://localhost:" + RPC_PORT));
         try {
-            String deployedContractAddress = Election.deploy(web3j, currentUserCredentials, new DefaultGasProvider()).send().getContractAddress();
+            String deployedContractAddress = Election.deploy(web3j, credentials, new DefaultGasProvider()).send().getContractAddress();
             System.out.println("Address is: " + deployedContractAddress);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void setCurrentUserCredentials(Credentials currentUserCredentials) {
-        this.currentUserCredentials = currentUserCredentials;
+    public void setCredentials(Credentials currentUserCredentials) {
+        this.credentials = currentUserCredentials;
     }
 }
