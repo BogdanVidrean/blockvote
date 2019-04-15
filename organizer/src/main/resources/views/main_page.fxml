@@ -8,18 +8,16 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
 <AnchorPane id="root_anchor_pane" prefHeight="900.0" prefWidth="1200.0" stylesheets="@../css/main_page.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.blockvote.organizer.controllers.MainPageController">
     <children>
       <BorderPane fx:id="borderPane" prefHeight="900.0" prefWidth="1200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <left>
-            <VBox alignment="CENTER" BorderPane.alignment="BOTTOM_CENTER">
+            <VBox id="menuVbox" alignment="CENTER" BorderPane.alignment="BOTTOM_CENTER">
                <children>
-                  <Button id="logoutButton" contentDisplay="TOP" mnemonicParsing="false" prefHeight="92.0" prefWidth="154.0" text="Logout" textAlignment="CENTER" textFill="WHITE" wrapText="true">
+                  <Button id="logoutButton" contentDisplay="TOP" mnemonicParsing="false" prefHeight="92.0" prefWidth="154.0" text="LOGOUT" textAlignment="CENTER" textFill="WHITE" wrapText="true">
                      <graphic>
-                        <ImageView fitHeight="154.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="115.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../images/logout.png" />
                            </image></ImageView>
@@ -29,12 +27,25 @@
                         <String fx:value="menu-button" />
                      </styleClass>
                   </Button>
-                  <Button id="createElectionButton" contentDisplay="TOP" mnemonicParsing="false" onMousePressed="#setElectionCreationPage" prefHeight="211.0" prefWidth="258.0" text="Create an election" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+                  <Button id="logoutButton" contentDisplay="TOP" layoutX="10.0" layoutY="24.0" mnemonicParsing="false" onMousePressed="#setHomePage" prefHeight="92.0" prefWidth="154.0" text="HOME" textAlignment="CENTER" textFill="WHITE" wrapText="true">
+                     <graphic>
+                        <ImageView fitHeight="115.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/home.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <styleClass>
+                        <String fx:value="menu-text" />
+                        <String fx:value="menu-button" />
+                     </styleClass>
+                  </Button>
+                  <Button id="createElectionButton" contentDisplay="TOP" mnemonicParsing="false" onMousePressed="#setElectionCreationPage" prefHeight="211.0" prefWidth="258.0" text="CREATE AN ELECTION" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
                      <graphic>
-                        <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="115.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../images/election-icon.png" />
                            </image>
@@ -45,12 +56,12 @@
                         <String fx:value="menu-button" />
                      </styleClass>
                   </Button>
-                  <Button id="registerVoterButton" alignment="CENTER" contentDisplay="TOP" layoutX="45.0" layoutY="317.0" mnemonicParsing="false" prefHeight="241.0" prefWidth="150.0" text="Register a voter" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+                  <Button id="registerVoterButton" alignment="CENTER" contentDisplay="TOP" layoutX="45.0" layoutY="317.0" mnemonicParsing="false" onMousePressed="#setRegisterVoterView" prefHeight="241.0" prefWidth="150.0" text="REGISTER A VOTER" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
                      <graphic>
-                        <ImageView fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="115.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../images/add_user.png" />
                            </image>
@@ -71,23 +82,6 @@
                </image>
             </ImageView>
          </top>
-         <center>
-            <AnchorPane id="derp" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-               <children>
-                  <VBox alignment="CENTER" prefHeight="777.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <children>
-                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="menu-text" text="Start sailing. Choose an action from the left side." textAlignment="CENTER" wrappingWidth="252.8765869140625">
-                           <font>
-                              <Font name="System Bold" size="13.0" />
-                           </font>
-                           <VBox.margin>
-                              <Insets bottom="100.0" />
-                           </VBox.margin>
-                        </Text>
-                     </children>
-                  </VBox>
-               </children></AnchorPane>
-         </center>
       </BorderPane>
     </children>
 </AnchorPane>

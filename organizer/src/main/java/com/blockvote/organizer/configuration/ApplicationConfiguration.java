@@ -5,7 +5,9 @@ import com.blockvote.core.os.OsInteraction;
 import com.blockvote.organizer.controllers.AppPreloaderController;
 import com.blockvote.organizer.controllers.CreateAccountController;
 import com.blockvote.organizer.controllers.ElectionCreationController;
+import com.blockvote.organizer.controllers.HomeController;
 import com.blockvote.organizer.controllers.MainPageController;
+import com.blockvote.organizer.controllers.RegisterVoterController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -36,6 +38,8 @@ public class ApplicationConfiguration {
     public MainPageController mainPageController() {
         MainPageController mainPageController = new MainPageController();
         mainPageController.setElectionCreationNode(electionCreationView());
+        mainPageController.setRegisterVoterNode(registerVoterView());
+        mainPageController.setHomeNode(homeView());
         return mainPageController;
     }
 
@@ -98,11 +102,47 @@ public class ApplicationConfiguration {
     }
 
     @Bean
+    public RegisterVoterController registerVoterController() {
+        final RegisterVoterController registerVoterController = new RegisterVoterController();
+        return registerVoterController;
+    }
+
+    @Bean
+    public HomeController homeController() {
+        final HomeController homeController = new HomeController();
+        return homeController;
+    }
+
+    @Bean
     public Node electionCreationView() {
         try {
             final FXMLLoader electionCreationLoade = new FXMLLoader(getClass().getResource("/views/election_creation_view.fxml"));
             electionCreationLoade.setControllerFactory(param -> this.electionCreationController());
             return electionCreationLoade.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Bean
+    public Node registerVoterView() {
+        try {
+            final FXMLLoader registerVoterLoader = new FXMLLoader(getClass().getResource("/views/register_voter_view.fxml"));
+            registerVoterLoader.setControllerFactory(param -> this.registerVoterController());
+            return registerVoterLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Bean
+    public Node homeView() {
+        try {
+            final FXMLLoader homeViewLoader = new FXMLLoader(getClass().getResource("/views/home_view.fxml"));
+            homeViewLoader.setControllerFactory(param -> this.homeController());
+            return homeViewLoader.load();
         } catch (IOException e) {
             e.printStackTrace();
         }
