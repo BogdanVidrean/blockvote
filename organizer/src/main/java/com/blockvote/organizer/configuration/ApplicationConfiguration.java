@@ -4,8 +4,10 @@ import com.blockvote.core.bootstrap.BootstrapMediator;
 import com.blockvote.core.os.OsInteraction;
 import com.blockvote.organizer.controllers.AppPreloaderController;
 import com.blockvote.organizer.controllers.CreateAccountController;
+import com.blockvote.organizer.controllers.ElectionCreationController;
 import com.blockvote.organizer.controllers.MainPageController;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +34,9 @@ public class ApplicationConfiguration {
 
     @Bean
     public MainPageController mainPageController() {
-        return new MainPageController();
+        MainPageController mainPageController = new MainPageController();
+        mainPageController.setElectionCreationNode(electionCreationView());
+        return mainPageController;
     }
 
     @Bean
@@ -87,4 +91,21 @@ public class ApplicationConfiguration {
         return null;
     }
 
+    @Bean
+    public ElectionCreationController electionCreationController() {
+        final ElectionCreationController electionCreationController = new ElectionCreationController();
+        return electionCreationController;
+    }
+
+    @Bean
+    public Node electionCreationView() {
+        try {
+            final FXMLLoader electionCreationLoade = new FXMLLoader(getClass().getResource("/views/election_creation_view.fxml"));
+            electionCreationLoade.setControllerFactory(param -> this.electionCreationController());
+            return electionCreationLoade.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
