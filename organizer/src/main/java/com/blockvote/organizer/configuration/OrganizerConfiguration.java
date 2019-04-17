@@ -1,6 +1,8 @@
 package com.blockvote.organizer.configuration;
 
 import com.blockvote.core.bootstrap.BootstrapMediator;
+import com.blockvote.core.contracts.interfaces.IElection;
+import com.blockvote.core.contracts.interfaces.IElectionMaster;
 import com.blockvote.core.os.OsInteraction;
 import com.blockvote.organizer.controllers.AppPreloaderController;
 import com.blockvote.organizer.controllers.CreateAccountController;
@@ -13,6 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
@@ -22,7 +25,17 @@ import static com.blockvote.core.os.OsInteractionFactory.createOsInteraction;
 
 @Configuration
 @SuppressWarnings({"SpringFacetCodeInspection", "Duplicates"})
-public class ApplicationConfiguration {
+@ComponentScan(basePackages = {"com.blockvote.core.configuration"})
+public class OrganizerConfiguration {
+
+    private final IElection election;
+    private final IElectionMaster electionMaster;
+
+    public OrganizerConfiguration(IElection election,
+                                  IElectionMaster electionMaster) {
+        this.election = election;
+        this.electionMaster = electionMaster;
+    }
 
     @Bean
     public OsInteraction osInteraction() {
@@ -49,13 +62,15 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public AppPreloaderController appPreloaderController(OsInteraction osInteraction,
+    public AppPreloaderController appPreloaderController(IElection election,
+                                                         IElectionMaster electionMaster,
+                                                         OsInteraction osInteraction,
                                                          @Qualifier("mainPageScene") Scene mainPageScene,
                                                          @Qualifier("createAccountScene") Scene createAccountScene,
                                                          CreateAccountController createAccountController,
                                                          MainPageController mainPageController,
                                                          BootstrapMediator bootstrapMediator) {
-        return new AppPreloaderController(osInteraction, mainPageScene, createAccountScene, createAccountController,
+        return new AppPreloaderController(election, electionMaster, osInteraction, mainPageScene, createAccountScene, createAccountController,
                 mainPageController, bootstrapMediator);
     }
 
@@ -104,6 +119,7 @@ public class ApplicationConfiguration {
     @Bean
     public RegisterVoterController registerVoterController() {
         final RegisterVoterController registerVoterController = new RegisterVoterController();
+        registerVoterController.setElectionMaster(electionMaster);
         return registerVoterController;
     }
 

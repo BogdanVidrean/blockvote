@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" id="rootAnchor" prefHeight="400.0" prefWidth="600.0"
             stylesheets="@../css/register_voter_view.css" xmlns="http://javafx.com/javafx/10.0.1"
             fx:controller="com.blockvote.organizer.controllers.RegisterVoterController">
@@ -16,11 +17,19 @@
             AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
             AnchorPane.topAnchor="0.0">
          <children>
+            <Text fx:id="userMessage" fill="#ff6060" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text">
+               <VBox.margin>
+                  <Insets bottom="20.0"/>
+               </VBox.margin>
+               <font>
+                  <Font name="System Bold" size="13.0"/>
+               </font>
+            </Text>
             <Label stylesheets="@../css/register_voter_view.css" text="INSERT THE ADDRESS" textAlignment="CENTER"
                    textFill="WHITE"/>
             <HBox alignment="CENTER" prefHeight="47.0" prefWidth="600.0">
                <children>
-                  <TextField alignment="CENTER" prefHeight="46.0" prefWidth="619.0">
+                  <TextField fx:id="addressTextField" alignment="CENTER" prefHeight="46.0" prefWidth="619.0">
                      <HBox.margin>
                         <Insets left="5.0" />
                      </HBox.margin>
@@ -33,9 +42,34 @@
                   <Insets />
                </VBox.margin>
             </HBox>
-            <Button mnemonicParsing="false" prefHeight="27.0" prefWidth="152.0" text="REGISTER">
+            <Label layoutX="176.0" layoutY="131.0" stylesheets="@../css/register_voter_view.css"
+                   text="INSERT THE ADDRESS AGAIN" textAlignment="CENTER" textFill="WHITE">
                <VBox.margin>
-                  <Insets left="5.0" top="30.0"/>
+                  <Insets top="20.0"/>
+               </VBox.margin>
+            </Label>
+            <HBox alignment="CENTER" layoutX="10.0" layoutY="161.0" prefHeight="47.0" prefWidth="600.0">
+               <children>
+                  <TextField fx:id="addressTextFieldAgain" alignment="CENTER" prefHeight="46.0" prefWidth="619.0">
+                     <HBox.margin>
+                        <Insets left="5.0"/>
+                     </HBox.margin>
+                     <font>
+                        <Font size="24.0"/>
+                     </font>
+                  </TextField>
+               </children>
+            </HBox>
+            <Button mnemonicParsing="false" onMousePressed="#registerNewAccount" prefHeight="27.0" prefWidth="152.0"
+                    text="REGISTER">
+               <VBox.margin>
+                  <Insets bottom="20.0" top="20.0"/>
+               </VBox.margin>
+            </Button>
+            <Button layoutX="234.0" layoutY="238.0" mnemonicParsing="false" onMousePressed="#verifyVoterStatus"
+                    prefHeight="27.0" prefWidth="152.0" text="VERIFY">
+               <VBox.margin>
+                  <Insets bottom="130.0"/>
                </VBox.margin>
             </Button>
          </children>

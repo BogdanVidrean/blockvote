@@ -1,12 +1,15 @@
 package com.blockvote.organizer.controllers;
 
 import com.blockvote.core.bootstrap.BootstrapMediator;
+import com.blockvote.core.contracts.interfaces.IElection;
+import com.blockvote.core.contracts.interfaces.IElectionMaster;
+import com.blockvote.core.contracts.proxy.ElectionMasterProxy;
+import com.blockvote.core.contracts.proxy.ElectionProxy;
 import com.blockvote.core.exceptions.BootstrapException;
 import com.blockvote.core.os.OsInteraction;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.effect.GaussianBlur;
@@ -42,12 +45,10 @@ public class AppPreloaderController {
     @FXML
     private PasswordField passwordField;
     @FXML
-    private Button logInButton;
-    @FXML
     private ListView<String> accountsListView;
-    @FXML
-    private Button createNewAccButton;
 
+    private IElectionMaster electionMaster;
+    private IElection election;
     private Stage primaryStage;
     private Scene mainPageScene;
     private Scene createAccountScene;
@@ -58,12 +59,16 @@ public class AppPreloaderController {
     private Map<String, File> accountFilesMap = new HashMap<>();
     private ObservableList<String> accountsObsList = observableArrayList();
 
-    public AppPreloaderController(OsInteraction osInteraction,
+    public AppPreloaderController(IElection election,
+                                  IElectionMaster electionMaster,
+                                  OsInteraction osInteraction,
                                   Scene mainPageScene,
                                   Scene createAccountScene,
                                   CreateAccountController createAccountController,
                                   MainPageController mainPageController,
                                   BootstrapMediator bootstrapMediator) {
+        this.election = election;
+        this.electionMaster = electionMaster;
         this.osInteraction = osInteraction;
         this.mainPageScene = mainPageScene;
         this.createAccountScene = createAccountScene;
@@ -111,7 +116,8 @@ public class AppPreloaderController {
             if (!isEmpty(password)) {
                 try {
                     final Credentials credentials = loadCredentials(password, accountFilesMap.get(selectedAddress));
-                    mainPageController.setCredentials(credentials);
+                    ((ElectionMasterProxy) electionMaster).setCredentials(credentials);
+                    ((ElectionProxy) election).setCredentials(credentials);
                     primaryStage.setScene(mainPageScene);
                 } catch (IOException e) {
                     e.printStackTrace();

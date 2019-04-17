@@ -1,6 +1,6 @@
 package com.blockvote.voter.controllers;
 
-import com.blockvote.core.contracts.Election;
+import com.blockvote.core.contracts.impl.Election;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.PieChart;
