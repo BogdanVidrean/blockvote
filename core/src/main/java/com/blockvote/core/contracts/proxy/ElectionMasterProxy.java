@@ -57,15 +57,33 @@ public class ElectionMasterProxy implements IElectionMaster {
     }
 
     @Override
-    public RemoteCall<TransactionReceipt> addVoter(String voterAddress) {
-        checkIfInstanceNull();
-        return electionsMaster.addVoter(voterAddress);
-    }
-
-    @Override
     public RemoteCall<Boolean> canAddressVote(String votersAddress) {
         checkIfInstanceNull();
         return electionsMaster.canAddressVote(votersAddress);
+    }
+
+    @Override
+    public RemoteCall<String> getAddressOfSocialSecurityNumber(String socialSecurityNumber) {
+        checkIfInstanceNull();
+        return electionsMaster.getAddressOfSocialSecurityNumber(socialSecurityNumber);
+    }
+
+    @Override
+    public RemoteCall<TransactionReceipt> addVoter(String socialSecurityNumber, String voterAddress) {
+        checkIfInstanceNull();
+        return electionsMaster.addVoter(socialSecurityNumber, voterAddress);
+    }
+
+    @Override
+    public RemoteCall<TransactionReceipt> removeVoter(String socialSecurityNumber) {
+        checkIfInstanceNull();
+        return electionsMaster.removeVoter(socialSecurityNumber);
+    }
+
+    @Override
+    public RemoteCall<Boolean> canSsnVote(String voterSsn) {
+        checkIfInstanceNull();
+        return electionsMaster.canSsnVote(voterSsn);
     }
 
     private void checkIfInstanceNull() {

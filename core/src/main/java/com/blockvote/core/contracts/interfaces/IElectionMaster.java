@@ -17,7 +17,13 @@ public interface IElectionMaster {
 
     RemoteCall<Boolean> canAddressDeployContract(String organizerAddress);
 
-    RemoteCall<TransactionReceipt> addVoter(String voterAddress);
-
     RemoteCall<Boolean> canAddressVote(String votersAddress);
+
+    RemoteCall<String> getAddressOfSocialSecurityNumber(String socialSecurityNumber);
+
+    RemoteCall<TransactionReceipt> addVoter(String socialSecurityNumber, String voterAddress);
+
+    RemoteCall<TransactionReceipt> removeVoter(String socialSecurityNumber);
+
+    RemoteCall<Boolean> canSsnVote(String voterSsn);
 }

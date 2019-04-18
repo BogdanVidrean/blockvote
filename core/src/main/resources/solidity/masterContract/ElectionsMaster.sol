@@ -8,11 +8,14 @@ contract ElectionsMaster {
 
     mapping(address => uint8) private organizersMapping;
 
-    mapping(address => uint8) private voters;
+    mapping(string => address) private votersSocialSecurityNumbers;
+
+    mapping(address => uint8) private votersAddresses;
+
+    uint private constant votersInitialBalance = 5;
 
     constructor() public {
         organizersMapping[msg.sender] = 1;
-        voters[msg.sender] = 1;
     }
 
     // Modifiers
@@ -29,6 +32,9 @@ contract ElectionsMaster {
 
     // Master Account API
 
+    function () external payable {
+    }
+
     function changeOwnerMasterAccount(address newOwnerMasterAccount) public isMasterAccount(msg.sender) {
         ownerMasterAddress = newOwnerMasterAccount;
         organizersMapping[newOwnerMasterAccount] = 1;
@@ -38,7 +44,27 @@ contract ElectionsMaster {
         organizersMapping[newOrganizer] = 1;
     }
 
+    function getBalance() public view isMasterAccount(msg.sender) returns(uint) {
+        return address(this).balance;
+    }
+
     // Organizer API
+
+    modifier isNotVoterAlready(string memory socialSecurityNumber) {
+        require(
+            votersSocialSecurityNumbers[socialSecurityNumber] == address(0x0),
+            "The address is already a voter."
+            );
+        _;
+    }
+
+    modifier isVoter(string memory socialSecurityNumber) {
+        require(
+            votersSocialSecurityNumbers[socialSecurityNumber] !=  address(0x0),
+            "The address is not a voter."
+            );
+        _;
+    }
 
     function addElection(address electionAddress,
                         string memory electionName,
@@ -47,8 +73,22 @@ contract ElectionsMaster {
         electionsNames[electionAddress] = electionName;
     }
 
-    function addVoter(address voterAddress) public isOrganizer(msg.sender) {
-        voters[voterAddress] = 1;
+    function addVoter(string memory socialSecurityNumber, address payable voterAddress) public isOrganizer(msg.sender) isNotVoterAlready(socialSecurityNumber) {
+        address(voterAddress).transfer(votersInitialBalance);
+        votersSocialSecurityNumbers[socialSecurityNumber] = voterAddress;
+        votersAddresses[voterAddress] = 1;
+    }
+
+    function getAddressOfSocialSecurityNumber(string memory socialSecurityNumber) public view isOrganizer(msg.sender) returns(address) {
+        return votersSocialSecurityNumbers[socialSecurityNumber];
+    }
+
+    function removeVoter(string memory socialSecurityNumber) public isOrganizer(msg.sender) isVoter(socialSecurityNumber) {
+        address votersAddress = votersSocialSecurityNumbers[socialSecurityNumber];
+        if (votersAddress != address(0x0)) {
+            delete votersSocialSecurityNumbers[socialSecurityNumber];
+            delete votersAddresses[votersAddress];
+        }
     }
 
     function getElectionAddresses() public view returns(address[] memory) {
@@ -60,8 +100,13 @@ contract ElectionsMaster {
     }
 
     //  Voter API
+
+    function canSsnVote(string memory voterSsn) public view returns(bool) {
+        return (votersSocialSecurityNumbers[voterSsn] != address(0x0));
+    }
+
     function canAddressVote(address votersAddress) public view returns(bool) {
-        return (voters[votersAddress] == 1);
+        return (votersAddresses[votersAddress] == 1);
     }
 
 }

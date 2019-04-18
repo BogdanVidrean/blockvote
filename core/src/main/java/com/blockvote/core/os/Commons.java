@@ -15,7 +15,7 @@ public abstract class Commons {
             "enode://cc7065603752954b9848d6b6501edf7d41773450661abd95be877e0e34f35659cdabfe35154a" +
                     "a81eb279726a13f6f513932f63f4cae2d5f30e25f0e811df17ab@100.114.25.143:30308";
     public static final String CONTRACT_ADDRESS = "0xce247b54d349d7e228d8fbdc10cccf7ea01a1f9a";
-    public static final String MASTER_CONTRACT_ADDRESS = "0x90032846e662f2bd97e266353e616d9055792639";
+    public static final String MASTER_CONTRACT_ADDRESS = "0xe4610b25ad5657130aa8f8618bb0ad63856ebb3b";
     public static final String APPDATA_APPLICATION_FOLDER_NAME = "blockvote";
     public static final String APPDATA_PATH = get(getProperty("user.home"), "Library", "Application Support",
             APPDATA_APPLICATION_FOLDER_NAME)
