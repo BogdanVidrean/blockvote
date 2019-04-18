@@ -44,7 +44,7 @@ public class RegisterVoterController {
         userMessage.setStyle("-fx-fill: #ff5f5f");
         if (!isEmpty(address) && !isEmpty(addressAgain) && !isEmpty(ssn) && StringUtils.equals(address, addressAgain)) {
             userMessage.setStyle("-fx-fill: #ffffff");
-            userMessage.setText("Transaction initiated.");
+            userMessage.setText("Transaction initiated successfully.");
             electionMaster.canSsnVote(ssn)
                     .sendAsync()
                     .thenAcceptAsync(canVote -> {

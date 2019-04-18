@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.image.Image?>
@@ -8,14 +7,18 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
-
+<?import java.lang.String?>
 <AnchorPane id="root_anchor_pane" prefHeight="900.0" prefWidth="1200.0" stylesheets="@../css/main_page.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.blockvote.organizer.controllers.MainPageController">
     <children>
-      <BorderPane fx:id="borderPane" prefHeight="900.0" prefWidth="1200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+       <BorderPane fx:id="borderPane" maxHeight="900.0" prefHeight="900.0" prefWidth="1200.0"
+                   AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                   AnchorPane.topAnchor="0.0">
          <left>
-            <VBox id="menuVbox" alignment="CENTER" BorderPane.alignment="BOTTOM_CENTER">
+            <VBox id="menuVbox" alignment="CENTER" BorderPane.alignment="TOP_LEFT">
                <children>
-                  <Button id="logoutButton" contentDisplay="TOP" mnemonicParsing="false" prefHeight="92.0" prefWidth="154.0" text="LOGOUT" textAlignment="CENTER" textFill="WHITE" wrapText="true">
+                  <Button id="logoutButton" contentDisplay="TOP" maxHeight="92.0" mnemonicParsing="false"
+                          prefHeight="92.0" prefWidth="154.0" text="LOGOUT" textAlignment="CENTER" textFill="WHITE"
+                          wrapText="true">
                      <graphic>
                         <ImageView fitHeight="115.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -27,7 +30,9 @@
                         <String fx:value="menu-button" />
                      </styleClass>
                   </Button>
-                  <Button id="logoutButton" contentDisplay="TOP" layoutX="10.0" layoutY="24.0" mnemonicParsing="false" onMousePressed="#setHomePage" prefHeight="92.0" prefWidth="154.0" text="HOME" textAlignment="CENTER" textFill="WHITE" wrapText="true">
+                  <Button id="logoutButton" contentDisplay="TOP" layoutX="10.0" layoutY="24.0" maxHeight="92.0"
+                          mnemonicParsing="false" onMousePressed="#setHomePage" prefHeight="92.0" prefWidth="154.0"
+                          text="HOME" textAlignment="CENTER" textFill="WHITE" wrapText="true">
                      <graphic>
                         <ImageView fitHeight="115.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -40,7 +45,9 @@
                         <String fx:value="menu-button" />
                      </styleClass>
                   </Button>
-                  <Button id="createElectionButton" contentDisplay="TOP" mnemonicParsing="false" onMousePressed="#setElectionCreationPage" prefHeight="211.0" prefWidth="258.0" text="CREATE AN ELECTION" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+                  <Button id="createElectionButton" contentDisplay="TOP" maxHeight="92.0" mnemonicParsing="false"
+                          onMousePressed="#setElectionCreationPage" prefHeight="211.0" prefWidth="258.0"
+                          text="CREATE AN ELECTION" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
@@ -56,7 +63,10 @@
                         <String fx:value="menu-button" />
                      </styleClass>
                   </Button>
-                  <Button id="registerVoterButton" alignment="CENTER" contentDisplay="TOP" layoutX="45.0" layoutY="317.0" mnemonicParsing="false" onMousePressed="#setRegisterVoterView" prefHeight="241.0" prefWidth="150.0" text="REGISTER A VOTER" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+                  <Button id="registerVoterButton" alignment="CENTER" contentDisplay="TOP" layoutX="45.0"
+                          layoutY="317.0" maxHeight="92.0" mnemonicParsing="false"
+                          onMousePressed="#setRegisterVoterView" prefHeight="241.0" prefWidth="150.0"
+                          text="REGISTER A VOTER" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>

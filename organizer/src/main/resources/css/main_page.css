@@ -30,19 +30,20 @@
 
 .menu-button:hover {
     -fx-cursor: hand;
+    -fx-background-color: #5bb8ff;
 }
 
-#logoutButton:hover {
-    -fx-background-color: #ff432e;
-}
+/*#logoutButton:hover {*/
+/*    -fx-background-color: #ff432e;*/
+/*}*/
 
-#createElectionButton:hover {
-    -fx-background-color: #ffbe4c;
-}
+/*#createElectionButton:hover {*/
+/*    -fx-background-color: #ffbe4c;*/
+/*}*/
 
-#registerVoterButton:hover {
-    -fx-background-color: #3ba53a;
-}
+/*#registerVoterButton:hover {*/
+/*    -fx-background-color: #3ba53a;*/
+/*}*/
 
 #menuVbox {
     -fx-background-color: #4CEAEB;
