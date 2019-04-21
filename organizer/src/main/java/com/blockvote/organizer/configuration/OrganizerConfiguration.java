@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.web3j.protocol.Web3j;
 
 import java.io.IOException;
 
@@ -30,11 +31,14 @@ public class OrganizerConfiguration {
 
     private final IElection election;
     private final IElectionMaster electionMaster;
+    private final Web3j web3j;
 
     public OrganizerConfiguration(IElection election,
-                                  IElectionMaster electionMaster) {
+                                  IElectionMaster electionMaster,
+                                  Web3j web3j) {
         this.election = election;
         this.electionMaster = electionMaster;
+        this.web3j = web3j;
     }
 
     @Bean
@@ -113,6 +117,7 @@ public class OrganizerConfiguration {
     @Bean
     public ElectionCreationController electionCreationController() {
         final ElectionCreationController electionCreationController = new ElectionCreationController();
+        electionCreationController.setWeb3j(web3j);
         return electionCreationController;
     }
 

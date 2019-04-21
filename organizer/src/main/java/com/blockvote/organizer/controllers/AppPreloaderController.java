@@ -6,6 +6,7 @@ import com.blockvote.core.contracts.interfaces.IElectionMaster;
 import com.blockvote.core.contracts.proxy.ElectionMasterProxy;
 import com.blockvote.core.contracts.proxy.ElectionProxy;
 import com.blockvote.core.exceptions.BootstrapException;
+import com.blockvote.core.observer.LoginObservable;
 import com.blockvote.core.os.OsInteraction;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -36,7 +37,7 @@ import static javafx.stage.Modality.APPLICATION_MODAL;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.web3j.crypto.WalletUtils.loadCredentials;
 
-public class AppPreloaderController {
+public class AppPreloaderController extends LoginObservable {
 
     @FXML
     private Text errorMsg;
@@ -116,6 +117,7 @@ public class AppPreloaderController {
             if (!isEmpty(password)) {
                 try {
                     final Credentials credentials = loadCredentials(password, accountFilesMap.get(selectedAddress));
+                    notify(credentials);
                     ((ElectionMasterProxy) electionMaster).setCredentials(credentials);
                     ((ElectionProxy) election).setCredentials(credentials);
                     primaryStage.setScene(mainPageScene);

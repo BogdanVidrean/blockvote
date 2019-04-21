@@ -8,12 +8,12 @@ import java.util.List;
 
 public interface IElection {
 
-    RemoteCall<List> getCandidates();
-
     RemoteCall<Boolean> canAddressVote(String votersAddress);
 
-    RemoteCall<TransactionReceipt> vote(BigInteger candidateId);
+    RemoteCall<TransactionReceipt> vote(BigInteger optionId);
 
-    RemoteCall<BigInteger> getResultsForCandidate(BigInteger candidateId);
+    RemoteCall<List> getOptions();
+
+    RemoteCall<BigInteger> getResultsForOption(BigInteger optionId);
 
 }

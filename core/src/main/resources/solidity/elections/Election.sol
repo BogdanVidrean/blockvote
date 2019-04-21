@@ -2,8 +2,8 @@ pragma solidity ^0.5.4;
 
 contract ElectionMaster {
     function addElection(address electionAddress,
-                        string memory electionName,
-                        address organizerAddress) public {}
+        string memory electionName,
+        address organizerAddress) public {}
 
     function canAddressDeployContract(address organizerAddress) public view returns(bool) {}
 
@@ -12,50 +12,52 @@ contract ElectionMaster {
 
 contract Election {
 
-    struct Candidate {
+    struct Option {
         uint8 id;
         bytes32 name;
         bool isValue;
     }
 
     ElectionMaster private electionMaster;
-    Candidate[] private candidates;
+    Option[] private options;
     mapping(uint8 => uint128) private votes;
     mapping(address => uint8) private voters;
-    string private electionName = "Derp";
+    string private electionName;
 
-    constructor(address masterContractAddress) public {
+    constructor(address masterContractAddress, string memory nameOfElection, bytes32[] memory initialOptions) public {
         electionMaster = ElectionMaster(masterContractAddress);
         bool canDeploy = electionMaster.canAddressDeployContract(msg.sender);
         require(canDeploy == true, "Organizer permissions required to deploy a contract.");
         electionMaster.addElection(address(this), electionName, msg.sender);
 
-        candidates.push(Candidate(0, "Gigel", true));
-        candidates.push(Candidate(1, "Dorel", true));
+        electionName = nameOfElection;
+        for (uint8 i = 0; i < options.length; i++) {
+            options.push(Option(i, initialOptions[i], true));
+        }
     }
 
-    modifier personAbleToVote(uint8 candidateId) {
+    modifier personAbleToVote(uint8 optionId) {
         require(electionMaster.canAddressVote(msg.sender), "Address is not registered for voting permissions.");
         require(voters[msg.sender] == 0, "This address has already voted.");
-        require(candidates[candidateId].isValue, "Candidate not found.");
+        require(options[optionId].isValue, "Option not found.");
         _;
     }
 
-    function vote(uint8 candidateId) public personAbleToVote(candidateId) {
-        votes[candidateId] += 1;
+    function vote(uint8 optionId) public personAbleToVote(optionId) {
+        votes[optionId] += 1;
         voters[msg.sender] = 1;
     }
 
-     function getCandidates() public view returns(bytes32[] memory) {
-        bytes32[] memory candidatesNames = new bytes32[](candidates.length);
-        for (uint i = 0; i < candidates.length; i++) {
-            candidatesNames[i] = candidates[i].name;
+    function getOptions() public view returns (bytes32[] memory) {
+        bytes32[] memory optionsName = new bytes32[](options.length);
+        for (uint i = 0; i < options.length; i++) {
+            optionsName[i] = options[i].name;
         }
-        return candidatesNames;
+        return optionsName;
     }
 
-    function getResultsForCandidate(uint8 candidateId) public view returns(uint128) {
-        return votes[candidateId];
+    function getResultsForOption(uint8 optionId) public view returns (uint128) {
+        return votes[optionId];
     }
 
     function canAddressVote(address votersAddress) public view returns(bool) {

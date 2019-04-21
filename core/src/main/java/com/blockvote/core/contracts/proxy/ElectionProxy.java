@@ -27,28 +27,24 @@ public class ElectionProxy implements IElection {
         this.credentials = credentials;
     }
 
-    @Override
-    public RemoteCall<List> getCandidates() {
-        checkIfInstanceNull();
-        return election.getCandidates();
-    }
-
-    @Override
     public RemoteCall<Boolean> canAddressVote(String votersAddress) {
         checkIfInstanceNull();
         return election.canAddressVote(votersAddress);
     }
 
-    @Override
-    public RemoteCall<TransactionReceipt> vote(BigInteger candidateId) {
+    public RemoteCall<TransactionReceipt> vote(BigInteger optionId) {
         checkIfInstanceNull();
-        return election.vote(candidateId);
+        return election.vote(optionId);
     }
 
-    @Override
-    public RemoteCall<BigInteger> getResultsForCandidate(BigInteger candidateId) {
+    public RemoteCall<List> getOptions() {
         checkIfInstanceNull();
-        return election.getResultsForCandidate(candidateId);
+        return election.getOptions();
+    }
+
+    public RemoteCall<BigInteger> getResultsForOption(BigInteger optionId) {
+        checkIfInstanceNull();
+        return election.getResultsForOption(optionId);
     }
 
     private void checkIfInstanceNull() {
