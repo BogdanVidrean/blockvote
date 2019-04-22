@@ -2,6 +2,7 @@ package com.blockvote.organizer.controllers;
 
 import com.blockvote.core.contracts.impl.Election;
 import com.blockvote.core.observer.LoginObserver;
+import com.blockvote.core.observer.LogoutObserver;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -31,7 +32,7 @@ import static javafx.application.Platform.runLater;
 import static javafx.geometry.Pos.CENTER;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
-public class ElectionCreationController implements LoginObserver {
+public class ElectionCreationController implements LoginObserver, LogoutObserver {
 
     private static final String NOT_VALID_OPTIONS_NR_PROVIDED_ERROR_MSG = "The provided value is not valid.";
     private static final String TRANSACTION_SUCCESSFULLY_SENT_MSG = "Transaction successfully registered.";
@@ -53,6 +54,7 @@ public class ElectionCreationController implements LoginObserver {
     private Credentials credentials;
     private Web3j web3j;
     private List<Node> optionsCollection = new ArrayList<>();
+    private List<Node> extraStuffToBeDeletedAtLogout = new ArrayList<>();
 
     public void setWeb3j(Web3j web3j) {
         this.web3j = web3j;
@@ -74,15 +76,18 @@ public class ElectionCreationController implements LoginObserver {
             electionNameLabel.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff");
             electionNameLabel.setUnderline(true);
             vboxContainer.getChildren().add(electionNameLabel);
+            extraStuffToBeDeletedAtLogout.add(electionNameLabel);
 
             TextField nameField = new TextField();
             nameField.setStyle("-fx-font-size: 20; -fx-fill: #ffffff; -fx-border-insets: 30");
+            extraStuffToBeDeletedAtLogout.add(nameField);
 
             HBox nameHbox = new HBox();
             nameHbox.setAlignment(CENTER);
             nameHbox.getChildren().add(nameField);
             nameField.setAlignment(CENTER);
             vboxContainer.getChildren().add(nameHbox);
+            extraStuffToBeDeletedAtLogout.add(nameHbox);
 
 
             optionsCollection = range(0, numberOfOptions)
@@ -106,7 +111,6 @@ public class ElectionCreationController implements LoginObserver {
             Button doneButton = new Button("DONE");
             doneButton.setStyle("-fx-border-insets: 30;");
             doneButton.setOnMousePressed(event -> {
-
                 if (validateElectionInfo(nameField, optionsCollection)) {
                     userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #fff");
                     userMessagge.setText(TRANSACTION_SUCCESSFULLY_SENT_MSG);
@@ -137,6 +141,7 @@ public class ElectionCreationController implements LoginObserver {
                     userMessagge.setText("All fields are mandatory.");
                 }
             });
+            extraStuffToBeDeletedAtLogout.add(doneButton);
 
             Button closeButton = new Button("CLOSE");
             closeButton.setStyle("-fx-border-insets: 30;");
@@ -146,6 +151,7 @@ public class ElectionCreationController implements LoginObserver {
             hBox.getChildren().add(doneButton);
             hBox.getChildren().add(closeButton);
             vboxContainer.getChildren().add(hBox);
+            extraStuffToBeDeletedAtLogout.add(hBox);
 
             closeButton.setOnMousePressed(event -> {
                 runLater(() -> {
@@ -162,6 +168,7 @@ public class ElectionCreationController implements LoginObserver {
                     userMessagge.setText("");
                 });
             });
+            extraStuffToBeDeletedAtLogout.add(closeButton);
         } catch (NumberFormatException e) {
             userMessagge.setText(NOT_VALID_OPTIONS_NR_PROVIDED_ERROR_MSG);
         } finally {
@@ -188,5 +195,14 @@ public class ElectionCreationController implements LoginObserver {
     @Override
     public void update(Credentials credentials) {
         this.credentials = credentials;
+    }
+
+    @Override
+    public void update() {
+        createButton.setVisible(true);
+        createButton.setDisable(false);
+        vboxContainer.getChildren().removeAll(optionsCollection);
+        vboxContainer.getChildren().removeAll(extraStuffToBeDeletedAtLogout);
+        numerOfOptionsField.setText("");
     }
 }

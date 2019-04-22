@@ -43,7 +43,14 @@ public class OrganizerConfiguration {
 
     @PostConstruct
     public void postConstruct() {
+        //setters
+        mainPageController().setAppPreloaderScene(appPreloaderScene());
+
+        //  login observers
         appPreloaderController().addObserver(electionCreationController());
+
+        // logout observers
+        mainPageController().addObserver(electionCreationController());
     }
 
     @Bean
@@ -90,9 +97,9 @@ public class OrganizerConfiguration {
     }
 
     @Bean(name = "appPreloaderScene")
-    public Scene appPreloaderScene(AppPreloaderController appPreloaderController) {
+    public Scene appPreloaderScene() {
         final FXMLLoader appPreloader = new FXMLLoader(getClass().getResource("/views/app_preloader.fxml"));
-        appPreloader.setControllerFactory(param -> appPreloaderController);
+        appPreloader.setControllerFactory(param -> appPreloaderController());
         try {
             return new Scene(appPreloader.load());
         } catch (IOException e) {

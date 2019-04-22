@@ -120,6 +120,8 @@ public class AppPreloaderController extends LoginObservable {
                     notify(credentials);
                     ((ElectionMasterProxy) electionMaster).setCredentials(credentials);
                     ((ElectionProxy) election).setCredentials(credentials);
+                    mainPageController.setPrimaryStage(primaryStage);
+                    clearFields();
                     primaryStage.setScene(mainPageScene);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -154,5 +156,11 @@ public class AppPreloaderController extends LoginObservable {
         GaussianBlur gaussianBlur = new GaussianBlur();
         rootAnchorPane.setEffect(gaussianBlur);
         createAccountPasswordModal.showAndWait();
+    }
+
+    private void clearFields() {
+        passwordField.setText("");
+        accountsListView.getSelectionModel().selectFirst();
+        accountsListView.getSelectionModel().clearSelection();
     }
 }

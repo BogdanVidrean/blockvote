@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.util.Observable;
 import java.util.function.Consumer;
 
 import static com.blockvote.core.os.Commons.KEYSTORE_PATH;
@@ -19,7 +18,7 @@ import static java.nio.file.Paths.get;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.web3j.crypto.WalletUtils.generateNewWalletFile;
 
-public class CreateAccountController extends Observable {
+public class CreateAccountController {
 
     @FXML
     private Text errorMsg;

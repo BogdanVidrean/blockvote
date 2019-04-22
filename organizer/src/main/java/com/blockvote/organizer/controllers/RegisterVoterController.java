@@ -1,6 +1,7 @@
 package com.blockvote.organizer.controllers;
 
 import com.blockvote.core.contracts.interfaces.IElectionMaster;
+import com.blockvote.core.observer.LogoutObserver;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -11,7 +12,7 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import static javafx.application.Platform.runLater;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
-public class RegisterVoterController {
+public class RegisterVoterController implements LogoutObserver {
 
     private static final String TRANSACTION_FAILED_ERROR_MESSAGE = "The process failed.";
     private static final String ALL_FIELDS_MANDATORY_ERROR_MESSAGE = "Please insert the address twice.";
@@ -94,5 +95,13 @@ public class RegisterVoterController {
         } else if (isEmpty(ssn)) {
             userMessage.setText(MISSING_SSN_ERROR_MSG);
         }
+    }
+
+    @Override
+    public void update() {
+        ssnTextField.setText("");
+        addressTextField.setText("");
+        addressTextFieldAgain.setText("");
+        userMessage.setText("");
     }
 }

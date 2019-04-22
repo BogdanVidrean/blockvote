@@ -1,18 +1,31 @@
 package com.blockvote.organizer.controllers;
 
+import com.blockvote.core.observer.LogoutObservable;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
-public class MainPageController {
+public class MainPageController extends LogoutObservable {
 
     @FXML
     private BorderPane borderPane;
 
+    private Stage primaryStage;
     private Node electionCreationNode;
     private Node registerVoterNode;
     private Node homeNode;
+    private Scene appPreloaderScene;
+
+    public void setAppPreloaderScene(Scene appPreloaderScene) {
+        this.appPreloaderScene = appPreloaderScene;
+    }
+
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
 
     public void setElectionCreationNode(Node electionCreationNode) {
         this.electionCreationNode = electionCreationNode;
@@ -31,7 +44,6 @@ public class MainPageController {
         borderPane.setCenter(homeNode);
     }
 
-
     @FXML
     private void setElectionCreationPage(MouseEvent mouseEvent) {
         borderPane.setCenter(electionCreationNode);
@@ -45,5 +57,12 @@ public class MainPageController {
     @FXML
     private void setHomePage(MouseEvent mouseEvent) {
         borderPane.setCenter(homeNode);
+    }
+
+    @FXML
+    private void logoutHandler(MouseEvent mouseEvent) {
+        borderPane.setCenter(homeNode);
+        notifyObservers();
+        primaryStage.setScene(appPreloaderScene);
     }
 }
