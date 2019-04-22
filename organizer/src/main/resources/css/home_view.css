@@ -1,0 +1,5 @@
+#rootAnchor {
+    -fx-background-image: url('../images/waves.png');
+    -fx-background-position: bottom center;
+    -fx-background-repeat: no-repeat;
+}

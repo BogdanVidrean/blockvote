@@ -1,0 +1,34 @@
+
+#rootAnchorPane {
+    -fx-background-color: #3FE5FF;
+}
+
+.password-field {
+    -fx-border-color: white;
+    -fx-border-width: 0 0 1 0;
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: white;
+}
+
+.button {
+    -fx-background-color: #3fe4ff;
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+    -fx-border-width: 6;
+    -fx-background-insets: 5px;
+    -fx-border-color: white;
+    -fx-text-fill: white;
+}
+
+.button:hover {
+    -fx-background-color: white;
+    -fx-text-fill: #3fe4ff;
+    -fx-cursor: hand;
+}
+
+.text {
+    -fx-text-fill: white;
+    -fx-font-size: 15;
+    -fx-font-weight: bold;
+}

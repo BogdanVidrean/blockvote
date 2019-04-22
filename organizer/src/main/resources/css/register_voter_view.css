@@ -1,0 +1,35 @@
+.text {
+    -fx-text-fill: white;
+    -fx-font-size: 25;
+    -fx-font-weight: bold;
+}
+
+.button {
+    -fx-background-color: #3FE5FF;
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+    -fx-border-width: 6;
+    -fx-background-insets: 5px;
+    -fx-border-color: white;
+    -fx-text-fill: white;
+}
+
+.button:hover {
+    -fx-background-color: white;
+    -fx-text-fill: #3fe4ff;
+    -fx-cursor: hand;
+}
+
+.text-field {
+    -fx-border-color: white;
+    -fx-border-width: 0 0 1 0;
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: white;
+}
+
+#rootAnchor {
+    -fx-background-image: url('../images/waves2.png');
+    -fx-background-position: bottom center;
+    -fx-background-repeat: no-repeat;
+}

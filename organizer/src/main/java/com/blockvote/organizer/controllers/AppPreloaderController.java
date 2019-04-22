@@ -1,28 +1,34 @@
 package com.blockvote.organizer.controllers;
 
 import com.blockvote.core.bootstrap.BootstrapMediator;
+import com.blockvote.core.contracts.interfaces.IElection;
+import com.blockvote.core.contracts.interfaces.IElectionMaster;
+import com.blockvote.core.contracts.proxy.ElectionMasterProxy;
+import com.blockvote.core.contracts.proxy.ElectionProxy;
 import com.blockvote.core.exceptions.BootstrapException;
+import com.blockvote.core.observer.LoginObservable;
 import com.blockvote.core.os.OsInteraction;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
-import org.web3j.protocol.admin.Admin;
-import org.web3j.protocol.admin.methods.response.PersonalUnlockAccount;
-import org.web3j.protocol.http.HttpService;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.blockvote.core.os.Commons.RPC_PORT;
+import static com.blockvote.core.os.Commons.KEYSTORE_PATH;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -31,17 +37,19 @@ import static javafx.stage.Modality.APPLICATION_MODAL;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.web3j.crypto.WalletUtils.loadCredentials;
 
-public class AppPreloaderController {
+public class AppPreloaderController extends LoginObservable {
 
+    @FXML
+    private Text errorMsg;
+    @FXML
+    private AnchorPane rootAnchorPane;
     @FXML
     private PasswordField passwordField;
     @FXML
-    private Button logInButton;
-    @FXML
     private ListView<String> accountsListView;
-    @FXML
-    private Button createNewAccButton;
 
+    private IElectionMaster electionMaster;
+    private IElection election;
     private Stage primaryStage;
     private Scene mainPageScene;
     private Scene createAccountScene;
@@ -50,12 +58,18 @@ public class AppPreloaderController {
     private MainPageController mainPageController;
     private BootstrapMediator bootstrapMediator;
     private Map<String, File> accountFilesMap = new HashMap<>();
+    private ObservableList<String> accountsObsList = observableArrayList();
 
-    public AppPreloaderController(OsInteraction osInteraction,
+    public AppPreloaderController(IElection election,
+                                  IElectionMaster electionMaster,
+                                  OsInteraction osInteraction,
                                   Scene mainPageScene,
                                   Scene createAccountScene,
                                   CreateAccountController createAccountController,
-                                  MainPageController mainPageController, BootstrapMediator bootstrapMediator) {
+                                  MainPageController mainPageController,
+                                  BootstrapMediator bootstrapMediator) {
+        this.election = election;
+        this.electionMaster = electionMaster;
         this.osInteraction = osInteraction;
         this.mainPageScene = mainPageScene;
         this.createAccountScene = createAccountScene;
@@ -74,7 +88,7 @@ public class AppPreloaderController {
             bootstrapMediator.bootstrap();
             loadAvailableAccountWallets();
         } catch (BootstrapException e) {
-            // TODO: Some retry mechanism or sth else
+            // TODO: Some retry mechanism
             e.printStackTrace();
         }
     }
@@ -85,56 +99,68 @@ public class AppPreloaderController {
             accountFilesMap.putAll(accounts.stream().collect(toMap(f -> formatAddressFromKeystoreFileName(f.getName()),
                     identity())));
             accountsListView.setVisible(true);
-            accountsListView.setItems(observableArrayList(accounts.stream().map(f -> formatAddressFromKeystoreFileName(f.getName())).collect(toList())));
-        } else {
-            createNewAccButton.setVisible(true);
+            accountsObsList.addAll(accounts.stream().map(f -> formatAddressFromKeystoreFileName(f.getName())).collect(toList()));
+            accountsListView.setItems(accountsObsList);
         }
     }
 
     private String formatAddressFromKeystoreFileName(String fileName) {
         String[] parts = fileName.split("--");
-        return (parts[parts.length - 1]);
-    }
-
-    @FXML
-    public void selectAddressToLogIn(MouseEvent mouseEvent) {
-        String selectedAddress = accountsListView.getSelectionModel().getSelectedItem();
-        if (selectedAddress != null) {
-            logInButton.setDisable(false);
-
-            passwordField.setDisable(false);
-            passwordField.setVisible(true);
-        }
+        return (parts[parts.length - 1]).replaceAll(".json", "");
     }
 
     @FXML
     public void logIn(MouseEvent mouseEvent) {
         String password = passwordField.getText();
         String selectedAddress = accountsListView.getSelectionModel().getSelectedItem();
-        if (!isEmpty(password) && (selectedAddress != null)) {
-            try {
-                final Credentials credentials = loadCredentials(password, accountFilesMap.get(selectedAddress));
-                Admin admin = Admin.build(new HttpService("http://localhost:" + RPC_PORT));
-                PersonalUnlockAccount personalUnlockAccount = admin.personalUnlockAccount(credentials.getAddress(), password).send();
-                if (personalUnlockAccount.accountUnlocked()) {
-                    mainPageController.setCurrentUserCredentials(credentials);
+        if (selectedAddress != null) {
+            if (!isEmpty(password)) {
+                try {
+                    final Credentials credentials = loadCredentials(password, accountFilesMap.get(selectedAddress));
+                    notify(credentials);
+                    ((ElectionMasterProxy) electionMaster).setCredentials(credentials);
+                    ((ElectionProxy) election).setCredentials(credentials);
+                    mainPageController.setPrimaryStage(primaryStage);
+                    clearFields();
+                    primaryStage.setScene(mainPageScene);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (CipherException e) {
+                    errorMsg.setText("The password is not correct.");
                 }
-                primaryStage.setScene(mainPageScene);
-            } catch (IOException | CipherException e) {
-                e.printStackTrace();
+            } else {
+                errorMsg.setText("No password provided.");
             }
+        } else {
+            errorMsg.setText("No wallet address selected.");
         }
     }
 
     @FXML
-    public void showPasswordInsertModal(MouseEvent mouseEvent) {
+    public void showCreateWalletModal(MouseEvent mouseEvent) {
         Stage createAccountPasswordModal = new Stage();
         createAccountPasswordModal.initOwner(primaryStage);
         createAccountPasswordModal.initModality(APPLICATION_MODAL);
         createAccountPasswordModal.setScene(createAccountScene);
-        createAccountPasswordModal.setX(primaryStage.getX() + primaryStage.getWidth() / 2 - createAccountPasswordModal.getWidth() / 2);
-        createAccountPasswordModal.setY(primaryStage.getY() + primaryStage.getHeight() / 2 - createAccountPasswordModal.getHeight() / 2);
+
         createAccountController.setCreateAccountStage(createAccountPasswordModal);
+        createAccountController.setCloseCallback(() -> rootAnchorPane.setEffect(null));
+        createAccountController.setAccountCreationCallback(newAddressFileName -> {
+            File newWalletFile = Paths.get(KEYSTORE_PATH, newAddressFileName).toFile();
+            accountFilesMap.put(formatAddressFromKeystoreFileName(newAddressFileName), newWalletFile);
+            accountsObsList.add(formatAddressFromKeystoreFileName(newAddressFileName));
+            accountsListView.refresh();
+            rootAnchorPane.setEffect(null);
+        });
+
+        GaussianBlur gaussianBlur = new GaussianBlur();
+        rootAnchorPane.setEffect(gaussianBlur);
         createAccountPasswordModal.showAndWait();
+    }
+
+    private void clearFields() {
+        passwordField.setText("");
+        accountsListView.getSelectionModel().selectFirst();
+        accountsListView.getSelectionModel().clearSelection();
     }
 }

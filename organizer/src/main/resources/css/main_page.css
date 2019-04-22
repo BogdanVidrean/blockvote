@@ -1,3 +1,50 @@
 #root_anchor_pane {
-    -fx-background-color: #1dcaf9;
+    -fx-background-color: #3FE5FF;
+}
+
+.menu-text {
+    -fx-text-fill: white;
+    -fx-font-size: 25;
+    -fx-font-weight: bold;
+}
+
+#voterMenuContainer {
+    -fx-background-color: #35ce8d;
+}
+
+#contractMenuContainer {
+    -fx-background-color: #ffbe4c;
+}
+
+#logout-button {
+    -fx-background-color: transparent;
+}
+
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-min-width: 150;
+    -fx-max-width: 150;
+    -fx-min-height: 200;
+    -fx-max-height: 200;
+}
+
+.menu-button:hover {
+    -fx-cursor: hand;
+    -fx-background-color: #5bb8ff;
+}
+
+/*#logoutButton:hover {*/
+/*    -fx-background-color: #ff432e;*/
+/*}*/
+
+/*#createElectionButton:hover {*/
+/*    -fx-background-color: #ffbe4c;*/
+/*}*/
+
+/*#registerVoterButton:hover {*/
+/*    -fx-background-color: #3ba53a;*/
+/*}*/
+
+#menuVbox {
+    -fx-background-color: #4CEAEB;
 }

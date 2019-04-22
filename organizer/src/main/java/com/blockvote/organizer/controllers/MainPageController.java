@@ -1,37 +1,68 @@
 package com.blockvote.organizer.controllers;
 
-import com.blockvote.core.contracts.Election;
+import com.blockvote.core.observer.LogoutObservable;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
-import org.web3j.crypto.Credentials;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.http.HttpService;
-import org.web3j.tx.gas.DefaultGasProvider;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
-import static com.blockvote.core.os.Commons.RPC_PORT;
+public class MainPageController extends LogoutObservable {
 
-public class MainPageController {
+    @FXML
+    private BorderPane borderPane;
 
-    private Credentials currentUserCredentials;
+    private Stage primaryStage;
+    private Node electionCreationNode;
+    private Node registerVoterNode;
+    private Node homeNode;
+    private Scene appPreloaderScene;
+
+    public void setAppPreloaderScene(Scene appPreloaderScene) {
+        this.appPreloaderScene = appPreloaderScene;
+    }
+
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
+
+    public void setElectionCreationNode(Node electionCreationNode) {
+        this.electionCreationNode = electionCreationNode;
+    }
+
+    public void setRegisterVoterNode(Node registerVoterNode) {
+        this.registerVoterNode = registerVoterNode;
+    }
+
+    public void setHomeNode(Node homeNode) {
+        this.homeNode = homeNode;
+    }
 
     @FXML
     public void initialize() {
-
+        borderPane.setCenter(homeNode);
     }
-
 
     @FXML
-    private void deployContract(MouseEvent mouseEvent) {
-        Web3j web3j = Web3j.build(new HttpService("http://localhost:" + RPC_PORT));
-        try {
-            String deployedContractAddress = Election.deploy(web3j, currentUserCredentials, new DefaultGasProvider()).send().getContractAddress();
-            System.out.println("Address is: " + deployedContractAddress);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void setElectionCreationPage(MouseEvent mouseEvent) {
+        borderPane.setCenter(electionCreationNode);
     }
 
-    public void setCurrentUserCredentials(Credentials currentUserCredentials) {
-        this.currentUserCredentials = currentUserCredentials;
+    @FXML
+    private void setRegisterVoterView(MouseEvent mouseEvent) {
+        borderPane.setCenter(registerVoterNode);
+    }
+
+    @FXML
+    private void setHomePage(MouseEvent mouseEvent) {
+        borderPane.setCenter(homeNode);
+    }
+
+    @FXML
+    private void logoutHandler(MouseEvent mouseEvent) {
+        borderPane.setCenter(homeNode);
+        notifyObservers();
+        primaryStage.setScene(appPreloaderScene);
     }
 }

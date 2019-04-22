@@ -1,6 +1,6 @@
 package com.blockvote.voter.controllers;
 
-import com.blockvote.core.contracts.Election;
+import com.blockvote.core.contracts.impl.Election;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.PieChart;
@@ -43,7 +43,7 @@ public class MainPageController {
         web3j = Web3j.build(new HttpService("http://localhost:8507"));
         election = Election.load(CONTRACT_ADDRESS, web3j, credentials, new DefaultGasProvider());
         try {
-            List<byte[]> candidates = election.getCandidates().send();
+            List<byte[]> candidates = election.getOptions().send();
             candidatesObsList.addAll(candidates.stream().map(String::new).collect(toList()));
             candidatesList.setItems(candidatesObsList);
         } catch (Exception e) {
@@ -72,7 +72,7 @@ public class MainPageController {
         resultsPieChart.setData(results);
         range(0, candidatesObsList.size()).forEach(i -> {
             try {
-                BigInteger result = election.getResultsForCandidate(valueOf(i)).send();
+                BigInteger result = election.getResultsForOption(valueOf(i)).send();
                 String candidate = candidatesObsList.get(i);
                 results.add(new PieChart.Data(candidate + " - " + result.toString() + " votes", result.doubleValue()));
             } catch (Exception e) {

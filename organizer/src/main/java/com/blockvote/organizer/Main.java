@@ -1,6 +1,6 @@
 package com.blockvote.organizer;
 
-import com.blockvote.organizer.configuration.ApplicationConfiguration;
+import com.blockvote.organizer.configuration.OrganizerConfiguration;
 import com.blockvote.organizer.controllers.AppPreloaderController;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -15,11 +15,13 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        final ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
+        final ApplicationContext applicationContext = new AnnotationConfigApplicationContext(OrganizerConfiguration.class);
         final Scene preloaderScene = (Scene) applicationContext.getBean("appPreloaderScene");
         final AppPreloaderController appPreloaderController = applicationContext.getBean(AppPreloaderController.class);
         appPreloaderController.setPrimaryStage(primaryStage);
         primaryStage.setScene(preloaderScene);
+        primaryStage.setMinHeight(945);
+        primaryStage.setMinWidth(1200);
         primaryStage.show();
     }
 }
