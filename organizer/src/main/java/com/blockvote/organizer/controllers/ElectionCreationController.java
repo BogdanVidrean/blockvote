@@ -24,6 +24,7 @@ import java.util.List;
 import static com.blockvote.core.os.Commons.MASTER_CONTRACT_ADDRESS;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static javafx.application.Platform.runLater;
@@ -33,6 +34,8 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 public class ElectionCreationController implements LoginObserver {
 
     private static final String NOT_VALID_OPTIONS_NR_PROVIDED_ERROR_MSG = "The provided value is not valid.";
+    private static final String TRANSACTION_SUCCESSFULLY_SENT_MSG = "Transaction successfully registered.";
+    private static final String ELECTION_CREATED_MSG = "The election was successfully created.";
 
     @FXML
     private ScrollPane scrollPane;
@@ -58,6 +61,7 @@ public class ElectionCreationController implements LoginObserver {
     @FXML
     public void createElection(MouseEvent mouseEvent) {
         userMessagge.setText("");
+        userMessagge.setStyle("-fx-fill: #fff");
         createButton.setVisible(false);
         createButton.setDisable(true);
         try {
@@ -72,7 +76,7 @@ public class ElectionCreationController implements LoginObserver {
             vboxContainer.getChildren().add(electionNameLabel);
 
             TextField nameField = new TextField();
-            nameField.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff; -fx-border-insets: 30");
+            nameField.setStyle("-fx-font-size: 20; -fx-fill: #ffffff; -fx-border-insets: 30");
 
             HBox nameHbox = new HBox();
             nameHbox.setAlignment(CENTER);
@@ -104,7 +108,9 @@ public class ElectionCreationController implements LoginObserver {
             doneButton.setOnMousePressed(event -> {
 
                 if (validateElectionInfo(nameField, optionsCollection)) {
-                    Election.myDeploy(
+                    userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #fff");
+                    userMessagge.setText(TRANSACTION_SUCCESSFULLY_SENT_MSG);
+                    requireNonNull(Election.deploy(
                             web3j, credentials,
                             new DefaultGasProvider(),
                             MASTER_CONTRACT_ADDRESS,
@@ -115,7 +121,18 @@ public class ElectionCreationController implements LoginObserver {
                                         TextField textField = (TextField) hBox.getChildren().get(1);
                                         return stringToBytes32(textField.getText());
                                     })
-                                    .collect(toList()));
+                                    .collect(toList())))
+                            .sendAsync()
+                            .thenAccept(election -> {
+                                userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #3ba53a");
+                                userMessagge.setText(ELECTION_CREATED_MSG);
+                                System.out.println(election.getContractAddress());
+                            })
+                            .exceptionally(error -> {
+                                userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff5f5f");
+                                userMessagge.setText("Something bad happened..");
+                                return null;
+                            });
                 } else {
                     userMessagge.setText("All fields are mandatory.");
                 }
@@ -147,6 +164,9 @@ public class ElectionCreationController implements LoginObserver {
             });
         } catch (NumberFormatException e) {
             userMessagge.setText(NOT_VALID_OPTIONS_NR_PROVIDED_ERROR_MSG);
+        } finally {
+            createButton.setVisible(true);
+            createButton.setDisable(false);
         }
 
     }

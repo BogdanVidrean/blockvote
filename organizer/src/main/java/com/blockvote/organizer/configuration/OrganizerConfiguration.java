@@ -13,12 +13,12 @@ import com.blockvote.organizer.controllers.RegisterVoterController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.web3j.protocol.Web3j;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 
 import static com.blockvote.core.os.OsInteraction.UNIX;
@@ -41,14 +41,19 @@ public class OrganizerConfiguration {
         this.web3j = web3j;
     }
 
+    @PostConstruct
+    public void postConstruct() {
+        appPreloaderController().addObserver(electionCreationController());
+    }
+
     @Bean
     public OsInteraction osInteraction() {
         return createOsInteraction(UNIX);
     }
 
     @Bean
-    public BootstrapMediator bootstrapMediator(OsInteraction osInteraction) {
-        return new BootstrapMediator(osInteraction);
+    public BootstrapMediator bootstrapMediator() {
+        return new BootstrapMediator(osInteraction());
     }
 
     @Bean
@@ -66,22 +71,16 @@ public class OrganizerConfiguration {
     }
 
     @Bean
-    public AppPreloaderController appPreloaderController(IElection election,
-                                                         IElectionMaster electionMaster,
-                                                         OsInteraction osInteraction,
-                                                         @Qualifier("mainPageScene") Scene mainPageScene,
-                                                         @Qualifier("createAccountScene") Scene createAccountScene,
-                                                         CreateAccountController createAccountController,
-                                                         MainPageController mainPageController,
-                                                         BootstrapMediator bootstrapMediator) {
-        return new AppPreloaderController(election, electionMaster, osInteraction, mainPageScene, createAccountScene, createAccountController,
-                mainPageController, bootstrapMediator);
+    public AppPreloaderController appPreloaderController() {
+        return new AppPreloaderController(election,
+                electionMaster, osInteraction(), mainPageScene(), createAccountScene(), createAccountController(),
+                mainPageController(), bootstrapMediator());
     }
 
     @Bean(name = "mainPageScene")
-    public Scene mainPageScene(MainPageController mainPageController) {
+    public Scene mainPageScene() {
         final FXMLLoader mainPageLoader = new FXMLLoader(getClass().getResource("/views/main_page.fxml"));
-        mainPageLoader.setControllerFactory(param -> mainPageController);
+        mainPageLoader.setControllerFactory(param -> mainPageController());
         try {
             return new Scene(mainPageLoader.load());
         } catch (IOException e) {
@@ -103,9 +102,9 @@ public class OrganizerConfiguration {
     }
 
     @Bean(name = "createAccountScene")
-    public Scene createAccountScene(CreateAccountController createAccountController) {
+    public Scene createAccountScene() {
         final FXMLLoader createAccountModal = new FXMLLoader(getClass().getResource("/views/create_account_modal.fxml"));
-        createAccountModal.setControllerFactory(param -> createAccountController);
+        createAccountModal.setControllerFactory(param -> createAccountController());
         try {
             return new Scene(createAccountModal.load());
         } catch (IOException e) {

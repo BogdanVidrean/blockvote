@@ -31,7 +31,7 @@ contract Election {
         electionMaster.addElection(address(this), electionName, msg.sender);
 
         electionName = nameOfElection;
-        for (uint8 i = 0; i < options.length; i++) {
+        for (uint8 i = 0; i < initialOptions.length; i++) {
             options.push(Option(i, initialOptions[i], true));
         }
     }
