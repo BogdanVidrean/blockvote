@@ -15,6 +15,8 @@ public class MainPageController extends LogoutObservable {
 
     private Stage primaryStage;
     private Node homeNode;
+    private Node checkEligibilityNode;
+    private Node voteScene;
     private Scene appPreloaderScene;
 
     public void setAppPreloaderScene(Scene appPreloaderScene) {
@@ -27,6 +29,14 @@ public class MainPageController extends LogoutObservable {
 
     public void setHomeNode(Node homeNode) {
         this.homeNode = homeNode;
+    }
+
+    public void setCheckEligibilityNode(Node checkEligibilityNode) {
+        this.checkEligibilityNode = checkEligibilityNode;
+    }
+
+    public void setVoteScene(Node voteScene) {
+        this.voteScene = voteScene;
     }
 
     @FXML
@@ -44,5 +54,15 @@ public class MainPageController extends LogoutObservable {
         borderPane.setCenter(homeNode);
         notifyObservers();
         primaryStage.setScene(appPreloaderScene);
+    }
+
+    @FXML
+    private void setVotePage(MouseEvent mouseEvent) {
+        borderPane.setCenter(voteScene);
+    }
+
+    @FXML
+    private void setCheckEligibilityPage(MouseEvent mouseEvent) {
+        borderPane.setCenter(checkEligibilityNode);
     }
 }

@@ -5,9 +5,11 @@ import com.blockvote.core.contracts.interfaces.IElection;
 import com.blockvote.core.contracts.interfaces.IElectionMaster;
 import com.blockvote.core.os.OsInteraction;
 import com.blockvote.voter.controllers.AppPreloaderController;
+import com.blockvote.voter.controllers.CheckEligibilityController;
 import com.blockvote.voter.controllers.CreateAccountController;
 import com.blockvote.voter.controllers.HomeController;
 import com.blockvote.voter.controllers.MainPageController;
+import com.blockvote.voter.controllers.VoteController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -58,7 +60,9 @@ public class VoterConfiguration {
     @Bean
     public MainPageController mainPageController() {
         MainPageController mainPageController = new MainPageController();
-        mainPageController.setHomeNode(homeView());
+        mainPageController.setHomeNode(homeViewScene());
+        mainPageController.setCheckEligibilityNode(checkEligibilityScene());
+        mainPageController.setVoteScene(voteScene());
         return mainPageController;
     }
 
@@ -82,6 +86,18 @@ public class VoterConfiguration {
     public HomeController homeController() {
         final HomeController homeController = new HomeController();
         return homeController;
+    }
+
+    @Bean
+    public CheckEligibilityController checkEligibilityController() {
+        final CheckEligibilityController checkEligibilityController = new CheckEligibilityController();
+        return checkEligibilityController;
+    }
+
+    @Bean
+    public VoteController voteController() {
+        VoteController voteController = new VoteController();
+        return voteController;
     }
 
     @Bean(name = "mainPageScene")
@@ -120,8 +136,8 @@ public class VoterConfiguration {
         return null;
     }
 
-    @Bean
-    public Node homeView() {
+    @Bean(name = "homeViewScene")
+    public Node homeViewScene() {
         try {
             final FXMLLoader homeViewLoader = new FXMLLoader(getClass().getResource("/views/home_view.fxml"));
             homeViewLoader.setControllerFactory(param -> this.homeController());
@@ -131,4 +147,30 @@ public class VoterConfiguration {
         }
         return null;
     }
+
+    @Bean(name = "checkEligibilityScene")
+    public Node checkEligibilityScene() {
+        try {
+            final FXMLLoader homeViewLoader = new FXMLLoader(getClass().getResource("/views/check_eligibility_page.fxml"));
+            homeViewLoader.setControllerFactory(param -> this.checkEligibilityController());
+            return homeViewLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Bean(name = "voteScene")
+    public Node voteScene() {
+        try {
+            final FXMLLoader homeViewLoader = new FXMLLoader(getClass().getResource("/views/vote_page.fxml"));
+            homeViewLoader.setControllerFactory(param -> this.voteController());
+            return homeViewLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 }
