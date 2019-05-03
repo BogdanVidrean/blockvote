@@ -91,6 +91,7 @@ public class VoterConfiguration {
     @Bean
     public CheckEligibilityController checkEligibilityController() {
         final CheckEligibilityController checkEligibilityController = new CheckEligibilityController();
+        checkEligibilityController.setElectionsMaster(electionMaster);
         return checkEligibilityController;
     }
 

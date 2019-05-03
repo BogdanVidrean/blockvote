@@ -39,55 +39,10 @@
                         </TextField>
                     </children>
                 </HBox>
-                <Label stylesheets="@../css/check_eligibility.css" text="INSERT THE ADDRESS" textAlignment="CENTER"
-                       textFill="WHITE">
-                    <VBox.margin>
-                        <Insets top="20.0"/>
-                    </VBox.margin>
-                </Label>
-                <HBox alignment="CENTER" prefHeight="47.0" prefWidth="600.0">
-                    <children>
-                        <TextField fx:id="addressTextField" alignment="CENTER" prefHeight="46.0" prefWidth="619.0">
-                            <HBox.margin>
-                                <Insets left="5.0"/>
-                            </HBox.margin>
-                            <font>
-                                <Font size="24.0"/>
-                            </font>
-                        </TextField>
-                    </children>
-                    <VBox.margin>
-                        <Insets/>
-                    </VBox.margin>
-                </HBox>
-                <Label layoutX="176.0" layoutY="131.0" stylesheets="@../css/check_eligibility.css"
-                       text="INSERT THE ADDRESS AGAIN" textAlignment="CENTER" textFill="WHITE">
-                    <VBox.margin>
-                        <Insets top="20.0"/>
-                    </VBox.margin>
-                </Label>
-                <HBox alignment="CENTER" layoutX="10.0" layoutY="161.0" prefHeight="47.0" prefWidth="600.0">
-                    <children>
-                        <TextField fx:id="addressTextFieldAgain" alignment="CENTER" prefHeight="46.0" prefWidth="619.0">
-                            <HBox.margin>
-                                <Insets left="5.0"/>
-                            </HBox.margin>
-                            <font>
-                                <Font size="24.0"/>
-                            </font>
-                        </TextField>
-                    </children>
-                </HBox>
-                <Button mnemonicParsing="false" prefHeight="52.0" prefWidth="174.0"
-                        text="REGISTER">
-                    <VBox.margin>
-                        <Insets bottom="20.0" top="20.0"/>
-                    </VBox.margin>
-                </Button>
                 <Button layoutX="234.0" layoutY="238.0" mnemonicParsing="false" onMousePressed="#verifySSNStatus"
                         prefHeight="52.0" prefWidth="174.0" text="VERIFY SSN">
                     <VBox.margin>
-                        <Insets bottom="190.0"/>
+                        <Insets bottom="300.0" top="20.0"/>
                     </VBox.margin>
                 </Button>
             </children>
