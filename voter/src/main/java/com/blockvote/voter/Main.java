@@ -24,6 +24,10 @@ public class Main extends Application {
         //TODO: This is a limitation, and the logout might me a little bit problematic regarding the height of the stage
         primaryStage.setMinHeight(945);
         primaryStage.setMinWidth(1200);
+        primaryStage.fullScreenProperty().addListener((v, o, n) -> {
+            primaryStage.setResizable(false);
+            primaryStage.setResizable(true);
+        });
         primaryStage.show();
     }
 }

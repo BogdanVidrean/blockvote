@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IElectionMaster {
 
-    RemoteCall<TransactionReceipt> addElection(String electionAddress, String electionName, String organizerAddress);
+    RemoteCall<TransactionReceipt> addElection(String electionAddress, byte[] electionName, String organizerAddress);
 
     RemoteCall<TransactionReceipt> changeOwnerMasterAccount(String newOwnerMasterAccount);
 
@@ -26,4 +26,6 @@ public interface IElectionMaster {
     RemoteCall<TransactionReceipt> removeVoter(String socialSecurityNumber);
 
     RemoteCall<Boolean> canSsnVote(String voterSsn);
+
+    RemoteCall<List> getElectionNames();
 }

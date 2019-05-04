@@ -64,8 +64,10 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
     public void createElection(MouseEvent mouseEvent) {
         userMessagge.setText("");
         userMessagge.setStyle("-fx-fill: #fff");
-        createButton.setVisible(false);
-        createButton.setDisable(true);
+        runLater(() -> {
+            createButton.setVisible(false);
+            createButton.setDisable(true);
+        });
         try {
             final int numberOfOptions = parseInt(numerOfOptionsField.getText());
             if (vboxContainer.getAlignment() == CENTER) {
@@ -118,7 +120,7 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
                             web3j, credentials,
                             new DefaultGasProvider(),
                             MASTER_CONTRACT_ADDRESS,
-                            nameField.getText(),
+                            stringToBytes32(nameField.getText()),
                             optionsCollection.stream()
                                     .map(node -> {
                                         HBox hBox = (HBox) node;

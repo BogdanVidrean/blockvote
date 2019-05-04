@@ -45,6 +45,9 @@ public class VoterConfiguration {
     public void postConstruct() {
         //setters
         mainPageController().setAppPreloaderScene(appPreloaderScene());
+
+        //login observers
+        appPreloaderController().addObserver(voteController());
     }
 
     @Bean
@@ -98,6 +101,7 @@ public class VoterConfiguration {
     @Bean
     public VoteController voteController() {
         VoteController voteController = new VoteController();
+        voteController.setElectionMaster(electionMaster);
         return voteController;
     }
 

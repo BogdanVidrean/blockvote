@@ -4,7 +4,7 @@ contract ElectionsMaster {
     address private ownerMasterAddress = msg.sender;
 
     address[] private elections;
-    mapping(address => string) private electionsNames;
+    bytes32[] private electionsNames;
 
     mapping(address => uint8) private organizersMapping;
 
@@ -54,7 +54,7 @@ contract ElectionsMaster {
         require(
             votersSocialSecurityNumbers[socialSecurityNumber] == address(0x0),
             "The address is already a voter."
-            );
+        );
         _;
     }
 
@@ -62,15 +62,15 @@ contract ElectionsMaster {
         require(
             votersSocialSecurityNumbers[socialSecurityNumber] !=  address(0x0),
             "The address is not a voter."
-            );
+        );
         _;
     }
 
     function addElection(address electionAddress,
-                        string memory electionName,
-                        address organizerAddress) public isOrganizer(organizerAddress) {
+        bytes32 electionName,
+        address organizerAddress) public isOrganizer(organizerAddress) {
         elections.push(electionAddress);
-        electionsNames[electionAddress] = electionName;
+        electionsNames.push(electionName);
     }
 
     function addVoter(string memory socialSecurityNumber, address payable voterAddress) public isOrganizer(msg.sender) isNotVoterAlready(socialSecurityNumber) {
@@ -93,6 +93,10 @@ contract ElectionsMaster {
 
     function getElectionAddresses() public view returns(address[] memory) {
         return elections;
+    }
+
+    function getElectionNames() public view returns (bytes32[] memory) {
+        return electionsNames;
     }
 
     function canAddressDeployContract(address organizerAddress) public view returns(bool) {
