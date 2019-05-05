@@ -23,8 +23,10 @@ contract Election {
     mapping(uint8 => uint128) private votes;
     mapping(address => uint8) private voters;
     bytes32 private electionName;
+    uint private startTime;
+    uint private endTime;
 
-    constructor(address masterContractAddress, bytes32 nameOfElection, bytes32[] memory initialOptions) public {
+    constructor(address masterContractAddress, bytes32 nameOfElection, bytes32[] memory initialOptions, uint electionStartTime, uint electionEndTime) public {
         electionMaster = ElectionMaster(masterContractAddress);
         bool canDeploy = electionMaster.canAddressDeployContract(msg.sender);
         require(canDeploy == true, "Organizer permissions required to deploy a contract.");
@@ -34,12 +36,16 @@ contract Election {
         for (uint8 i = 0; i < initialOptions.length; i++) {
             options.push(Option(i, initialOptions[i], true));
         }
+        startTime = electionStartTime;
+        endTime = electionEndTime;
     }
 
     modifier personAbleToVote(uint8 optionId) {
         require(electionMaster.canAddressVote(msg.sender), "Address is not registered for voting permissions.");
         require(voters[msg.sender] == 0, "This address has already voted.");
         require(options[optionId].isValue, "Option not found.");
+        require(now > startTime, "The election didn't start yet.");
+        require(now < endTime, "The election is finished.");
         _;
     }
 

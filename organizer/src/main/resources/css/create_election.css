@@ -99,3 +99,41 @@
     -fx-background-insets: 2.0, 0.0, 0.0;
     -fx-background-radius: 2.0em;
 }
+
+.date-picker > .text-field {
+    -fx-background-color: #3FE5FF;
+}
+
+.date-picker:focused > .text-field,
+.date-picker > .text-field:focused {
+    -fx-background-color: #3FE5FF;
+}
+
+.date-picker {
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+}
+
+.date-picker:editable {
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+}
+
+.date-picker > * {
+    -fx-border-color: transparent;
+}
+
+.date-picker-popup > .month-year-pane {
+    -fx-background-color: #fff;
+    -fx-text-fill: #3FE5FF;
+}
+
+.date-picker:editable > .arrow-button {
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+    -fx-background-color: #fff;
+}
+
+.date-picker-popup > .date-picker {
+    -fx-background-color: #fff;
+}

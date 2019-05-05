@@ -9,7 +9,9 @@ import org.web3j.crypto.Credentials;
 
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
+import static javafx.geometry.Pos.CENTER;
 
 public class VoteController implements LoginObserver {
 
@@ -38,16 +40,24 @@ public class VoteController implements LoginObserver {
                 .thenAcceptAsync(electionsAddresses -> {
                     try {
                         List<byte[]> electionsNames = electionMaster.getElectionNames().send();
-                        range(0, electionsAddresses.size())
-                                .forEach(i -> {
+
+                        vbox.getChildren().addAll(range(0, electionsAddresses.size())
+                                .boxed()
+                                .map(i -> {
                                     Label newElectionLabel = new Label(new String(electionsNames.get(i)));
                                     newElectionLabel.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff;");
-                                    vbox.getChildren().add(newElectionLabel);
-                                });
+
+                                    VBox electionInformationContainer = new VBox();
+                                    electionInformationContainer.setAlignment(CENTER);
+                                    electionInformationContainer.setStyle("-fx-border-insets: 30");
+                                    electionInformationContainer.getChildren()
+                                            .addAll(newElectionLabel);
+                                    return electionInformationContainer;
+                                })
+                                .collect(toList()));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
                 })
                 .exceptionally(ex -> {
 
