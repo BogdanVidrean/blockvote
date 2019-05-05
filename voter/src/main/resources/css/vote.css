@@ -32,6 +32,14 @@
     -fx-background-color: #3FE5FF;
 }
 
+#rootAnchor {
+    -fx-background-color: #3FE5FF;
+}
+
+#scrollpane > .viewport {
+    -fx-background-color: transparent;
+}
+
 .scroll-bar {
     -fx-background-color: transparent;
 }

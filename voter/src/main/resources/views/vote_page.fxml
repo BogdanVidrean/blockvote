@@ -10,7 +10,7 @@
       <ScrollPane id="scrollpane" fx:id="scrollPane" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0"
                   AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <content>
-            <VBox id="vboxContainer" fx:id="vbox" alignment="TOP_CENTER" minHeight="${scrollPane.viewportBounds.height}"
+            <VBox id="vboxContainer" fx:id="vbox" alignment="TOP_CENTER"
                   minWidth="${scrollPane.viewportBounds.width}" prefHeight="200.0" prefWidth="100.0"
                   stylesheets="@../css/vote.css"/>
          </content>

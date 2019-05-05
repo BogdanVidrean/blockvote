@@ -3,6 +3,7 @@ package com.blockvote.voter.controllers;
 import com.blockvote.core.contracts.interfaces.IElectionMaster;
 import com.blockvote.core.observer.LoginObserver;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import org.web3j.crypto.Credentials;
@@ -28,7 +29,8 @@ public class VoteController implements LoginObserver {
     @FXML
     public void initialize() {
         selectElectionLabel = new Label("Select the election:");
-        selectElectionLabel.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff;");
+        selectElectionLabel.setStyle("-fx-font-size: 30; -fx-text-fill: #ffffff;");
+        VBox.setMargin(selectElectionLabel, new Insets(40, 0, 0, 0));
         vbox.getChildren().add(selectElectionLabel);
     }
 
@@ -49,7 +51,7 @@ public class VoteController implements LoginObserver {
 
                                     VBox electionInformationContainer = new VBox();
                                     electionInformationContainer.setAlignment(CENTER);
-                                    electionInformationContainer.setStyle("-fx-border-insets: 30");
+                                    VBox.setMargin(electionInformationContainer, new Insets(200, 0, 0, 0));
                                     electionInformationContainer.getChildren()
                                             .addAll(newElectionLabel);
                                     return electionInformationContainer;
