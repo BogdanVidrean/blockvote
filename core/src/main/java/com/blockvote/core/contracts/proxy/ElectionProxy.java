@@ -12,12 +12,16 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static com.blockvote.core.contracts.impl.Election.load;
-import static com.blockvote.core.os.Commons.MASTER_CONTRACT_ADDRESS;
 
 public class ElectionProxy implements IElection {
     private Election election;
     private Web3j web3j;
     private Credentials credentials;
+    private String electionAddress;
+
+    public ElectionProxy(String electionAddress) {
+        this.electionAddress = electionAddress;
+    }
 
     public void setWeb3j(Web3j web3j) {
         this.web3j = web3j;
@@ -51,7 +55,7 @@ public class ElectionProxy implements IElection {
         if (election == null) {
             synchronized (this) {
                 if (election == null) {
-                    election = load(MASTER_CONTRACT_ADDRESS, web3j, credentials, new DefaultGasProvider());
+                    election = load(electionAddress, web3j, credentials, new DefaultGasProvider());
                 }
             }
         }

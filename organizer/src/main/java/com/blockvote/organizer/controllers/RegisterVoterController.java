@@ -98,7 +98,7 @@ public class RegisterVoterController implements LogoutObserver {
     }
 
     @Override
-    public void update() {
+    public void updateOnLogout() {
         ssnTextField.setText("");
         addressTextField.setText("");
         addressTextFieldAgain.setText("");

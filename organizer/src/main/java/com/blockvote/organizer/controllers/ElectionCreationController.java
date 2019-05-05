@@ -256,12 +256,12 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
     }
 
     @Override
-    public void update(Credentials credentials) {
+    public void updateOnLogin(Credentials credentials) {
         this.credentials = credentials;
     }
 
     @Override
-    public void update() {
+    public void updateOnLogout() {
         createButton.setVisible(true);
         createButton.setDisable(false);
         vboxContainer.getChildren().removeAll(optionsCollection);

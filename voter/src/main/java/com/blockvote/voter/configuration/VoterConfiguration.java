@@ -1,7 +1,7 @@
 package com.blockvote.voter.configuration;
 
 import com.blockvote.core.bootstrap.BootstrapMediator;
-import com.blockvote.core.contracts.interfaces.IElection;
+import com.blockvote.core.contracts.dispatcher.ElectionsDispatcher;
 import com.blockvote.core.contracts.interfaces.IElectionMaster;
 import com.blockvote.core.os.OsInteraction;
 import com.blockvote.voter.controllers.AppPreloaderController;
@@ -29,16 +29,16 @@ import static com.blockvote.core.os.OsInteractionFactory.createOsInteraction;
 @ComponentScan(basePackages = {"com.blockvote.core.configuration"})
 public class VoterConfiguration {
 
-    private final IElection election;
     private final IElectionMaster electionMaster;
     private final Web3j web3j;
+    private final ElectionsDispatcher electionsDispatcher;
 
-    public VoterConfiguration(IElection election,
-                              IElectionMaster electionMaster,
-                              Web3j web3j) {
-        this.election = election;
+    public VoterConfiguration(IElectionMaster electionMaster,
+                              Web3j web3j,
+                              ElectionsDispatcher electionsDispatcher) {
         this.electionMaster = electionMaster;
         this.web3j = web3j;
+        this.electionsDispatcher = electionsDispatcher;
     }
 
     @PostConstruct
@@ -46,8 +46,12 @@ public class VoterConfiguration {
         //setters
         mainPageController().setAppPreloaderScene(appPreloaderScene());
 
+        //  logout observers
+        mainPageController().addObserver(voteController());
+
         //login observers
         appPreloaderController().addObserver(voteController());
+        appPreloaderController().addObserver(electionsDispatcher);
     }
 
     @Bean
@@ -76,7 +80,8 @@ public class VoterConfiguration {
 
     @Bean
     public AppPreloaderController appPreloaderController() {
-        return new AppPreloaderController(election, electionMaster,
+        return new AppPreloaderController(
+                electionMaster,
                 osInteraction(),
                 mainPageScene(),
                 createAccountScene(),
@@ -102,6 +107,7 @@ public class VoterConfiguration {
     public VoteController voteController() {
         VoteController voteController = new VoteController();
         voteController.setElectionMaster(electionMaster);
+        voteController.setElectionsDispatcher(electionsDispatcher);
         return voteController;
     }
 

@@ -15,6 +15,6 @@ public abstract class LogoutObservable {
     }
 
     protected void notifyObservers() {
-        logoutObserverList.forEach(LogoutObserver::update);
+        logoutObserverList.forEach(LogoutObserver::updateOnLogout);
     }
 }

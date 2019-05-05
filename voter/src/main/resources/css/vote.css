@@ -36,7 +36,15 @@
     -fx-background-color: #3FE5FF;
 }
 
-#scrollpane > .viewport {
+#electionNamesScrollPane, #electionsScrollPane {
+    -fx-background-color: transparent;
+}
+
+.grid-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > .viewport {
     -fx-background-color: transparent;
 }
 
@@ -95,6 +103,26 @@
     -fx-background-radius: 2.0em;
 }
 
-#scrollpane {
-    -fx-background-color: transparent;
+.electionName:hover {
+    -fx-background-color: #5bb8ff;
+    -fx-cursor: hand;
+}
+
+.check-box .box {
+
+    -fx-background-color: white;
+    -fx-border-color: 5 bb8ff;
+    -fx-border-radius: 3px;
+
+}
+
+.check-box:selected .mark {
+
+    -fx-background-color: white;
+
+}
+
+.check-box:selected .box {
+
+    -fx-background-color: #5bb8ff;
 }

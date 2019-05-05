@@ -1,5 +1,5 @@
 package com.blockvote.core.observer;
 
 public interface LogoutObserver {
-    void update();
+    void updateOnLogout();
 }
