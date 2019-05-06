@@ -13,8 +13,10 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import org.web3j.crypto.Credentials;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +43,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
     private ElectionsDispatcher electionsDispatcher;
     private List<Node> currentElectionNodes = new ArrayList<>();
     private Map<Integer, CheckBox> options = new HashMap<>();
+    private Text userText;
 
     public void setElectionsDispatcher(ElectionsDispatcher electionsDispatcher) {
         this.electionsDispatcher = electionsDispatcher;
@@ -120,6 +123,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
         runLater(() -> {
             electionMasterVBox.getChildren().removeAll(currentElectionNodes);
             currentElectionNodes = new ArrayList<>();
+
             //  Election Name
             HBox electionNameContainer = new HBox();
             VBox.setMargin(electionNameContainer, new Insets(30, 0, 0, 0));
@@ -173,8 +177,12 @@ public class VoteController implements LoginObserver, LogoutObserver {
 
                         Button button = new Button("VOTE");
                         VBox.setMargin(button, new Insets(50, 0, 0, 0));
-                        button.setOnMousePressed(event -> vote());
+                        button.setOnMousePressed(event -> vote(selectedAddress));
                         currentElectionNodes.add(button);
+
+                        //User message label
+                        userText = new Text();
+                        currentElectionNodes.add(userText);
 
                         runLater(() -> electionMasterVBox.getChildren().addAll(currentElectionNodes));
                     })
@@ -185,8 +193,38 @@ public class VoteController implements LoginObserver, LogoutObserver {
         });
     }
 
-    private void vote() {
+    private void vote(String selectedAddress) {
+        int selectedOption = -1;
+        int selectedOptionsCounter = 0;
+        for (Map.Entry<Integer, CheckBox> entry : options.entrySet()) {
+            CheckBox currentOptionCheckbox = entry.getValue();
+            if (currentOptionCheckbox.isSelected()) {
+                selectedOption = entry.getKey();
+                selectedOptionsCounter++;
+            }
+        }
+        if (selectedOptionsCounter > 1 || selectedOptionsCounter == 0) {
 
+        } else {
+            IElection selectedElection = electionsDispatcher.getElection(selectedAddress);
+            selectedElection.vote(BigInteger.valueOf(selectedOption))
+                    .sendAsync()
+                    .thenRun(() -> runLater(() -> {
+                        userText.setStyle("-fx-text-fill: #ff5f5f");
+                        userText.setText("Transaction successfully registered.");
+                    }))
+                    .thenAccept(transactionReceipt -> {
+                        userText.setStyle("-fx-text-fill: #3ba53a");
+                        userText.setText("Vote successfully registered.");
+                    })
+                    .exceptionally(ex -> {
+                        runLater(() -> {
+                            userText.setStyle("-fx-text-fill: #ff5f5f");
+                            userText.setText("Something went wrong.");
+                        });
+                        return null;
+                    });
+        }
     }
 
     @Override

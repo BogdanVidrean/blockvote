@@ -1,7 +1,7 @@
 package com.blockvote.organizer.configuration;
 
 import com.blockvote.core.bootstrap.BootstrapMediator;
-import com.blockvote.core.contracts.interfaces.IElection;
+import com.blockvote.core.contracts.dispatcher.ElectionsDispatcher;
 import com.blockvote.core.contracts.interfaces.IElectionMaster;
 import com.blockvote.core.os.OsInteraction;
 import com.blockvote.organizer.controllers.AppPreloaderController;
@@ -29,16 +29,17 @@ import static com.blockvote.core.os.OsInteractionFactory.createOsInteraction;
 @ComponentScan(basePackages = {"com.blockvote.core.configuration"})
 public class OrganizerConfiguration {
 
-    private final IElection election;
     private final IElectionMaster electionMaster;
     private final Web3j web3j;
+    private final ElectionsDispatcher electionsDispatcher;
 
-    public OrganizerConfiguration(IElection election,
-                                  IElectionMaster electionMaster,
-                                  Web3j web3j) {
-        this.election = election;
+    public OrganizerConfiguration(
+            IElectionMaster electionMaster,
+            Web3j web3j,
+            ElectionsDispatcher electionsDispatcher) {
         this.electionMaster = electionMaster;
         this.web3j = web3j;
+        this.electionsDispatcher = electionsDispatcher;
     }
 
     @PostConstruct
@@ -79,7 +80,7 @@ public class OrganizerConfiguration {
 
     @Bean
     public AppPreloaderController appPreloaderController() {
-        return new AppPreloaderController(election,
+        return new AppPreloaderController(
                 electionMaster, osInteraction(), mainPageScene(), createAccountScene(), createAccountController(),
                 mainPageController(), bootstrapMediator());
     }

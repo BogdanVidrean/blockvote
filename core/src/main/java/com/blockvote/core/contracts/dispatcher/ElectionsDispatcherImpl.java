@@ -23,6 +23,7 @@ public class ElectionsDispatcherImpl implements ElectionsDispatcher {
             ElectionProxy electionProxy = new ElectionProxy(address);
             electionProxy.setCredentials(credentials);
             electionProxy.setWeb3j(web3j);
+            elections.put(address, electionProxy);
             return electionProxy;
         }
     }
