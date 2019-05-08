@@ -20,11 +20,12 @@ contract Election {
 
     ElectionMaster private electionMaster;
     Option[] private options;
-    mapping(uint8 => uint128) private votes;
+    uint128[] private votes;
     mapping(address => uint8) private voters;
     bytes32 private electionName;
     uint private startTime;
     uint private endTime;
+    bool private isOver;
 
     constructor(address masterContractAddress, bytes32 nameOfElection, bytes32[] memory initialOptions, uint electionStartTime, uint electionEndTime) public {
         electionMaster = ElectionMaster(masterContractAddress);
@@ -35,9 +36,11 @@ contract Election {
         electionName = nameOfElection;
         for (uint8 i = 0; i < initialOptions.length; i++) {
             options.push(Option(i, initialOptions[i], true));
+            votes.push(0);
         }
         startTime = electionStartTime;
         endTime = electionEndTime;
+        isOver = false;
     }
 
     modifier personAbleToVote(uint8 optionId) {
@@ -46,6 +49,21 @@ contract Election {
         require(options[optionId].isValue, "Option not found.");
         require(now > startTime, "The election didn't start yet.");
         require(now < endTime, "The election is finished.");
+        _;
+    }
+
+    modifier isElectionOver() {
+        require(isOver == true, "The election is not over yet.");
+        _;
+    }
+
+    modifier isTimeOver() {
+        require(now > endTime, "The time is not over yet.");
+        _;
+    }
+
+    modifier isOrganizer() {
+        require(electionMaster.canAddressDeployContract(msg.sender), "Only organizers can end elections.");
         _;
     }
 
@@ -62,11 +80,15 @@ contract Election {
         return optionsName;
     }
 
-    function getResultsForOption(uint8 optionId) public view returns (uint128) {
-        return votes[optionId];
+    function getResults() public view isElectionOver returns (uint128[] memory) {
+        return votes;
     }
 
     function canAddressVote(address votersAddress) public view returns(bool) {
         return electionMaster.canAddressVote(votersAddress);
+    }
+
+    function endElection() public isTimeOver isOrganizer {
+        isOver = true;
     }
 }

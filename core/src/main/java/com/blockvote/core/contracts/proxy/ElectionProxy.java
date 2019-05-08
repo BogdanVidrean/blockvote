@@ -46,9 +46,9 @@ public class ElectionProxy implements IElection {
         return election.getOptions();
     }
 
-    public RemoteCall<BigInteger> getResultsForOption(BigInteger optionId) {
+    public RemoteCall<List> getResults() {
         checkIfInstanceNull();
-        return election.getResultsForOption(optionId);
+        return election.getResults();
     }
 
     private void checkIfInstanceNull() {

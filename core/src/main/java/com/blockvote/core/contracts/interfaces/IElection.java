@@ -14,6 +14,5 @@ public interface IElection {
 
     RemoteCall<List> getOptions();
 
-    RemoteCall<BigInteger> getResultsForOption(BigInteger optionId);
-
+    RemoteCall<List> getResults();
 }

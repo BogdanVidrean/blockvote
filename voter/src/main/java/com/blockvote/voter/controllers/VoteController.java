@@ -14,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import org.apache.commons.lang3.tuple.Pair;
 import org.web3j.crypto.Credentials;
 
 import java.math.BigInteger;
@@ -29,6 +30,7 @@ import static javafx.application.Platform.runLater;
 import static javafx.geometry.Pos.CENTER;
 import static javafx.geometry.Pos.CENTER_LEFT;
 import static javafx.geometry.Pos.TOP_LEFT;
+import static org.apache.commons.lang3.tuple.Pair.of;
 
 public class VoteController implements LoginObserver, LogoutObserver {
 
@@ -42,7 +44,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
     private Map<String, String> electionAddressesAndNames = new HashMap<>();
     private ElectionsDispatcher electionsDispatcher;
     private List<Node> currentElectionNodes = new ArrayList<>();
-    private Map<Integer, CheckBox> options = new HashMap<>();
+    private Map<Integer, Pair<CheckBox, Label>> options = new HashMap<>();
     private Text userText;
 
     public void setElectionsDispatcher(ElectionsDispatcher electionsDispatcher) {
@@ -164,7 +166,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
                             currentOption.setStyle("-fx-text-fill: #fff;");
                             currentOptionHbox.getChildren().add(currentOption);
 
-                            options.put(optionsCounter.getAndIncrement(), checkBox);
+                            options.put(optionsCounter.getAndIncrement(), of(checkBox, currentOption));
 
                             checkBox.setOnSwipeLeft(event -> {
 
@@ -179,6 +181,11 @@ public class VoteController implements LoginObserver, LogoutObserver {
                         VBox.setMargin(button, new Insets(50, 0, 0, 0));
                         button.setOnMousePressed(event -> vote(selectedAddress));
                         currentElectionNodes.add(button);
+
+                        Button resultsButton = new Button("SEE RESULTS");
+                        VBox.setMargin(resultsButton, new Insets(20, 0, 0, 0));
+                        resultsButton.setOnMousePressed(event -> getResults(selectedAddress));
+                        currentElectionNodes.add(resultsButton);
 
                         //User message label
                         userText = new Text();
@@ -196,8 +203,8 @@ public class VoteController implements LoginObserver, LogoutObserver {
     private void vote(String selectedAddress) {
         int selectedOption = -1;
         int selectedOptionsCounter = 0;
-        for (Map.Entry<Integer, CheckBox> entry : options.entrySet()) {
-            CheckBox currentOptionCheckbox = entry.getValue();
+        for (Map.Entry<Integer, Pair<CheckBox, Label>> entry : options.entrySet()) {
+            CheckBox currentOptionCheckbox = entry.getValue().getKey();
             if (currentOptionCheckbox.isSelected()) {
                 selectedOption = entry.getKey();
                 selectedOptionsCounter++;
@@ -214,8 +221,10 @@ public class VoteController implements LoginObserver, LogoutObserver {
                         userText.setText("Transaction successfully registered.");
                     }))
                     .thenAccept(transactionReceipt -> {
-                        userText.setStyle("-fx-text-fill: #3ba53a");
-                        userText.setText("Vote successfully registered.");
+                        runLater(() -> {
+                            userText.setStyle("-fx-text-fill: #3ba53a");
+                            userText.setText("Vote successfully registered.");
+                        });
                     })
                     .exceptionally(ex -> {
                         runLater(() -> {
@@ -225,6 +234,26 @@ public class VoteController implements LoginObserver, LogoutObserver {
                         return null;
                     });
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void getResults(String selectedAddress) {
+        IElection election = electionsDispatcher.getElection(selectedAddress);
+        AtomicInteger atomicInteger = new AtomicInteger();
+        election.getResults()
+                .sendAsync()
+                .thenAccept(list -> runLater(() -> list.forEach(result -> {
+                    Pair<CheckBox, Label> checkBoxLabelPair = options.get(atomicInteger.getAndIncrement());
+                    if (checkBoxLabelPair != null) {
+                        Label label = checkBoxLabelPair.getValue();
+                        label.setText(label.getText() + " - " + result + " votes");
+                    }
+                })))
+                .exceptionally(ex -> {
+
+                    return null;
+                });
+
     }
 
     @Override
