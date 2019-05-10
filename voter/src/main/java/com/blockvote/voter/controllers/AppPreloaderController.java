@@ -1,7 +1,10 @@
 package com.blockvote.voter.controllers;
 
 import com.blockvote.core.bootstrap.BootstrapMediator;
+import com.blockvote.core.contracts.interfaces.IElectionMaster;
+import com.blockvote.core.contracts.proxy.ElectionMasterProxy;
 import com.blockvote.core.exceptions.BootstrapException;
+import com.blockvote.core.observer.LoginObservable;
 import com.blockvote.core.os.OsInteraction;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -33,7 +36,8 @@ import static javafx.stage.Modality.APPLICATION_MODAL;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.web3j.crypto.WalletUtils.loadCredentials;
 
-public class AppPreloaderController {
+public class AppPreloaderController extends LoginObservable {
+
 
     @FXML
     private Text errorMsg;
@@ -48,6 +52,7 @@ public class AppPreloaderController {
     @FXML
     private Button createNewAccButton;
 
+    private IElectionMaster electionMaster;
     private Stage primaryStage;
     private Scene mainPageScene;
     private Scene createAccountScene;
@@ -58,12 +63,14 @@ public class AppPreloaderController {
     private Map<String, File> accountFilesMap = new HashMap<>();
     private ObservableList<String> accountsObsList = observableArrayList();
 
-    public AppPreloaderController(OsInteraction osInteraction,
+    public AppPreloaderController(IElectionMaster electionMaster,
+                                  OsInteraction osInteraction,
                                   Scene mainPageScene,
                                   Scene createAccountScene,
                                   CreateAccountController createAccountController,
                                   MainPageController mainPageController,
                                   BootstrapMediator bootstrapMediator) {
+        this.electionMaster = electionMaster;
         this.osInteraction = osInteraction;
         this.mainPageScene = mainPageScene;
         this.createAccountScene = createAccountScene;
@@ -111,7 +118,10 @@ public class AppPreloaderController {
             if (!isEmpty(password)) {
                 try {
                     final Credentials credentials = loadCredentials(password, accountFilesMap.get(selectedAddress));
-                    mainPageController.setCredentials(credentials);
+                    ((ElectionMasterProxy) electionMaster).setCredentials(credentials);
+                    notify(credentials);
+                    mainPageController.setPrimaryStage(primaryStage);
+                    clearFields();
                     primaryStage.setScene(mainPageScene);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -146,5 +156,11 @@ public class AppPreloaderController {
         GaussianBlur gaussianBlur = new GaussianBlur();
         rootAnchorPane.setEffect(gaussianBlur);
         createAccountPasswordModal.showAndWait();
+    }
+
+    private void clearFields() {
+        passwordField.setText("");
+        accountsListView.getSelectionModel().selectFirst();
+        accountsListView.getSelectionModel().clearSelection();
     }
 }

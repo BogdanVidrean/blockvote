@@ -17,6 +17,6 @@ public abstract class LoginObservable {
     }
 
     public void notify(Credentials credentials) {
-        loginObserverList.forEach(loginObserver -> loginObserver.update(credentials));
+        loginObserverList.forEach(loginObserver -> loginObserver.updateOnLogin(credentials));
     }
 }

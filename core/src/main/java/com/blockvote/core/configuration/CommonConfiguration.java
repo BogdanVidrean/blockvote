@@ -1,9 +1,10 @@
 package com.blockvote.core.configuration;
 
-import com.blockvote.core.contracts.interfaces.IElection;
+import com.blockvote.core.contracts.dispatcher.ElectionsDispatcher;
+import com.blockvote.core.contracts.dispatcher.ElectionsDispatcherImpl;
 import com.blockvote.core.contracts.interfaces.IElectionMaster;
 import com.blockvote.core.contracts.proxy.ElectionMasterProxy;
-import com.blockvote.core.contracts.proxy.ElectionProxy;
+import com.blockvote.core.services.MiningService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.web3j.protocol.Web3j;
@@ -30,16 +31,21 @@ public class CommonConfiguration {
     }
 
     @Bean
-    public IElection election() {
-        ElectionProxy electionProxy = new ElectionProxy();
-        electionProxy.setWeb3j(web3j());
-        return electionProxy;
-    }
-
-    @Bean
     public IElectionMaster electionsMaster() {
         ElectionMasterProxy electionMasterProxy = new ElectionMasterProxy();
         electionMasterProxy.setWeb3j(web3j());
         return electionMasterProxy;
+    }
+
+    @Bean
+    public ElectionsDispatcher electionsDispatcher() {
+        ElectionsDispatcherImpl electionsDispatcher = new ElectionsDispatcherImpl();
+        electionsDispatcher.setWeb3j(web3j());
+        return electionsDispatcher;
+    }
+
+    @Bean
+    public MiningService miningService() {
+        return new MiningService();
     }
 }

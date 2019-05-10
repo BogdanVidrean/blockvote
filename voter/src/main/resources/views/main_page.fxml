@@ -1,53 +1,154 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootAnchorPane" prefHeight="900.0" prefWidth="1200.0"
+<?import java.lang.String?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" id="root_anchor_pane" prefHeight="900.0" prefWidth="1200.0"
             stylesheets="@../css/main_page.css" xmlns="http://javafx.com/javafx/10.0.1"
             fx:controller="com.blockvote.voter.controllers.MainPageController">
     <children>
-        <BorderPane prefHeight="900.0" prefWidth="1200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <center>
-                <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+        <BorderPane fx:id="borderPane" maxHeight="900.0" prefHeight="900.0" prefWidth="1200.0"
+                    AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                    AnchorPane.topAnchor="0.0">
+            <left>
+                <VBox id="menuVbox" alignment="CENTER" BorderPane.alignment="TOP_LEFT">
                     <children>
-                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Select your option:"
-                              textAlignment="CENTER">
-                            <VBox.margin>
-                                <Insets bottom="150.0" top="30.0"/>
-                            </VBox.margin>
-                            <font>
-                                <Font name="System Bold" size="24.0"/>
-                            </font>
-                        </Text>
-                        <ListView fx:id="candidatesList" maxWidth="900.0" prefHeight="200.0" prefWidth="200.0">
-                            <VBox.margin>
-                                <Insets bottom="30.0"/>
-                            </VBox.margin>
-                        </ListView>
-                        <Button mnemonicParsing="false" onMousePressed="#voteForCandidate" prefHeight="32.0"
-                                prefWidth="211.0" text="VOTE">
-                            <VBox.margin>
-                                <Insets bottom="20.0"/>
-                            </VBox.margin>
+                        <Button id="logoutButton" contentDisplay="TOP" maxHeight="92.0" mnemonicParsing="false"
+                                onMousePressed="#logoutHandler" prefHeight="92.0" prefWidth="154.0" text="LOGOUT"
+                                textAlignment="CENTER" textFill="WHITE" wrapText="true">
+                            <graphic>
+                                <ImageView fitHeight="115.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../images/logout.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                            <styleClass>
+                                <String fx:value="menu-text"/>
+                                <String fx:value="menu-button"/>
+                            </styleClass>
                         </Button>
-                        <Button mnemonicParsing="false" onMousePressed="#showResults" prefHeight="32.0"
-                                prefWidth="211.0" text="See Results">
-                            <VBox.margin>
-                                <Insets bottom="20.0"/>
-                            </VBox.margin>
+                        <Button id="logoutButton" contentDisplay="TOP" layoutX="10.0" layoutY="24.0" maxHeight="92.0"
+                                mnemonicParsing="false" onMousePressed="#setHomePage" prefHeight="92.0"
+                                prefWidth="154.0" text="HOME" textAlignment="CENTER" textFill="WHITE" wrapText="true">
+                            <graphic>
+                                <ImageView fitHeight="115.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../images/home.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                            <styleClass>
+                                <String fx:value="menu-text"/>
+                                <String fx:value="menu-button"/>
+                            </styleClass>
                         </Button>
-                        <PieChart fx:id="resultsPieChart"/>
+                        <Button id="voteButton" contentDisplay="TOP" layoutX="10.0" layoutY="399.0" maxHeight="92.0"
+                                mnemonicParsing="false" onMousePressed="#setVotePage" prefHeight="92.0"
+                                prefWidth="154.0" text="VOTE" textAlignment="CENTER" textFill="WHITE" wrapText="true">
+                            <graphic>
+                                <ImageView fitHeight="115.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../images/vote.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                            <styleClass>
+                                <String fx:value="menu-text"/>
+                                <String fx:value="menu-button"/>
+                            </styleClass>
+                        </Button>
+                        <Button id="checkEligibilityButton" contentDisplay="TOP" layoutX="10.0" layoutY="499.0"
+                                maxHeight="92.0" mnemonicParsing="false" onMousePressed="#setCheckEligibilityPage"
+                                prefHeight="92.0" prefWidth="154.0" text="CHECK ELIGIBILITY" textAlignment="CENTER"
+                                textFill="WHITE" wrapText="true">
+                            <graphic>
+                                <ImageView fitHeight="115.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../images/eligible.png"/>
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                            <styleClass>
+                                <String fx:value="menu-text"/>
+                                <String fx:value="menu-button"/>
+                            </styleClass>
+                        </Button>
                     </children>
                 </VBox>
-            </center>
+            </left>
+            <top>
+                <GridPane prefHeight="135.0" prefWidth="1200.0" BorderPane.alignment="CENTER">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                    <children>
+                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
+                            <children>
+                                <ImageView fitHeight="123.0" fitWidth="544.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../images/logo.png"/>
+                                    </image>
+                                </ImageView>
+                            </children>
+                        </HBox>
+                        <GridPane GridPane.columnIndex="2">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="274.0611572265625" minWidth="10.0"
+                                                   prefWidth="274.0611572265625"/>
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="191.53582763671875" minWidth="10.0"
+                                                   prefWidth="125.9388427734375"/>
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                            </rowConstraints>
+                            <children>
+                                <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                                    <children>
+                                        <Label styleClass="menu-text" text="Validating elections:">
+                                            <font>
+                                                <Font size="18.0"/>
+                                            </font>
+                                            <HBox.margin>
+                                                <Insets/>
+                                            </HBox.margin>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="121.0"
+                                      GridPane.columnIndex="1">
+                                    <children>
+                                        <ToggleButton fx:id="miningToggle" mnemonicParsing="false"
+                                                      onMousePressed="#handleMiningToggle" text="OFF">
+                                            <HBox.margin>
+                                                <Insets left="30.0" right="30.0"/>
+                                            </HBox.margin>
+                                        </ToggleButton>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </GridPane>
+                    </children>
+                </GridPane>
+            </top>
         </BorderPane>
     </children>
 </AnchorPane>

@@ -3,7 +3,9 @@ package com.blockvote.organizer.controllers;
 import com.blockvote.core.contracts.impl.Election;
 import com.blockvote.core.observer.LoginObserver;
 import com.blockvote.core.observer.LogoutObserver;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,18 +20,24 @@ import org.web3j.abi.datatypes.generated.Bytes32;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.tx.gas.DefaultGasProvider;
+import tornadofx.control.DateTimePicker;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.blockvote.core.os.Commons.MASTER_CONTRACT_ADDRESS;
 import static java.lang.Integer.parseInt;
+import static java.math.BigInteger.valueOf;
+import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static javafx.application.Platform.runLater;
 import static javafx.geometry.Pos.CENTER;
+import static javafx.scene.layout.HBox.setMargin;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 public class ElectionCreationController implements LoginObserver, LogoutObserver {
@@ -64,8 +72,10 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
     public void createElection(MouseEvent mouseEvent) {
         userMessagge.setText("");
         userMessagge.setStyle("-fx-fill: #fff");
-        createButton.setVisible(false);
-        createButton.setDisable(true);
+        runLater(() -> {
+            createButton.setVisible(false);
+            createButton.setDisable(true);
+        });
         try {
             final int numberOfOptions = parseInt(numerOfOptionsField.getText());
             if (vboxContainer.getAlignment() == CENTER) {
@@ -79,8 +89,9 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
             extraStuffToBeDeletedAtLogout.add(electionNameLabel);
 
             TextField nameField = new TextField();
-            nameField.setStyle("-fx-font-size: 20; -fx-fill: #ffffff; -fx-border-insets: 30");
+            nameField.setStyle("-fx-font-size: 20; -fx-fill: #ffffff; -fx-border-insets: 15");
             extraStuffToBeDeletedAtLogout.add(nameField);
+
 
             HBox nameHbox = new HBox();
             nameHbox.setAlignment(CENTER);
@@ -89,6 +100,37 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
             vboxContainer.getChildren().add(nameHbox);
             extraStuffToBeDeletedAtLogout.add(nameHbox);
 
+            //Time And Date Container
+            HBox timeAndDateContainer = new HBox();
+            timeAndDateContainer.setAlignment(CENTER);
+            vboxContainer.getChildren().add(timeAndDateContainer);
+            extraStuffToBeDeletedAtLogout.add(timeAndDateContainer);
+
+            //Start date
+            Label startDateAndTimeLabel = new Label("Start Time");
+            startDateAndTimeLabel.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff");
+            setMargin(startDateAndTimeLabel, new Insets(0, 30, 0, 20));
+            timeAndDateContainer.getChildren().add(startDateAndTimeLabel);
+
+            DateTimePicker startDateTimePicker = new DateTimePicker();
+            timeAndDateContainer.getChildren().add(startDateTimePicker);
+//            extraStuffToBeDeletedAtLogout.add(startDateTimePicker);
+
+            //End date
+            Label endDateAndTimeLabel = new Label("End Time");
+            endDateAndTimeLabel.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff");
+            timeAndDateContainer.getChildren().add(endDateAndTimeLabel);
+            setMargin(endDateAndTimeLabel, new Insets(0, 30, 0, 30));
+
+            DateTimePicker endDateTimePicker = new DateTimePicker();
+            timeAndDateContainer.getChildren().add(endDateTimePicker);
+//            extraStuffToBeDeletedAtLogout.add(endDateTimePicker);
+
+
+            Platform.runLater(() -> {
+                startDateTimePicker.setDateTimeValue(now());
+                endDateTimePicker.setDateTimeValue(now());
+            });
 
             optionsCollection = range(0, numberOfOptions)
                     .boxed()
@@ -111,32 +153,39 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
             Button doneButton = new Button("DONE");
             doneButton.setStyle("-fx-border-insets: 30;");
             doneButton.setOnMousePressed(event -> {
-                if (validateElectionInfo(nameField, optionsCollection)) {
-                    userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #fff");
-                    userMessagge.setText(TRANSACTION_SUCCESSFULLY_SENT_MSG);
-                    requireNonNull(Election.deploy(
-                            web3j, credentials,
-                            new DefaultGasProvider(),
-                            MASTER_CONTRACT_ADDRESS,
-                            nameField.getText(),
-                            optionsCollection.stream()
-                                    .map(node -> {
-                                        HBox hBox = (HBox) node;
-                                        TextField textField = (TextField) hBox.getChildren().get(1);
-                                        return stringToBytes32(textField.getText());
-                                    })
-                                    .collect(toList())))
-                            .sendAsync()
-                            .thenAccept(election -> {
-                                userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #3ba53a");
-                                userMessagge.setText(ELECTION_CREATED_MSG);
-                                System.out.println(election.getContractAddress());
-                            })
-                            .exceptionally(error -> {
-                                userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff5f5f");
-                                userMessagge.setText("Something bad happened..");
-                                return null;
-                            });
+                if (validateElectionInfo(nameField, optionsCollection, startDateTimePicker, endDateTimePicker)) {
+                    try {
+                        validateDateAndTime(startDateTimePicker, endDateTimePicker);
+                        userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #fff");
+                        userMessagge.setText(TRANSACTION_SUCCESSFULLY_SENT_MSG);
+                        requireNonNull(Election.deploy(
+                                web3j, credentials,
+                                new DefaultGasProvider(),
+                                MASTER_CONTRACT_ADDRESS,
+                                stringToBytes32(nameField.getText()),
+                                optionsCollection.stream()
+                                        .map(node -> {
+                                            HBox hBox = (HBox) node;
+                                            TextField textField = (TextField) hBox.getChildren().get(1);
+                                            return stringToBytes32(textField.getText());
+                                        })
+                                        .collect(toList()),
+                                valueOf(startDateTimePicker.getDateTimeValue().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC")).toInstant().getEpochSecond()),
+                                valueOf(endDateTimePicker.getDateTimeValue().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC")).toInstant().getEpochSecond())))
+                                .sendAsync()
+                                .thenAccept(election -> {
+                                    userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #3ba53a");
+                                    userMessagge.setText(ELECTION_CREATED_MSG);
+                                    System.out.println(election.getContractAddress());
+                                })
+                                .exceptionally(error -> {
+                                    userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff5f5f");
+                                    userMessagge.setText("Something bad happened..");
+                                    return null;
+                                });
+                    } catch (IllegalArgumentException e) {
+                        userMessagge.setText(e.getMessage());
+                    }
                 } else {
                     userMessagge.setText("All fields are mandatory.");
                 }
@@ -153,36 +202,50 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
             vboxContainer.getChildren().add(hBox);
             extraStuffToBeDeletedAtLogout.add(hBox);
 
-            closeButton.setOnMousePressed(event -> {
-                runLater(() -> {
-                    vboxContainer.getChildren().remove(electionNameLabel);
-                    vboxContainer.getChildren().remove(nameHbox);
+            closeButton.setOnMousePressed(event -> runLater(() -> {
+                vboxContainer.getChildren().removeAll(optionsCollection);
+                vboxContainer.getChildren().removeAll(extraStuffToBeDeletedAtLogout);
 
-                    vboxContainer.getChildren().removeAll(optionsCollection);
-                    vboxContainer.getChildren().remove(hBox);
+                createButton.setVisible(true);
+                createButton.setDisable(false);
 
-                    vboxContainer.setAlignment(CENTER);
-                    createButton.setVisible(true);
-                    createButton.setDisable(false);
-
-                    userMessagge.setText("");
-                });
-            });
+                userMessagge.setText("");
+            }));
             extraStuffToBeDeletedAtLogout.add(closeButton);
         } catch (NumberFormatException e) {
             userMessagge.setText(NOT_VALID_OPTIONS_NR_PROVIDED_ERROR_MSG);
-        } finally {
-            createButton.setVisible(true);
-            createButton.setDisable(false);
+            runLater(() -> {
+                createButton.setVisible(true);
+                createButton.setDisable(false);
+            });
         }
 
     }
 
-    private boolean validateElectionInfo(TextField nameField, List<Node> optionsCollection) {
+    private boolean validateElectionInfo(TextField nameField, List<Node> optionsCollection,
+                                         DateTimePicker startDateTimePicker, DateTimePicker endDateTimePicker) {
         return !isEmpty(nameField.getText()) &&
                 optionsCollection.stream()
                         .reduce(true, (aBoolean, node2) -> aBoolean && !isEmpty(((TextField) (((HBox) node2).getChildren().get(1))).getText()),
                                 (aBoolean, aBoolean2) -> aBoolean && aBoolean2);
+    }
+
+    private void validateDateAndTime(DateTimePicker startDateTimePicker, DateTimePicker endDateTimePicker) {
+        LocalDateTime startDateTime = startDateTimePicker.getDateTimeValue();
+        LocalDateTime endDateTime = endDateTimePicker.getDateTimeValue();
+
+        if (startDateTime == null) {
+            throw new IllegalArgumentException("The start date and time must be provided.");
+        }
+        if (endDateTime == null) {
+            throw new IllegalArgumentException("The end date and time must be provided.");
+        }
+        if (startDateTime.isBefore(now())) {
+            throw new IllegalArgumentException("The start date and time cannot be in the past.");
+        }
+        if (endDateTime.isBefore(startDateTime)) {
+            throw new IllegalArgumentException("The end date and time mus tbe after the start date and time.");
+        }
     }
 
     private Bytes32 stringToBytes32(String string) {
@@ -193,12 +256,12 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
     }
 
     @Override
-    public void update(Credentials credentials) {
+    public void updateOnLogin(Credentials credentials) {
         this.credentials = credentials;
     }
 
     @Override
-    public void update() {
+    public void updateOnLogout() {
         createButton.setVisible(true);
         createButton.setDisable(false);
         vboxContainer.getChildren().removeAll(optionsCollection);

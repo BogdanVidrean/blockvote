@@ -1,23 +1,7 @@
-#rootAnchor {
-    /*-fx-background-image: url('../images/beanstalk.png');*/
-    -fx-background-position: bottom center;
-    -fx-background-repeat: no-repeat;
-}
-
-.menu-text {
+.text {
     -fx-text-fill: white;
     -fx-font-size: 25;
     -fx-font-weight: bold;
-}
-
-.text-field {
-    -fx-border-color: white;
-    -fx-border-width: 0 0 1 0;
-    -fx-background-color: transparent;
-    -fx-text-fill: white;
-    -fx-prompt-text-fill: white;
-    -fx-font-size: 20;
-    -fx-text-alignment: center;
 }
 
 .button {
@@ -36,13 +20,32 @@
     -fx-cursor: hand;
 }
 
-.error-text {
-    -fx-font-size: 20;
-    -fx-fill: #ff5f5f;
+.text-field {
+    -fx-border-color: white;
+    -fx-border-width: 0 0 1 0;
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: white;
 }
 
-#scrollPane {
+#vboxContainer {
     -fx-background-color: #3FE5FF;
+}
+
+#rootAnchor {
+    -fx-background-color: #3FE5FF;
+}
+
+#electionNamesScrollPane, #electionsScrollPane {
+    -fx-background-color: transparent;
+}
+
+.grid-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
 }
 
 .scroll-bar {
@@ -100,40 +103,26 @@
     -fx-background-radius: 2.0em;
 }
 
-.date-picker > .text-field {
-    -fx-background-color: #3FE5FF;
+.electionName:hover {
+    -fx-background-color: #5bb8ff;
+    -fx-cursor: hand;
 }
 
-.date-picker:focused > .text-field,
-.date-picker > .text-field:focused {
-    -fx-background-color: #3FE5FF;
+.check-box .box {
+
+    -fx-background-color: white;
+    /*-fx-border-color: 5 bb8ff;*/
+    -fx-border-radius: 3px;
+
 }
 
-.date-picker {
-    -fx-border-width: 0;
-    -fx-border-color: transparent;
+.check-box:selected .mark {
+
+    -fx-background-color: white;
+
 }
 
-.date-picker:editable {
-    -fx-border-width: 0;
-    -fx-border-color: transparent;
-}
+.check-box:selected .box {
 
-.date-picker > * {
-    -fx-border-color: transparent;
-}
-
-.date-picker-popup > .month-year-pane {
-    -fx-background-color: #fff;
-    -fx-text-fill: #3FE5FF;
-}
-
-.date-picker:editable > .arrow-button {
-    -fx-border-width: 0;
-    -fx-border-color: transparent;
-    -fx-background-color: #fff;
-}
-
-.date-picker-popup > .date-picker {
-    -fx-background-color: #fff;
+    -fx-background-color: #5bb8ff;
 }

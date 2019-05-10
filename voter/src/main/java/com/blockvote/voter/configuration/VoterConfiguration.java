@@ -1,17 +1,16 @@
-package com.blockvote.organizer.configuration;
+package com.blockvote.voter.configuration;
 
 import com.blockvote.core.bootstrap.BootstrapMediator;
 import com.blockvote.core.contracts.dispatcher.ElectionsDispatcher;
 import com.blockvote.core.contracts.interfaces.IElectionMaster;
 import com.blockvote.core.os.OsInteraction;
 import com.blockvote.core.services.MiningService;
-import com.blockvote.organizer.controllers.AppPreloaderController;
-import com.blockvote.organizer.controllers.CreateAccountController;
-import com.blockvote.organizer.controllers.ElectionCreationController;
-import com.blockvote.organizer.controllers.HomeController;
-import com.blockvote.organizer.controllers.MainPageController;
-import com.blockvote.organizer.controllers.RegisterVoterController;
-import com.blockvote.organizer.controllers.VoteController;
+import com.blockvote.voter.controllers.AppPreloaderController;
+import com.blockvote.voter.controllers.CheckEligibilityController;
+import com.blockvote.voter.controllers.CreateAccountController;
+import com.blockvote.voter.controllers.HomeController;
+import com.blockvote.voter.controllers.MainPageController;
+import com.blockvote.voter.controllers.VoteController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -29,18 +28,17 @@ import static com.blockvote.core.os.OsInteractionFactory.createOsInteraction;
 @Configuration
 @SuppressWarnings({"SpringFacetCodeInspection", "Duplicates"})
 @ComponentScan(basePackages = {"com.blockvote.core.configuration"})
-public class OrganizerConfiguration {
+public class VoterConfiguration {
 
     private final IElectionMaster electionMaster;
     private final Web3j web3j;
     private final ElectionsDispatcher electionsDispatcher;
     private final MiningService miningService;
 
-    public OrganizerConfiguration(
-            IElectionMaster electionMaster,
-            Web3j web3j,
-            ElectionsDispatcher electionsDispatcher,
-            MiningService miningService) {
+    public VoterConfiguration(IElectionMaster electionMaster,
+                              Web3j web3j,
+                              ElectionsDispatcher electionsDispatcher,
+                              MiningService miningService) {
         this.electionMaster = electionMaster;
         this.web3j = web3j;
         this.electionsDispatcher = electionsDispatcher;
@@ -52,13 +50,12 @@ public class OrganizerConfiguration {
         //setters
         mainPageController().setAppPreloaderScene(appPreloaderScene());
 
-        //  login observers
-        appPreloaderController().addObserver(electionCreationController());
+        //  logout observers
+        mainPageController().addObserver(voteController());
+
+        //login observers
         appPreloaderController().addObserver(voteController());
         appPreloaderController().addObserver(electionsDispatcher);
-
-        // logout observers
-        mainPageController().addObserver(electionCreationController());
     }
 
     @Bean
@@ -74,10 +71,9 @@ public class OrganizerConfiguration {
     @Bean
     public MainPageController mainPageController() {
         MainPageController mainPageController = new MainPageController();
-        mainPageController.setElectionCreationNode(electionCreationView());
-        mainPageController.setRegisterVoterNode(registerVoterView());
-        mainPageController.setHomeNode(homeView());
-        mainPageController.setVotePage(voteView());
+        mainPageController.setHomeNode(homeViewScene());
+        mainPageController.setCheckEligibilityNode(checkEligibilityScene());
+        mainPageController.setVoteScene(voteScene());
         mainPageController.setMiningService(miningService);
         return mainPageController;
     }
@@ -90,8 +86,34 @@ public class OrganizerConfiguration {
     @Bean
     public AppPreloaderController appPreloaderController() {
         return new AppPreloaderController(
-                electionMaster, osInteraction(), mainPageScene(), createAccountScene(), createAccountController(),
-                mainPageController(), bootstrapMediator());
+                electionMaster,
+                osInteraction(),
+                mainPageScene(),
+                createAccountScene(),
+                createAccountController(),
+                mainPageController(),
+                bootstrapMediator());
+    }
+
+    @Bean
+    public HomeController homeController() {
+        final HomeController homeController = new HomeController();
+        return homeController;
+    }
+
+    @Bean
+    public CheckEligibilityController checkEligibilityController() {
+        final CheckEligibilityController checkEligibilityController = new CheckEligibilityController();
+        checkEligibilityController.setElectionsMaster(electionMaster);
+        return checkEligibilityController;
+    }
+
+    @Bean
+    public VoteController voteController() {
+        VoteController voteController = new VoteController();
+        voteController.setElectionMaster(electionMaster);
+        voteController.setElectionsDispatcher(electionsDispatcher);
+        return voteController;
     }
 
     @Bean(name = "mainPageScene")
@@ -130,60 +152,8 @@ public class OrganizerConfiguration {
         return null;
     }
 
-    @Bean
-    public ElectionCreationController electionCreationController() {
-        final ElectionCreationController electionCreationController = new ElectionCreationController();
-        electionCreationController.setWeb3j(web3j);
-        return electionCreationController;
-    }
-
-    @Bean
-    public RegisterVoterController registerVoterController() {
-        final RegisterVoterController registerVoterController = new RegisterVoterController();
-        registerVoterController.setElectionMaster(electionMaster);
-        return registerVoterController;
-    }
-
-    @Bean
-    public HomeController homeController() {
-        final HomeController homeController = new HomeController();
-        return homeController;
-    }
-
-    @Bean
-    public VoteController voteController() {
-        final VoteController voteController = new VoteController();
-        voteController.setElectionMaster(electionMaster);
-        voteController.setElectionsDispatcher(electionsDispatcher);
-        return voteController;
-    }
-
-    @Bean
-    public Node electionCreationView() {
-        try {
-            final FXMLLoader electionCreationLoade = new FXMLLoader(getClass().getResource("/views/election_creation_view.fxml"));
-            electionCreationLoade.setControllerFactory(param -> this.electionCreationController());
-            return electionCreationLoade.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Bean
-    public Node registerVoterView() {
-        try {
-            final FXMLLoader registerVoterLoader = new FXMLLoader(getClass().getResource("/views/register_voter_view.fxml"));
-            registerVoterLoader.setControllerFactory(param -> this.registerVoterController());
-            return registerVoterLoader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Bean
-    public Node homeView() {
+    @Bean(name = "homeViewScene")
+    public Node homeViewScene() {
         try {
             final FXMLLoader homeViewLoader = new FXMLLoader(getClass().getResource("/views/home_view.fxml"));
             homeViewLoader.setControllerFactory(param -> this.homeController());
@@ -194,15 +164,29 @@ public class OrganizerConfiguration {
         return null;
     }
 
-    @Bean
-    public Node voteView() {
+    @Bean(name = "checkEligibilityScene")
+    public Node checkEligibilityScene() {
         try {
-            final FXMLLoader voteViewLoader = new FXMLLoader(getClass().getResource("/views/vote_page.fxml"));
-            voteViewLoader.setControllerFactory(param -> this.voteController());
-            return voteViewLoader.load();
+            final FXMLLoader homeViewLoader = new FXMLLoader(getClass().getResource("/views/check_eligibility_page.fxml"));
+            homeViewLoader.setControllerFactory(param -> this.checkEligibilityController());
+            return homeViewLoader.load();
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
+
+    @Bean(name = "voteScene")
+    public Node voteScene() {
+        try {
+            final FXMLLoader homeViewLoader = new FXMLLoader(getClass().getResource("/views/vote_page.fxml"));
+            homeViewLoader.setControllerFactory(param -> this.voteController());
+            return homeViewLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 }

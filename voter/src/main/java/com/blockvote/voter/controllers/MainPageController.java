@@ -1,83 +1,134 @@
 package com.blockvote.voter.controllers;
 
-import com.blockvote.core.contracts.impl.Election;
-import javafx.collections.ObservableList;
+import com.blockvote.core.observer.LogoutObservable;
+import com.blockvote.core.services.MiningService;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import javafx.fxml.FXML;
-import javafx.scene.chart.PieChart;
-import javafx.scene.control.ListView;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
-import org.web3j.crypto.Credentials;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.http.HttpService;
-import org.web3j.tx.gas.DefaultGasProvider;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
-import java.math.BigInteger;
-import java.util.List;
+import static java.util.concurrent.CompletableFuture.supplyAsync;
+import static javafx.application.Platform.runLater;
 
-import static com.blockvote.core.os.Commons.CONTRACT_ADDRESS;
-import static java.math.BigInteger.valueOf;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.IntStream.range;
-import static javafx.collections.FXCollections.observableArrayList;
-
-public class MainPageController {
+public class MainPageController extends LogoutObservable {
 
     @FXML
-    private PieChart resultsPieChart;
+    private ToggleButton miningToggle;
     @FXML
-    private ListView<String> candidatesList;
+    private BorderPane borderPane;
 
-    private ObservableList<String> candidatesObsList = observableArrayList();
-    private ObservableList<PieChart.Data> results = observableArrayList();
-    private Credentials credentials;
-    private Web3j web3j;
-    private Election election;
+    private Stage primaryStage;
+    private Node homeNode;
+    private Node checkEligibilityNode;
+    private Node voteScene;
+    private Scene appPreloaderScene;
+    private MiningService miningService;
+
+    public void setMiningService(MiningService miningService) {
+        this.miningService = miningService;
+    }
+
+    public void setAppPreloaderScene(Scene appPreloaderScene) {
+        this.appPreloaderScene = appPreloaderScene;
+    }
+
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
+
+    public void setHomeNode(Node homeNode) {
+        this.homeNode = homeNode;
+    }
+
+    public void setCheckEligibilityNode(Node checkEligibilityNode) {
+        this.checkEligibilityNode = checkEligibilityNode;
+    }
+
+    public void setVoteScene(Node voteScene) {
+        this.voteScene = voteScene;
+    }
 
     @FXML
     public void initialize() {
-        resultsPieChart.setData(results);
-    }
-
-    public void setCredentials(Credentials credentials) {
-        this.credentials = credentials;
-        web3j = Web3j.build(new HttpService("http://localhost:8507"));
-        election = Election.load(CONTRACT_ADDRESS, web3j, credentials, new DefaultGasProvider());
-        try {
-            List<byte[]> candidates = election.getOptions().send();
-            candidatesObsList.addAll(candidates.stream().map(String::new).collect(toList()));
-            candidatesList.setItems(candidatesObsList);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        miningToggle.setStyle("-fx-background-color: #ff6060;");
+        borderPane.setCenter(homeNode);
     }
 
     @FXML
-    private void voteForCandidate(MouseEvent mouseEvent) {
-        String selectedCandidate = candidatesList.getSelectionModel().getSelectedItem();
-        if (selectedCandidate != null) {
-            int candidateIndex = candidatesObsList.indexOf(selectedCandidate);
-            Web3j web3j = Web3j.build(new HttpService("http://localhost:8507"));
-            Election election = Election.load(CONTRACT_ADDRESS, web3j, credentials, new DefaultGasProvider());
-            try {
-                election.vote(valueOf(candidateIndex)).send();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    private void setHomePage(MouseEvent mouseEvent) {
+        borderPane.setCenter(homeNode);
     }
 
     @FXML
-    private void showResults(MouseEvent mouseEvent) {
-        results = observableArrayList();
-        resultsPieChart.setData(results);
-        range(0, candidatesObsList.size()).forEach(i -> {
-            try {
-                BigInteger result = election.getResultsForOption(valueOf(i)).send();
-                String candidate = candidatesObsList.get(i);
-                results.add(new PieChart.Data(candidate + " - " + result.toString() + " votes", result.doubleValue()));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+    private void logoutHandler(MouseEvent mouseEvent) {
+        borderPane.setCenter(homeNode);
+        notifyObservers();
+        primaryStage.setScene(appPreloaderScene);
+    }
+
+    @FXML
+    private void setVotePage(MouseEvent mouseEvent) {
+        borderPane.setCenter(voteScene);
+    }
+
+    @FXML
+    private void setCheckEligibilityPage(MouseEvent mouseEvent) {
+        borderPane.setCenter(checkEligibilityNode);
+    }
+
+    @FXML
+    private void handleMiningToggle(MouseEvent mouseEvent) {
+        if (!miningToggle.isSelected()) {
+            // start mining
+            supplyAsync(() -> {
+                try {
+                    runLater(() -> miningToggle.setDisable(true));
+                    return miningService.startMining();
+                } catch (UnirestException e) {
+                    e.printStackTrace();
+                    runLater(() -> miningToggle.setDisable(false));
+                    throw new RuntimeException("Failed to connect to the node.");
+                }
+            })
+                    .thenAccept(jsonNodeHttpResponse -> {
+                        runLater(() -> {
+                            miningToggle.setStyle("-fx-background-color: #85eca5;");
+                            miningToggle.setDisable(false);
+                            miningToggle.setText("ON");
+
+                        });
+                    })
+                    .exceptionally(ex -> {
+                        miningToggle.setDisable(false);
+                        ex.printStackTrace();
+                        return null;
+                    });
+        } else {
+            //  stop mining
+            supplyAsync(() -> {
+                try {
+                    runLater(() -> miningToggle.setDisable(true));
+                    return miningService.stopMinig();
+                } catch (UnirestException e) {
+                    e.printStackTrace();
+                    runLater(() -> miningToggle.setDisable(false));
+                    throw new RuntimeException("Failed to connect to the node.");
+                }
+            })
+                    .thenAccept(jsonNodeHttpResponse -> {
+                        miningToggle.setDisable(false);
+                        miningToggle.setStyle("-fx-background-color: #ff6060;");
+                        runLater(() -> miningToggle.setText("OFF"));
+                    })
+                    .exceptionally(ex -> {
+                        miningToggle.setDisable(false);
+                        ex.printStackTrace();
+                        return null;
+                    });
+        }
     }
 }

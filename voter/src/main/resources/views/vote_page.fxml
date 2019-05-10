@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" id="rootAnchor" fx:id="rootAnchor" prefHeight="400.0" prefWidth="600.0"
+            stylesheets="@../css/vote.css" xmlns="http://javafx.com/javafx/10.0.1"
+            fx:controller="com.blockvote.voter.controllers.VoteController">
+    <children>
+        <GridPane prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                  AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="70.0" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <children>
+                <ScrollPane id="electionsScrollPane" fx:id="electionsScrollPane" prefHeight="400.0" prefWidth="278.0"
+                            stylesheets="@../css/vote.css">
+                    <content>
+                        <VBox fx:id="electionMasterVBox" alignment="CENTER"
+                              minWidth="${electionsScrollPane.viewportBounds.width}" prefHeight="200.0"
+                              prefWidth="100.0"/>
+                    </content>
+                </ScrollPane>
+                <ScrollPane id="electionNamesScrollPane" fx:id="electionNamesScrollPane" prefHeight="400.0"
+                            prefWidth="199.0" stylesheets="@../css/vote.css" GridPane.columnIndex="1">
+                    <content>
+                        <VBox id="electionsNamesContainer" fx:id="electionsNamesContainer"
+                              minWidth="${electionNamesScrollPane.viewportBounds.width}" prefHeight="200.0"
+                              prefWidth="100.0"/>
+                    </content>
+                </ScrollPane>
+            </children>
+        </GridPane>
+   </children>
+</AnchorPane>
