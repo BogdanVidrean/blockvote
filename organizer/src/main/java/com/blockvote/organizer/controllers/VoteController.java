@@ -1,4 +1,4 @@
-package com.blockvote.voter.controllers;
+package com.blockvote.organizer.controllers;
 
 import com.blockvote.core.contracts.dispatcher.ElectionsDispatcher;
 import com.blockvote.core.contracts.interfaces.IElection;
@@ -19,6 +19,7 @@ import org.web3j.crypto.Credentials;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import static javafx.application.Platform.runLater;
 import static javafx.geometry.Pos.CENTER;
 import static javafx.geometry.Pos.CENTER_LEFT;
 import static javafx.geometry.Pos.TOP_LEFT;
+import static javafx.scene.text.Font.font;
 import static org.apache.commons.lang3.tuple.Pair.of;
 
 public class VoteController implements LoginObserver, LogoutObserver {
@@ -45,7 +47,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
     private ElectionsDispatcher electionsDispatcher;
     private List<Node> currentElectionNodes = new ArrayList<>();
     private Map<Integer, Pair<CheckBox, Label>> options = new HashMap<>();
-    private Text userText;
+    private Text userText = new Text();
     private volatile boolean areResultsVisible = false;
 
     public void setElectionsDispatcher(ElectionsDispatcher electionsDispatcher) {
@@ -62,6 +64,10 @@ public class VoteController implements LoginObserver, LogoutObserver {
         selectElectionLabel.setStyle("-fx-font-size: 30; -fx-text-fill: #ffffff;");
         VBox.setMargin(selectElectionLabel, new Insets(40, 0, 0, 0));
         electionsNamesContainer.getChildren().add(selectElectionLabel);
+
+        //  user text
+        VBox.setMargin(userText, new Insets(20, 0, 0, 0));
+        userText.setFont(font(25));
     }
 
     @Override
@@ -145,7 +151,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
             electionAddressContainer.setAlignment(CENTER);
 
             Label electionAddressLabel = new Label("#" + selectedAddress);
-            electionAddressLabel.setStyle("-fx-text-fill: #fff");
+            electionAddressLabel.setStyle("-fx-text-fill: #fff; -fx-font-size: 15");
             electionAddressContainer.getChildren().addAll(electionAddressLabel);
 
             currentElectionNodes.add(electionAddressContainer);
@@ -154,7 +160,40 @@ public class VoteController implements LoginObserver, LogoutObserver {
 
             selectedElection.getOptions()
                     .sendAsync()
-                    .thenAccept(currentOptions -> {
+                    .thenAcceptAsync(currentOptions -> {
+
+                        //  Election start and end time
+                        VBox electionStartAndEndTimeContainer = new VBox();
+                        electionStartAndEndTimeContainer.setAlignment(CENTER);
+
+                        IElection selectedElectionObject = electionsDispatcher.getElection(selectedAddress);
+                        try {
+                            long endTime = selectedElectionObject.getStartTime().send().longValue() * 1000;
+                            long startTime = selectedElectionObject.getEndTime().send().longValue() * 1000;
+                            Label startLabel = new Label("Starts at: " + new Date(endTime).toString());
+                            Label endLabel = new Label("Ends at: " + new Date(startTime).toString());
+                            startLabel.setStyle("-fx-text-fill: #3ba53a");
+                            endLabel.setStyle("-fx-text-fill: #ff5f5f");
+                            electionStartAndEndTimeContainer.getChildren().add(startLabel);
+                            electionStartAndEndTimeContainer.getChildren().add(endLabel);
+                            currentElectionNodes.add(electionStartAndEndTimeContainer);
+                            long currentTime = new Date().getTime();
+                            Label statusLabel = new Label();
+                            if (currentTime < startTime && currentTime > endTime) {
+                                statusLabel.setText("Active");
+                                statusLabel.setStyle("-fx-text-fill: #3ba53a");
+                            } else if (currentTime < startTime) {
+                                statusLabel.setText("Not started yet");
+                                statusLabel.setStyle("-fx-text-fill: #ff5f5f");
+                            } else if (currentTime > endTime) {
+                                statusLabel.setText("Ended");
+                                statusLabel.setStyle("-fx-text-fill: #ff5f5f");
+                            }
+                            currentElectionNodes.add(statusLabel);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
                         AtomicInteger optionsCounter = new AtomicInteger();
                         currentOptions.forEach(option -> {
 
@@ -182,15 +221,24 @@ public class VoteController implements LoginObserver, LogoutObserver {
                         Button button = new Button("VOTE");
                         VBox.setMargin(button, new Insets(50, 0, 0, 0));
                         button.setOnMousePressed(event -> vote(selectedAddress));
+                        button.setPrefWidth(250);
                         currentElectionNodes.add(button);
 
                         Button resultsButton = new Button("SEE RESULTS");
                         VBox.setMargin(resultsButton, new Insets(20, 0, 0, 0));
                         resultsButton.setOnMousePressed(event -> getResults(selectedAddress));
+                        resultsButton.setPrefWidth(250);
                         currentElectionNodes.add(resultsButton);
 
+                        Button endElection = new Button("END ELECTION");
+                        VBox.setMargin(endElection, new Insets(20, 0, 0, 0));
+                        endElection.setOnMousePressed(event -> endElectionHandler(selectedAddress));
+                        endElection.getStyleClass().add("cancelElectionButton");
+                        endElection.setPrefWidth(250);
+                        currentElectionNodes.add(endElection);
+
+
                         //User message label
-                        userText = new Text();
                         currentElectionNodes.add(userText);
 
                         runLater(() -> electionMasterVBox.getChildren().addAll(currentElectionNodes));
@@ -199,6 +247,36 @@ public class VoteController implements LoginObserver, LogoutObserver {
 
                         return null;
                     });
+        });
+    }
+
+    private void endElectionHandler(String selectedAddress) {
+        IElection election = electionsDispatcher.getElection(selectedAddress);
+        election.endElection()
+                .sendAsync()
+                .thenAccept(transactionReceipt -> {
+                    if (transactionReceipt.isStatusOK()) {
+                        runLater(() -> {
+                            userText.setStyle("-fx-fill: #3ba53a");
+                            userText.setText("The election was successfully ended.");
+                        });
+                    } else {
+                        runLater(() -> {
+                            userText.setStyle("-fx-fill: #ff5f5f");
+                            userText.setText("the transaction failed.");
+                        });
+                    }
+                })
+                .exceptionally(ex -> {
+                    runLater(() -> {
+                        userText.setStyle("-fx-fill: #ff5f5f");
+                        userText.setText("The transaction failed.");
+                    });
+                    return null;
+                });
+        runLater(() -> {
+            userText.setStyle("-fx-fill: #ffffff;");
+            userText.setText("Transaction successfully initiated.");
         });
     }
 
@@ -219,18 +297,18 @@ public class VoteController implements LoginObserver, LogoutObserver {
             selectedElection.vote(BigInteger.valueOf(selectedOption))
                     .sendAsync()
                     .thenRun(() -> runLater(() -> {
-                        userText.setStyle("-fx-text-fill: #ff5f5f");
+                        userText.setStyle("-fx-fill: #ff5f5f");
                         userText.setText("Transaction successfully registered.");
                     }))
                     .thenAccept(transactionReceipt -> {
                         runLater(() -> {
-                            userText.setStyle("-fx-text-fill: #3ba53a");
+                            userText.setStyle("-fx-fill: #3ba53a");
                             userText.setText("Vote successfully registered.");
                         });
                     })
                     .exceptionally(ex -> {
                         runLater(() -> {
-                            userText.setStyle("-fx-text-fill: #ff5f5f");
+                            userText.setStyle("-fx-fill: #ff5f5f");
                             userText.setText("Something went wrong.");
                         });
                         return null;

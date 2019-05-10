@@ -15,4 +15,10 @@ public interface IElection {
     RemoteCall<List> getOptions();
 
     RemoteCall<List> getResults();
+
+    RemoteCall<TransactionReceipt> endElection();
+
+    RemoteCall<BigInteger> getStartTime();
+
+    RemoteCall<BigInteger> getEndTime();
 }

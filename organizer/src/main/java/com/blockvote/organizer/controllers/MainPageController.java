@@ -17,7 +17,12 @@ public class MainPageController extends LogoutObservable {
     private Node electionCreationNode;
     private Node registerVoterNode;
     private Node homeNode;
+    private Node votePage;
     private Scene appPreloaderScene;
+
+    public void setVotePage(Node votePage) {
+        this.votePage = votePage;
+    }
 
     public void setAppPreloaderScene(Scene appPreloaderScene) {
         this.appPreloaderScene = appPreloaderScene;
@@ -57,6 +62,11 @@ public class MainPageController extends LogoutObservable {
     @FXML
     private void setHomePage(MouseEvent mouseEvent) {
         borderPane.setCenter(homeNode);
+    }
+
+    @FXML
+    private void setVotePage(MouseEvent mouseEvent) {
+        borderPane.setCenter(votePage);
     }
 
     @FXML

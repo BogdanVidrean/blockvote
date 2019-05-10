@@ -51,6 +51,24 @@ public class ElectionProxy implements IElection {
         return election.getResults();
     }
 
+    @Override
+    public RemoteCall<TransactionReceipt> endElection() {
+        checkIfInstanceNull();
+        return election.endElection();
+    }
+
+    @Override
+    public RemoteCall<BigInteger> getStartTime() {
+        checkIfInstanceNull();
+        return election.getStartTime();
+    }
+
+    @Override
+    public RemoteCall<BigInteger> getEndTime() {
+        checkIfInstanceNull();
+        return election.getEndTime();
+    }
+
     private void checkIfInstanceNull() {
         if (election == null) {
             synchronized (this) {

@@ -112,8 +112,8 @@ public class AppPreloaderController extends LoginObservable {
             if (!isEmpty(password)) {
                 try {
                     final Credentials credentials = loadCredentials(password, accountFilesMap.get(selectedAddress));
-                    notify(credentials);
                     ((ElectionMasterProxy) electionMaster).setCredentials(credentials);
+                    notify(credentials);
                     mainPageController.setPrimaryStage(primaryStage);
                     clearFields();
                     primaryStage.setScene(mainPageScene);

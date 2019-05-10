@@ -10,6 +10,7 @@ import com.blockvote.organizer.controllers.ElectionCreationController;
 import com.blockvote.organizer.controllers.HomeController;
 import com.blockvote.organizer.controllers.MainPageController;
 import com.blockvote.organizer.controllers.RegisterVoterController;
+import com.blockvote.organizer.controllers.VoteController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -49,6 +50,8 @@ public class OrganizerConfiguration {
 
         //  login observers
         appPreloaderController().addObserver(electionCreationController());
+        appPreloaderController().addObserver(voteController());
+        appPreloaderController().addObserver(electionsDispatcher);
 
         // logout observers
         mainPageController().addObserver(electionCreationController());
@@ -70,6 +73,7 @@ public class OrganizerConfiguration {
         mainPageController.setElectionCreationNode(electionCreationView());
         mainPageController.setRegisterVoterNode(registerVoterView());
         mainPageController.setHomeNode(homeView());
+        mainPageController.setVotePage(voteView());
         return mainPageController;
     }
 
@@ -142,6 +146,14 @@ public class OrganizerConfiguration {
     }
 
     @Bean
+    public VoteController voteController() {
+        final VoteController voteController = new VoteController();
+        voteController.setElectionMaster(electionMaster);
+        voteController.setElectionsDispatcher(electionsDispatcher);
+        return voteController;
+    }
+
+    @Bean
     public Node electionCreationView() {
         try {
             final FXMLLoader electionCreationLoade = new FXMLLoader(getClass().getResource("/views/election_creation_view.fxml"));
@@ -171,6 +183,18 @@ public class OrganizerConfiguration {
             final FXMLLoader homeViewLoader = new FXMLLoader(getClass().getResource("/views/home_view.fxml"));
             homeViewLoader.setControllerFactory(param -> this.homeController());
             return homeViewLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Bean
+    public Node voteView() {
+        try {
+            final FXMLLoader voteViewLoader = new FXMLLoader(getClass().getResource("/views/vote_page.fxml"));
+            voteViewLoader.setControllerFactory(param -> this.voteController());
+            return voteViewLoader.load();
         } catch (IOException e) {
             e.printStackTrace();
         }

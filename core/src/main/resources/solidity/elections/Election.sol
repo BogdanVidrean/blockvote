@@ -91,4 +91,12 @@ contract Election {
     function endElection() public isTimeOver isOrganizer {
         isOver = true;
     }
+
+    function getStartTime() public view returns (uint) {
+        return startTime;
+    }
+
+    function getEndTime() public view returns (uint) {
+        return endTime;
+    }
 }
