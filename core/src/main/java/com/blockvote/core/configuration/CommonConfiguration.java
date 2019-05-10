@@ -4,6 +4,7 @@ import com.blockvote.core.contracts.dispatcher.ElectionsDispatcher;
 import com.blockvote.core.contracts.dispatcher.ElectionsDispatcherImpl;
 import com.blockvote.core.contracts.interfaces.IElectionMaster;
 import com.blockvote.core.contracts.proxy.ElectionMasterProxy;
+import com.blockvote.core.services.MiningService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.web3j.protocol.Web3j;
@@ -41,5 +42,10 @@ public class CommonConfiguration {
         ElectionsDispatcherImpl electionsDispatcher = new ElectionsDispatcherImpl();
         electionsDispatcher.setWeb3j(web3j());
         return electionsDispatcher;
+    }
+
+    @Bean
+    public MiningService miningService() {
+        return new MiningService();
     }
 }

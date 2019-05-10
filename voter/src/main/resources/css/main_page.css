@@ -8,6 +8,15 @@
     -fx-font-weight: bold;
 }
 
+.header-button {
+    -fx-background-color: transparent;
+}
+
+.header-button:hover {
+    -fx-cursor: hand;
+    -fx-background-color: #5bb8ff;
+}
+
 #voterMenuContainer {
     -fx-background-color: #35ce8d;
 }
@@ -33,17 +42,19 @@
     -fx-background-color: #5bb8ff;
 }
 
-/*#logoutButton:hover {*/
-/*    -fx-background-color: #ff432e;*/
+/*.toggle-button {*/
+/*    base-color: #ff6060;*/
+/*    -fx-background-color: base-color;*/
 /*}*/
 
-/*#createElectionButton:hover {*/
-/*    -fx-background-color: #ffbe4c;*/
+/*.toggle-button:selected {*/
+/*    base-color: #85eca5;*/
 /*}*/
 
-/*#registerVoterButton:hover {*/
-/*    -fx-background-color: #3ba53a;*/
-/*}*/
+.toggle-button:hover {
+    -fx-cursor: hand;
+    -fx-background-color: derive(base-color, -20%);
+}
 
 #menuVbox {
     -fx-background-color: #4CEAEB;

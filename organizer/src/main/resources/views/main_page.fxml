@@ -2,6 +2,8 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -11,6 +13,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <?import java.lang.String?>
 <AnchorPane id="root_anchor_pane" prefHeight="900.0" prefWidth="1200.0" stylesheets="@../css/main_page.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.blockvote.organizer.controllers.MainPageController">
     <children>
@@ -111,7 +114,6 @@
                                 </ImageView>
                             </children>
                         </HBox>
-                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0"/>
                         <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2">
                             <children>
                                 <Button id="logoutButton" contentDisplay="TOP" maxHeight="92.0" mnemonicParsing="false"
@@ -132,6 +134,26 @@
                                 </Button>
                             </children>
                         </HBox>
+                        <GridPane>
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="261.0" minWidth="10.0"
+                                                   prefWidth="258.0"/>
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="238.0" minWidth="10.0"
+                                                   prefWidth="142.0"/>
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                            </rowConstraints>
+                            <children>
+                                <ToggleButton fx:id="miningToggle" mnemonicParsing="false"
+                                              onMousePressed="#handleMiningToggle" text="OFF" GridPane.columnIndex="1"/>
+                            </children>
+                        </GridPane>
+                        <Label styleClass="menu-text" text="Validating elections:">
+                            <font>
+                                <Font size="18.0"/>
+                            </font>
+                        </Label>
                     </children>
                 </GridPane>
             </top>

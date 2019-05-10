@@ -4,6 +4,7 @@ import com.blockvote.core.bootstrap.BootstrapMediator;
 import com.blockvote.core.contracts.dispatcher.ElectionsDispatcher;
 import com.blockvote.core.contracts.interfaces.IElectionMaster;
 import com.blockvote.core.os.OsInteraction;
+import com.blockvote.core.services.MiningService;
 import com.blockvote.voter.controllers.AppPreloaderController;
 import com.blockvote.voter.controllers.CheckEligibilityController;
 import com.blockvote.voter.controllers.CreateAccountController;
@@ -32,13 +33,16 @@ public class VoterConfiguration {
     private final IElectionMaster electionMaster;
     private final Web3j web3j;
     private final ElectionsDispatcher electionsDispatcher;
+    private final MiningService miningService;
 
     public VoterConfiguration(IElectionMaster electionMaster,
                               Web3j web3j,
-                              ElectionsDispatcher electionsDispatcher) {
+                              ElectionsDispatcher electionsDispatcher,
+                              MiningService miningService) {
         this.electionMaster = electionMaster;
         this.web3j = web3j;
         this.electionsDispatcher = electionsDispatcher;
+        this.miningService = miningService;
     }
 
     @PostConstruct
@@ -70,6 +74,7 @@ public class VoterConfiguration {
         mainPageController.setHomeNode(homeViewScene());
         mainPageController.setCheckEligibilityNode(checkEligibilityScene());
         mainPageController.setVoteScene(voteScene());
+        mainPageController.setMiningService(miningService);
         return mainPageController;
     }
 
