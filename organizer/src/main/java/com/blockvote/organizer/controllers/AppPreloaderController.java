@@ -30,6 +30,7 @@ import static com.blockvote.core.os.Commons.KEYSTORE_PATH;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static javafx.application.Platform.runLater;
 import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.stage.Modality.APPLICATION_MODAL;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
@@ -113,10 +114,20 @@ public class AppPreloaderController extends LoginObservable {
                 try {
                     final Credentials credentials = loadCredentials(password, accountFilesMap.get(selectedAddress));
                     ((ElectionMasterProxy) electionMaster).setCredentials(credentials);
-                    notify(credentials);
-                    mainPageController.setPrimaryStage(primaryStage);
-                    clearFields();
-                    primaryStage.setScene(mainPageScene);
+                    electionMaster.canAddressDeployContract(selectedAddress)
+                            .sendAsync()
+                            .thenAccept(isOrganizer -> {
+                                if (isOrganizer) {
+                                    runLater(() -> {
+                                        notify(credentials);
+                                        mainPageController.setPrimaryStage(primaryStage);
+                                        clearFields();
+                                        primaryStage.setScene(mainPageScene);
+                                    });
+                                } else {
+                                    runLater(() -> errorMsg.setText("Access denied."));
+                                }
+                            });
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (CipherException e) {
