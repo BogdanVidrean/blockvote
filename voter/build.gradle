@@ -40,7 +40,8 @@ def jdk = System.getProperty("java.home")
 def moduleName = "com.blockvote.voter"
 def mainClass = "com.blockvote.voter.Main"
 
-jar {
+// Mac OS client
+task executableJarMacOs(type: Jar, dependsOn: assemble) {
     manifest {
         attributes(
                 'Main-Class': mainClass,
@@ -49,7 +50,30 @@ jar {
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+    from('src/main/resources/geth_client/mac_os/geth') {
+        include 'geth'
+        into('geth_client')
+    }
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA', 'geth_client/*'
+    with jar
+}
+
+// Linux client
+task executableJarLinux(type: Jar, dependsOn: assemble) {
+    manifest {
+        attributes(
+                'Main-Class': mainClass,
+        )
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    from('src/main/resources/geth_client/linux/geth') {
+        include 'geth'
+        into('geth_client')
+    }
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA', 'geth_client/*'
+    with jar
 }
 
 task javaPackager(type: Exec, dependsOn: assemble) {

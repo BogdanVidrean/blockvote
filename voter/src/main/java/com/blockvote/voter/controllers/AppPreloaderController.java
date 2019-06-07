@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.effect.GaussianBlur;
@@ -39,6 +40,8 @@ import static org.web3j.crypto.WalletUtils.loadCredentials;
 public class AppPreloaderController extends LoginObservable {
 
 
+    @FXML
+    private Label chooseWalletMessage;
     @FXML
     private Text errorMsg;
     @FXML
@@ -102,6 +105,8 @@ public class AppPreloaderController extends LoginObservable {
             accountsListView.setVisible(true);
             accountsObsList.addAll(accounts.stream().map(f -> formatAddressFromKeystoreFileName(f.getName())).collect(toList()));
             accountsListView.setItems(accountsObsList);
+        } else {
+            chooseWalletMessage.setText("No wallets available. Create a new one.");
         }
     }
 
@@ -150,6 +155,7 @@ public class AppPreloaderController extends LoginObservable {
             accountFilesMap.put(formatAddressFromKeystoreFileName(newAddressFileName), newWalletFile);
             accountsObsList.add(formatAddressFromKeystoreFileName(newAddressFileName));
             accountsListView.refresh();
+            chooseWalletMessage.setText("Hi there! Choose your wallet:");
             rootAnchorPane.setEffect(null);
         });
 
