@@ -19,10 +19,10 @@
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" id="root_anchor_pane" stylesheets="@../css/main_page.css"
             xmlns="http://javafx.com/javafx/10.0.1" fx:controller="com.blockvote.voter.controllers.MainPageController">
     <children>
-        <ScrollPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                    AnchorPane.topAnchor="0.0">
+        <ScrollPane fitToHeight="true" fitToWidth="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <content>
-                <BorderPane fx:id="borderPane">
+                <BorderPane fx:id="borderPane" minWidth="-Infinity" prefWidth="1202.0">
                     <left>
                         <VBox id="menuVbox" alignment="CENTER" BorderPane.alignment="TOP_LEFT">
                             <children>
