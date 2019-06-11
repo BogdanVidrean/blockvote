@@ -99,13 +99,13 @@ public class AppPreloaderController extends LoginObservable {
     }
 
     private void loadAvailableAccountWallets() {
+        accountsListView.setItems(accountsObsList);
         List<File> accounts = osInteraction.loadAvailableAccounts();
         if (accounts.size() != 0) {
             accountFilesMap.putAll(accounts.stream().collect(toMap(f -> formatAddressFromKeystoreFileName(f.getName()),
                     identity())));
             accountsListView.setVisible(true);
             accountsObsList.addAll(accounts.stream().map(f -> formatAddressFromKeystoreFileName(f.getName())).collect(toList()));
-            accountsListView.setItems(accountsObsList);
         } else {
             chooseWalletMessage.setText("No wallets available. Create a new one.");
         }
@@ -158,6 +158,7 @@ public class AppPreloaderController extends LoginObservable {
             accountFilesMap.put(formatAddressFromKeystoreFileName(newAddressFileName), newWalletFile);
             accountsObsList.add(formatAddressFromKeystoreFileName(newAddressFileName));
             accountsListView.refresh();
+            accountsListView.setVisible(true);
             chooseWalletMessage.setText("Hi there! Choose your wallet:");
             rootAnchorPane.setEffect(null);
         });
