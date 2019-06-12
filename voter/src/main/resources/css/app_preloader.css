@@ -1,7 +1,21 @@
-#rootAnchorPane {
-    -fx-background-image: url("/images/preloader_bg.png");
+/*#rootAnchorPane {*/
+/*    -fx-background-image: url("/images/preloader_bg.png");*/
+/*    -fx-background-repeat: stretch;*/
+/*    -fx-background-position: center center;*/
+/*}*/
+
+#bottom_container {
+    -fx-background-image: url("/images/app_preloader_bottom_background.png");
     -fx-background-repeat: stretch;
-    -fx-background-position: center center;
+    /*-fx-background-position: center center;*/
+}
+
+#upper_container {
+    -fx-background-color: #92f8ff;
+}
+
+#middle_container {
+    -fx-background-color: #92f8ff;
 }
 
 .list-cell:filled:selected:focused, .list-cell:filled:selected {
