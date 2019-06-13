@@ -10,12 +10,17 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 import java.util.Optional;
 
 import static com.blockvote.core.os.Commons.CHAIN_ID;
 import static java.lang.Long.parseLong;
-import static java.net.InetAddress.getLocalHost;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 public class BootstrapMediator {
@@ -87,14 +92,15 @@ public class BootstrapMediator {
                     JSONObject nodeInfoNode = (JSONObject) jsonNodeHttpResponse.getBody().getObject().get("result");
                     String enode = (String) nodeInfoNode.get("enode");
                     try {
-                        String ip = getLocalHost().getHostAddress();
+                        InetAddress ip = getFirstNonLoopbackAddress(true, false);
                         String[] splittedEnode = enode.split("@");
-                        String enodeFinal = splittedEnode[0] + "@" + ip + ":" + splittedEnode[1].split(":")[1];
+                        String ipAddress = ip != null ? ip.getHostAddress() : InetAddress.getLocalHost().getHostAddress();
+                        String enodeFinal = splittedEnode[0] + "@" + ipAddress + ":" + splittedEnode[1].split(":")[1];
                         bootstrapService.registerNode(enodeFinal);
-                    } catch (UnknownHostException e) {
-                        throw new RuntimeException("Failed to get the ip address of current host.");
                     } catch (UnirestException e) {
                         throw new RuntimeException("Failed to register the node to the bootstrap server.");
+                    } catch (SocketException | UnknownHostException e) {
+                        throw new RuntimeException("Failed to get the ip address of current host.");
                     }
                 })
                 .exceptionally(ex -> {
@@ -133,5 +139,30 @@ public class BootstrapMediator {
         osInteraction.deleteNodeFolder();
         osInteraction.createLocalNode();
         osInteraction.startLocalNode();
+    }
+
+    private InetAddress getFirstNonLoopbackAddress(boolean preferIpv4, boolean preferIPv6) throws SocketException {
+        Enumeration en = NetworkInterface.getNetworkInterfaces();
+        while (en.hasMoreElements()) {
+            NetworkInterface i = (NetworkInterface) en.nextElement();
+            for (Enumeration en2 = i.getInetAddresses(); en2.hasMoreElements(); ) {
+                InetAddress addr = (InetAddress) en2.nextElement();
+                if (!addr.isLoopbackAddress()) {
+                    if (addr instanceof Inet4Address) {
+                        if (preferIPv6) {
+                            continue;
+                        }
+                        return addr;
+                    }
+                    if (addr instanceof Inet6Address) {
+                        if (preferIpv4) {
+                            continue;
+                        }
+                        return addr;
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
