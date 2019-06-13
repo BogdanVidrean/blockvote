@@ -26,8 +26,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
-import static com.blockvote.core.os.Commons.MASTER_CONTRACT_ADDRESS;
 import static java.lang.Integer.parseInt;
 import static java.math.BigInteger.valueOf;
 import static java.time.LocalDateTime.now;
@@ -61,11 +61,17 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
 
     private Credentials credentials;
     private Web3j web3j;
+    private Properties applicationProperties;
     private List<Node> optionsCollection = new ArrayList<>();
     private List<Node> extraStuffToBeDeletedAtLogout = new ArrayList<>();
 
     public void setWeb3j(Web3j web3j) {
         this.web3j = web3j;
+    }
+
+    public void setApplicationProperties(Properties applicationProperties) {
+        this.applicationProperties = applicationProperties;
+
     }
 
     @FXML
@@ -155,34 +161,37 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
             doneButton.setOnMousePressed(event -> {
                 if (validateElectionInfo(nameField, optionsCollection, startDateTimePicker, endDateTimePicker)) {
                     try {
-                        validateDateAndTime(startDateTimePicker, endDateTimePicker);
-                        userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #fff");
-                        userMessagge.setText(TRANSACTION_SUCCESSFULLY_SENT_MSG);
-                        requireNonNull(Election.deploy(
-                                web3j, credentials,
-                                new DefaultGasProvider(),
-                                MASTER_CONTRACT_ADDRESS,
-                                stringToBytes32(nameField.getText()),
-                                optionsCollection.stream()
-                                        .map(node -> {
-                                            HBox hBox = (HBox) node;
-                                            TextField textField = (TextField) hBox.getChildren().get(1);
-                                            return stringToBytes32(textField.getText());
-                                        })
-                                        .collect(toList()),
-                                valueOf(startDateTimePicker.getDateTimeValue().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC")).toInstant().getEpochSecond()),
-                                valueOf(endDateTimePicker.getDateTimeValue().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC")).toInstant().getEpochSecond())))
-                                .sendAsync()
-                                .thenAccept(election -> {
-                                    userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #3ba53a");
-                                    userMessagge.setText(ELECTION_CREATED_MSG);
-                                    System.out.println(election.getContractAddress());
-                                })
-                                .exceptionally(error -> {
-                                    userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff5f5f");
-                                    userMessagge.setText("Something bad happened..");
-                                    return null;
-                                });
+                        String masterContractAddress = applicationProperties.getProperty("master.contract.address");
+                        if (masterContractAddress != null) {
+                            validateDateAndTime(startDateTimePicker, endDateTimePicker);
+                            userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #fff");
+                            userMessagge.setText(TRANSACTION_SUCCESSFULLY_SENT_MSG);
+                            requireNonNull(Election.deploy(
+                                    web3j, credentials,
+                                    new DefaultGasProvider(),
+                                    masterContractAddress,
+                                    stringToBytes32(nameField.getText()),
+                                    optionsCollection.stream()
+                                            .map(node -> {
+                                                HBox hBox = (HBox) node;
+                                                TextField textField = (TextField) hBox.getChildren().get(1);
+                                                return stringToBytes32(textField.getText());
+                                            })
+                                            .collect(toList()),
+                                    valueOf(startDateTimePicker.getDateTimeValue().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC")).toInstant().getEpochSecond()),
+                                    valueOf(endDateTimePicker.getDateTimeValue().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC")).toInstant().getEpochSecond())))
+                                    .sendAsync()
+                                    .thenAccept(election -> {
+                                        userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #3ba53a");
+                                        userMessagge.setText(ELECTION_CREATED_MSG);
+                                        System.out.println(election.getContractAddress());
+                                    })
+                                    .exceptionally(error -> {
+                                        userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff5f5f");
+                                        userMessagge.setText("Something bad happened..");
+                                        return null;
+                                    });
+                        }
                     } catch (IllegalArgumentException e) {
                         userMessagge.setText(e.getMessage());
                     }

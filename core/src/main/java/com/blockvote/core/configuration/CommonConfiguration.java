@@ -45,6 +45,7 @@ public class CommonConfiguration {
     public IElectionMaster electionsMaster() {
         ElectionMasterProxy electionMasterProxy = new ElectionMasterProxy();
         electionMasterProxy.setWeb3j(web3j());
+        electionMasterProxy.setApplicationProperties(applicationProperties());
         return electionMasterProxy;
     }
 

@@ -24,6 +24,7 @@ import org.web3j.protocol.Web3j;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.Properties;
 
 import static com.blockvote.core.os.OsInteraction.UNIX;
 import static com.blockvote.core.os.OsInteractionFactory.createOsInteraction;
@@ -39,19 +40,23 @@ public class OrganizerConfiguration {
     private final MiningService miningService;
     private final BootstrapService bootstrapService;
     private final AdminService adminService;
+    private final Properties applicationProperties;
 
     public OrganizerConfiguration(
             IElectionMaster electionMaster,
             Web3j web3j,
             ElectionsDispatcher electionsDispatcher,
-            MiningService miningService, BootstrapService bootstrapService,
-            AdminService adminService) {
+            MiningService miningService,
+            BootstrapService bootstrapService,
+            AdminService adminService,
+            Properties applicationProperties) {
         this.electionMaster = electionMaster;
         this.web3j = web3j;
         this.electionsDispatcher = electionsDispatcher;
         this.miningService = miningService;
         this.bootstrapService = bootstrapService;
         this.adminService = adminService;
+        this.applicationProperties = applicationProperties;
     }
 
     @PostConstruct
@@ -141,6 +146,7 @@ public class OrganizerConfiguration {
     public ElectionCreationController electionCreationController() {
         final ElectionCreationController electionCreationController = new ElectionCreationController();
         electionCreationController.setWeb3j(web3j);
+        electionCreationController.setApplicationProperties(applicationProperties);
         return electionCreationController;
     }
 

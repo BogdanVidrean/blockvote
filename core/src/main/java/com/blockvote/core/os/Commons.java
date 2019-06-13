@@ -12,7 +12,7 @@ public abstract class Commons {
     public static final String RPC_PROTOCOL = "http";
     public static final String RPC_HOST = "localhost";
     public static final String DEFAULT_BOOTSTRAP_SERVER_URL = "http://localhost:8080";
-    public static final String MASTER_CONTRACT_ADDRESS = "0x368c2e11fd0201f454eb713e7537d9ec54784990";
+    //    public static final String MASTER_CONTRACT_ADDRESS = "0x368c2e11fd0201f454eb713e7537d9ec54784990";
     //    Master Contract with no elections added
 //    public static final String MASTER_CONTRACT_ADDRESS = "0xe8a1038e3d10ae81f7df2f250240183fb296d545";
     public static final String APPDATA_APPLICATION_FOLDER_NAME = "blockvote";
