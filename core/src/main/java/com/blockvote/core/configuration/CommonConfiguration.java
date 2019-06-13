@@ -12,9 +12,18 @@ import org.springframework.context.annotation.Configuration;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.util.Properties;
+
+import static com.blockvote.core.os.Commons.BLOCKVOTE_PROPERTIES_LOCATION;
 import static com.blockvote.core.os.Commons.RPC_HOST;
 import static com.blockvote.core.os.Commons.RPC_PORT;
 import static com.blockvote.core.os.Commons.RPC_PROTOCOL;
+import static java.nio.file.Paths.get;
+import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 import static org.web3j.protocol.Web3j.build;
 
 @Configuration
@@ -58,6 +67,24 @@ public class CommonConfiguration {
 
     @Bean
     public BootstrapService bootstrapService() {
-        return new BootstrapService();
+        return new BootstrapService(applicationProperties());
+    }
+
+    @Bean
+    public Properties applicationProperties() {
+        Properties applicationProperties = new Properties();
+        try {
+            applicationProperties.load(new FileInputStream(BLOCKVOTE_PROPERTIES_LOCATION));
+        } catch (IOException e) {
+            try {
+                InputStream source = getClass().getResourceAsStream("/blockvote.properties");
+                Path destination = get(BLOCKVOTE_PROPERTIES_LOCATION);
+                copyInputStreamToFile(source, destination.toFile());
+                applicationProperties.load(new FileInputStream(BLOCKVOTE_PROPERTIES_LOCATION));
+            } catch (IOException copyingException) {
+                e.printStackTrace();
+            }
+        }
+        return applicationProperties;
     }
 }

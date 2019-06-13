@@ -4,25 +4,30 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-import static com.blockvote.core.os.Commons.BOOTSTRAP_SERVER_HOST;
-import static com.blockvote.core.os.Commons.BOOTSTRAP_SERVER_PORT;
-import static com.blockvote.core.os.Commons.BOOTSTRAP_SERVER_PROTOCOL;
+import java.util.Properties;
+
+import static com.blockvote.core.os.Commons.DEFAULT_BOOTSTRAP_SERVER_URL;
 import static com.mashape.unirest.http.Unirest.get;
 import static com.mashape.unirest.http.Unirest.put;
 
 public class BootstrapService {
 
-    private static final String BOOTSTRAP_SERVER_URL = BOOTSTRAP_SERVER_PROTOCOL + "://" + BOOTSTRAP_SERVER_HOST +
-            ":" + BOOTSTRAP_SERVER_PORT + "/nodes";
+    private final String bootstrapServerUrl;
+    private Properties applicationProperties;
+
+    public BootstrapService(Properties applicationProperties) {
+        this.applicationProperties = applicationProperties;
+        bootstrapServerUrl = this.applicationProperties.getProperty("bootstrap.server.url", DEFAULT_BOOTSTRAP_SERVER_URL) + "/nodes";
+    }
 
     public HttpResponse<String> registerNode(String enode) throws UnirestException {
-        return put(BOOTSTRAP_SERVER_URL)
+        return put(bootstrapServerUrl)
                 .queryString("enode", enode)
                 .asString();
     }
 
     public HttpResponse<JsonNode> getNodes() throws UnirestException {
-        return get(BOOTSTRAP_SERVER_URL)
+        return get(bootstrapServerUrl)
                 .asJson();
     }
 }
