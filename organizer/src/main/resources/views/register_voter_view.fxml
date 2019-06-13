@@ -23,7 +23,7 @@
                   <ImageView fitHeight="175.0" fitWidth="114.0" layoutX="10.0" layoutY="112.0" pickOnBounds="true"
                              preserveRatio="true">
                      <image>
-                        <Image url="@../../../../../voter/src/main/resources/images/block_parachute.png"/>
+                        <Image url="@../images/block_parachute.png"/>
                      </image>
                      <VBox.margin>
                         <Insets bottom="30.0" right="140.0"/>
@@ -31,7 +31,7 @@
                   </ImageView>
                   <ImageView fitHeight="175.0" fitWidth="114.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../../../../../voter/src/main/resources/images/block_parachute.png"/>
+                        <Image url="@../images/block_parachute.png"/>
                      </image>
                      <VBox.margin>
                         <Insets bottom="100.0"/>
@@ -39,7 +39,7 @@
                   </ImageView>
                </children>
             </VBox>
-            <VBox alignment="CENTER" stylesheets="@../../../../../voter/src/main/resources/css/vote.css">
+            <VBox alignment="CENTER" stylesheets="@../css/register_voter_view.css">
                <children>
                   <Text fx:id="userMessage" fill="#ff6060" strokeType="OUTSIDE" strokeWidth="0.0">
                      <VBox.margin>
@@ -49,8 +49,7 @@
                         <Font name="System Bold" size="20.0"/>
                      </font>
                   </Text>
-                  <Label layoutX="176.0" layoutY="60.0" styleClass="text"
-                         stylesheets="@../../../../../voter/src/main/resources/css/check_eligibility.css"
+                  <Label layoutX="176.0" layoutY="60.0" styleClass="text" stylesheets="@../css/register_voter_view.css"
                          text="SOCIAL SECURITY NUMBER" textAlignment="CENTER" textFill="WHITE"/>
                   <HBox alignment="CENTER" layoutX="10.0" layoutY="90.0" prefHeight="37.0" prefWidth="600.0">
                      <children>
@@ -123,7 +122,7 @@
                   <ImageView fitHeight="175.0" fitWidth="114.0" layoutX="10.0" layoutY="63.0" pickOnBounds="true"
                              preserveRatio="true">
                      <image>
-                        <Image url="@../../../../../voter/src/main/resources/images/block_parachute.png"/>
+                        <Image url="@../images/block_parachute.png"/>
                      </image>
                      <VBox.margin>
                         <Insets bottom="30.0" left="150.0"/>
@@ -131,7 +130,7 @@
                   </ImageView>
                   <ImageView fitHeight="175.0" fitWidth="114.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../../../../../voter/src/main/resources/images/block_parachute.png"/>
+                        <Image url="@../images/block_parachute.png"/>
                      </image>
                      <VBox.margin>
                         <Insets bottom="200.0"/>
