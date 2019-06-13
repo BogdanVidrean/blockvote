@@ -9,14 +9,15 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.gas.DefaultGasProvider;
 
 import java.util.List;
+import java.util.Properties;
 
 import static com.blockvote.core.contracts.impl.ElectionsMaster.load;
-import static com.blockvote.core.os.Commons.MASTER_CONTRACT_ADDRESS;
 
 public class ElectionMasterProxy implements IElectionMaster {
     private ElectionsMaster electionsMaster;
     private Web3j web3j;
     private Credentials credentials;
+    private Properties applicationProperties;
 
     public void setWeb3j(Web3j web3j) {
         this.web3j = web3j;
@@ -24,6 +25,10 @@ public class ElectionMasterProxy implements IElectionMaster {
 
     public void setCredentials(Credentials credentials) {
         this.credentials = credentials;
+    }
+
+    public void setApplicationProperties(Properties applicationProperties) {
+        this.applicationProperties = applicationProperties;
     }
 
     @Override
@@ -96,7 +101,8 @@ public class ElectionMasterProxy implements IElectionMaster {
         if (electionsMaster == null) {
             synchronized (this) {
                 if (electionsMaster == null) {
-                    electionsMaster = load(MASTER_CONTRACT_ADDRESS, web3j, credentials, new DefaultGasProvider());
+                    String masterContractAddress = applicationProperties.getProperty("master.contract.address", "");
+                    electionsMaster = load(masterContractAddress, web3j, credentials, new DefaultGasProvider());
                 }
             }
         }

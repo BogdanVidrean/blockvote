@@ -1,6 +1,5 @@
 package com.blockvote.core.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -16,7 +15,6 @@ public class MiningService {
 
     private static final String GETH_RPC_URL = RPC_PROTOCOL + "://" + RPC_HOST + ":" + RPC_PORT;
     private static final int NUMBER_OF_CORES = getRuntime().availableProcessors();
-    private ObjectMapper objectMapper;
 
     public HttpResponse<String> startMining() throws UnirestException {
         return post(GETH_RPC_URL)

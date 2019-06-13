@@ -2,4 +2,5 @@ rootProject.name = 'blockvote'
 include 'voter'
 include 'organizer'
 include 'core'
+include 'bootstrap'
 

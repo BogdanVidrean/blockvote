@@ -20,8 +20,6 @@ public class Main extends Application {
         final AppPreloaderController appPreloaderController = applicationContext.getBean(AppPreloaderController.class);
         appPreloaderController.setPrimaryStage(primaryStage);
         primaryStage.setScene(preloaderScene);
-//        primaryStage.setMinHeight(945);
-//        primaryStage.setMinWidth(1200);
         primaryStage.show();
     }
 }

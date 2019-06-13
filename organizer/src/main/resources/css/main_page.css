@@ -4,7 +4,13 @@
 
 .menu-text {
     -fx-text-fill: white;
-    -fx-font-size: 25;
+    -fx-font-size: 2em;
+    -fx-font-weight: bold;
+}
+
+.validate-election-text {
+    -fx-text-fill: white;
+    -fx-font-size: 1.8em;
     -fx-font-weight: bold;
 }
 
@@ -22,10 +28,10 @@
 
 .menu-button {
     -fx-background-color: transparent;
-    -fx-min-width: 150;
-    -fx-max-width: 150;
-    -fx-min-height: 200;
-    -fx-max-height: 200;
+    /*-fx-min-width: 150;*/
+    /*-fx-max-width: 150;*/
+    -fx-min-height: 150;
+    -fx-max-height: 150;
 }
 
 .menu-button:hover {
@@ -50,4 +56,12 @@
 
 #menuVbox {
     -fx-background-color: #4CEAEB;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
 }

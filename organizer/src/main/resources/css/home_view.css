@@ -3,3 +3,7 @@
     -fx-background-position: bottom center;
     -fx-background-repeat: no-repeat;
 }
+
+.text {
+    -fx-font-size: 1.8em;
+}
