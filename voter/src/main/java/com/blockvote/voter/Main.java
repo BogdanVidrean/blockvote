@@ -21,13 +21,6 @@ public class Main extends Application {
         final AppPreloaderController appPreloaderController = applicationContext.getBean(AppPreloaderController.class);
         appPreloaderController.setPrimaryStage(primaryStage);
         primaryStage.setScene(preloaderScene);
-        //TODO: This is a limitation, and the logout might me a little bit problematic regarding the height of the stage
-//        primaryStage.setMinHeight(762);
-//        primaryStage.setMinWidth(1202);
-//        primaryStage.fullScreenProperty().addListener((v, o, n) -> {
-//            primaryStage.setResizable(false);
-//            primaryStage.setResizable(true);
-//        });
         primaryStage.show();
     }
 }
