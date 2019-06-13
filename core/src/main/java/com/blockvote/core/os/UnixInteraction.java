@@ -34,7 +34,7 @@ public class UnixInteraction implements OsInteraction {
     public Optional<Process> startLocalNode() {
         String[] args = new String[]{"./geth", "--datadir", NODE_PATH,
                 "--bootnodes", BOOTNODE,
-                "--networkid", valueOf(NETWORK_ID), "--ipcdisable", "--port", valueOf(DEFAULT_PORT), "--rpc", "--rpcapi",
+                "--networkid", valueOf(NETWORK_ID), "--port", valueOf(DEFAULT_PORT), "--rpc", "--rpcapi",
                 "eth,web3,personal,net,miner,admin,debug", "--rpcport", valueOf(RPC_PORT)};
         ProcessBuilder builder = new ProcessBuilder();
         builder.command(args);

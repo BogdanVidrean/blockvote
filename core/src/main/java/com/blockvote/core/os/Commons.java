@@ -11,6 +11,9 @@ public abstract class Commons {
     public static final int CHAIN_ID = 3792;
     public static final String RPC_PROTOCOL = "http";
     public static final String RPC_HOST = "localhost";
+    public static final int BOOTSTRAP_SERVER_PORT = 8080;
+    public static final String BOOTSTRAP_SERVER_PROTOCOL = "http";
+    public static final String BOOTSTRAP_SERVER_HOST = "192.168.0.102";
     public static final String BOOTNODE =
             "enode://cc7065603752954b9848d6b6501edf7d41773450661abd95be877e0e34f35659cdabfe35154a" +
                     "a81eb279726a13f6f513932f63f4cae2d5f30e25f0e811df17ab@100.114.25.143:30308";

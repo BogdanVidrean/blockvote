@@ -4,6 +4,8 @@ import com.blockvote.core.contracts.dispatcher.ElectionsDispatcher;
 import com.blockvote.core.contracts.dispatcher.ElectionsDispatcherImpl;
 import com.blockvote.core.contracts.interfaces.IElectionMaster;
 import com.blockvote.core.contracts.proxy.ElectionMasterProxy;
+import com.blockvote.core.services.AdminService;
+import com.blockvote.core.services.BootstrapService;
 import com.blockvote.core.services.MiningService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,5 +49,15 @@ public class CommonConfiguration {
     @Bean
     public MiningService miningService() {
         return new MiningService();
+    }
+
+    @Bean
+    public AdminService adminService() {
+        return new AdminService();
+    }
+
+    @Bean
+    public BootstrapService bootstrapService() {
+        return new BootstrapService();
     }
 }

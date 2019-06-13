@@ -4,6 +4,8 @@ import com.blockvote.core.bootstrap.BootstrapMediator;
 import com.blockvote.core.contracts.dispatcher.ElectionsDispatcher;
 import com.blockvote.core.contracts.interfaces.IElectionMaster;
 import com.blockvote.core.os.OsInteraction;
+import com.blockvote.core.services.AdminService;
+import com.blockvote.core.services.BootstrapService;
 import com.blockvote.core.services.MiningService;
 import com.blockvote.organizer.controllers.AppPreloaderController;
 import com.blockvote.organizer.controllers.CreateAccountController;
@@ -35,16 +37,21 @@ public class OrganizerConfiguration {
     private final Web3j web3j;
     private final ElectionsDispatcher electionsDispatcher;
     private final MiningService miningService;
+    private final BootstrapService bootstrapService;
+    private final AdminService adminService;
 
     public OrganizerConfiguration(
             IElectionMaster electionMaster,
             Web3j web3j,
             ElectionsDispatcher electionsDispatcher,
-            MiningService miningService) {
+            MiningService miningService, BootstrapService bootstrapService,
+            AdminService adminService) {
         this.electionMaster = electionMaster;
         this.web3j = web3j;
         this.electionsDispatcher = electionsDispatcher;
         this.miningService = miningService;
+        this.bootstrapService = bootstrapService;
+        this.adminService = adminService;
     }
 
     @PostConstruct
@@ -68,7 +75,7 @@ public class OrganizerConfiguration {
 
     @Bean
     public BootstrapMediator bootstrapMediator() {
-        return new BootstrapMediator(osInteraction());
+        return new BootstrapMediator(osInteraction(), bootstrapService, adminService);
     }
 
     @Bean
