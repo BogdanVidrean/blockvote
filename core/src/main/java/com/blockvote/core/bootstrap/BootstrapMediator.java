@@ -18,16 +18,21 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 
 import static com.blockvote.core.os.Commons.CHAIN_ID;
 import static java.lang.Long.parseLong;
+import static java.lang.Thread.sleep;
+import static java.util.concurrent.CompletableFuture.runAsync;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 public class BootstrapMediator {
 
+    private static final CountDownLatch GETH_INIT_COUNT_DOWN_LATCH = new CountDownLatch(1);
     private final OsInteraction osInteraction;
     private final BootstrapService bootstrapService;
     private final AdminService adminService;
+    private volatile String enode;
 
     public BootstrapMediator(OsInteraction osInteraction,
                              BootstrapService bootstrapService,
@@ -49,20 +54,39 @@ public class BootstrapMediator {
             if (!isCurrentNodeValid) {
                 recreateCorrectNode(gethProcess);
             }
-            registerNode();
+            getEnodeAddress();
             retrieveNodesList();
+            registerCurrentNode();
             return gethProcess;
         } else {
             throw new BootstrapException();
         }
     }
 
+    private void registerCurrentNode() {
+        runAsync(() -> {
+            try {
+                GETH_INIT_COUNT_DOWN_LATCH.await();
+                if (enode != null) {
+                    bootstrapService.registerNode(enode);
+                }
+            } catch (UnirestException | InterruptedException e) {
+                throw new RuntimeException(e.getMessage());
+            }
+        })
+                .exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return null;
+                });
+    }
+
     private void retrieveNodesList() {
         supplyAsync(() -> {
             try {
+                GETH_INIT_COUNT_DOWN_LATCH.await();
                 return bootstrapService.getNodes();
-            } catch (UnirestException e) {
-                throw new RuntimeException("Failed to retrieve the nodes from the network.");
+            } catch (UnirestException | InterruptedException e) {
+                throw new RuntimeException(e.getMessage());
             }
         })
                 .thenAcceptAsync(listHttpResponse -> {
@@ -70,23 +94,33 @@ public class BootstrapMediator {
                         try {
                             adminService.adminAddPeer((String) o);
                         } catch (UnirestException e) {
-                            e.printStackTrace();
+                            throw new RuntimeException(e.getMessage());
                         }
                     }
                 })
                 .exceptionally(ex -> {
-
+                    ex.printStackTrace();
                     return null;
                 });
     }
 
-    private void registerNode() {
+    private void getEnodeAddress() {
         supplyAsync(() -> {
-            try {
-                return adminService.adminNodeInfo();
-            } catch (UnirestException e) {
-                throw new RuntimeException("Failed to retrieve node info.");
+            final int maxAttempts = 10;
+            int currentAttempt = 0;
+            while (currentAttempt < maxAttempts) {
+                try {
+                    return adminService.adminNodeInfo();
+                } catch (UnirestException e) {
+                    try {
+                        currentAttempt--;
+                        sleep(300);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                }
             }
+            throw new RuntimeException("Failed to retrieve node info.");
         })
                 .thenAcceptAsync(jsonNodeHttpResponse -> {
                     JSONObject nodeInfoNode = (JSONObject) jsonNodeHttpResponse.getBody().getObject().get("result");
@@ -95,15 +129,14 @@ public class BootstrapMediator {
                         InetAddress ip = getFirstNonLoopbackAddress(true, false);
                         String[] splittedEnode = enode.split("@");
                         String ipAddress = ip != null ? ip.getHostAddress() : InetAddress.getLocalHost().getHostAddress();
-                        String enodeFinal = splittedEnode[0] + "@" + ipAddress + ":" + splittedEnode[1].split(":")[1];
-                        bootstrapService.registerNode(enodeFinal);
-                    } catch (UnirestException e) {
-                        throw new RuntimeException("Failed to register the node to the bootstrap server.");
+                        this.enode = splittedEnode[0] + "@" + ipAddress + ":" + splittedEnode[1].split(":")[1];
+                        GETH_INIT_COUNT_DOWN_LATCH.countDown();
                     } catch (SocketException | UnknownHostException e) {
-                        throw new RuntimeException("Failed to get the ip address of current host.");
+                        throw new RuntimeException(e.getMessage());
                     }
                 })
                 .exceptionally(ex -> {
+                    GETH_INIT_COUNT_DOWN_LATCH.countDown();
                     ex.printStackTrace();
                     return null;
                 });
@@ -141,6 +174,7 @@ public class BootstrapMediator {
         osInteraction.startLocalNode();
     }
 
+    @SuppressWarnings("SameParameterValue")
     private InetAddress getFirstNonLoopbackAddress(boolean preferIpv4, boolean preferIPv6) throws SocketException {
         Enumeration en = NetworkInterface.getNetworkInterfaces();
         while (en.hasMoreElements()) {
