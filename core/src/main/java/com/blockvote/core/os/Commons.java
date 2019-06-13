@@ -12,9 +12,6 @@ public abstract class Commons {
     public static final String RPC_PROTOCOL = "http";
     public static final String RPC_HOST = "localhost";
     public static final String DEFAULT_BOOTSTRAP_SERVER_URL = "http://localhost:8080";
-    public static final String BOOTNODE =
-            "enode://cc7065603752954b9848d6b6501edf7d41773450661abd95be877e0e34f35659cdabfe35154a" +
-                    "a81eb279726a13f6f513932f63f4cae2d5f30e25f0e811df17ab@100.114.25.143:30308";
     public static final String MASTER_CONTRACT_ADDRESS = "0x368c2e11fd0201f454eb713e7537d9ec54784990";
     //    Master Contract with no elections added
 //    public static final String MASTER_CONTRACT_ADDRESS = "0xe8a1038e3d10ae81f7df2f250240183fb296d545";
