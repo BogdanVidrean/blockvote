@@ -51,7 +51,6 @@ public class RegisterVoterController implements LogoutObserver {
                     .sendAsync()
                     .thenApply(canVote -> {
                         if (canVote) {
-                            userMessage.setStyle("-fx-fill: #3ba53a");
                             throw new RuntimeException("The person is already registered.");
                         } else {
                             try {
@@ -63,7 +62,6 @@ public class RegisterVoterController implements LogoutObserver {
                     })
                     .thenApply(isAddressAlreadyRegistered -> {
                         if (isAddressAlreadyRegistered) {
-                            userMessage.setStyle("-fx-fill: #ff5f5f");
                             throw new RuntimeException("The address is already registered.");
                         } else {
                             try {
@@ -75,26 +73,29 @@ public class RegisterVoterController implements LogoutObserver {
                     })
                     .thenAcceptAsync(masterAccountBalance -> {
                         if (masterAccountBalance.compareTo(valueOf(1000000000000000000L)) < 0) {
-                            userMessage.setStyle("-fx-fill: #ff5f5f");
                             throw new RuntimeException("Not enough ether remained in master contract.");
                         } else {
                             try {
                                 TransactionReceipt transactionReceipt = electionMaster.addVoter(ssn, address).send();
                                 if (transactionReceipt.isStatusOK()) {
-                                    userMessage.setStyle("-fx-fill: #3ba53a");
-                                    userMessage.setText("Voter successfully registered.");
+                                    runLater(() -> {
+                                        userMessage.setStyle("-fx-fill: #3ba53a");
+                                        userMessage.setText("Voter successfully registered.");
+                                    });
                                 } else {
-                                    userMessage.setStyle("-fx-fill: #ff5f5f");
                                     throw new RuntimeException(TRANSACTION_FAILED_ERROR_MESSAGE);
                                 }
                             } catch (Exception e) {
-                                userMessage.setStyle("-fx-fill: #ff5f5f");
                                 throw new RuntimeException(TRANSACTION_FAILED_ERROR_MESSAGE);
                             }
                         }
                     })
                     .exceptionally(exception -> {
-                        userMessage.setText(exception.getCause().getMessage());
+                        exception.printStackTrace();
+                        runLater(() -> {
+                            userMessage.setStyle("-fx-fill: #ff5f5f");
+                            userMessage.setText(exception.getCause().getMessage());
+                        });
                         return null;
                     });
         } else if (isEmpty(address) || isEmpty(addressAgain)) {
