@@ -8,6 +8,7 @@ import org.web3j.protocol.core.RemoteCall;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.gas.DefaultGasProvider;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Properties;
 
@@ -95,6 +96,12 @@ public class ElectionMasterProxy implements IElectionMaster {
     public RemoteCall<List> getElectionNames() {
         checkIfInstanceNull();
         return electionsMaster.getElectionNames();
+    }
+
+    @Override
+    public RemoteCall<BigInteger> getBalance() {
+        checkIfInstanceNull();
+        return electionsMaster.getBalance();
     }
 
     private void checkIfInstanceNull() {

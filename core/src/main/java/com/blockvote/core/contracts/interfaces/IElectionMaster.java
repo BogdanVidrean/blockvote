@@ -3,6 +3,7 @@ package com.blockvote.core.contracts.interfaces;
 import org.web3j.protocol.core.RemoteCall;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
+import java.math.BigInteger;
 import java.util.List;
 
 public interface IElectionMaster {
@@ -28,4 +29,6 @@ public interface IElectionMaster {
     RemoteCall<Boolean> canSsnVote(String voterSsn);
 
     RemoteCall<List> getElectionNames();
+
+    RemoteCall<BigInteger> getBalance();
 }

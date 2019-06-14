@@ -9,6 +9,7 @@ import javafx.scene.text.Text;
 import org.apache.commons.lang3.StringUtils;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
+import static java.math.BigInteger.valueOf;
 import static javafx.application.Platform.runLater;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
@@ -48,10 +49,34 @@ public class RegisterVoterController implements LogoutObserver {
             userMessage.setText("Transaction initiated successfully.");
             electionMaster.canSsnVote(ssn)
                     .sendAsync()
-                    .thenAcceptAsync(canVote -> {
+                    .thenApply(canVote -> {
                         if (canVote) {
                             userMessage.setStyle("-fx-fill: #3ba53a");
-                            userMessage.setText("The voter is already registered.");
+                            throw new RuntimeException("The person is already registered.");
+                        } else {
+                            try {
+                                return electionMaster.canAddressVote(address).send();
+                            } catch (Exception e) {
+                                throw new RuntimeException(TRANSACTION_FAILED_ERROR_MESSAGE);
+                            }
+                        }
+                    })
+                    .thenApply(isAddressAlreadyRegistered -> {
+                        if (isAddressAlreadyRegistered) {
+                            userMessage.setStyle("-fx-fill: #ff5f5f");
+                            throw new RuntimeException("The address is already registered.");
+                        } else {
+                            try {
+                                return electionMaster.getBalance().send();
+                            } catch (Exception e) {
+                                throw new RuntimeException(TRANSACTION_FAILED_ERROR_MESSAGE);
+                            }
+                        }
+                    })
+                    .thenAcceptAsync(masterAccountBalance -> {
+                        if (masterAccountBalance.compareTo(valueOf(1000000000000000000L)) < 0) {
+                            userMessage.setStyle("-fx-fill: #ff5f5f");
+                            throw new RuntimeException("Not enough ether remained in master contract.");
                         } else {
                             try {
                                 TransactionReceipt transactionReceipt = electionMaster.addVoter(ssn, address).send();
@@ -59,21 +84,25 @@ public class RegisterVoterController implements LogoutObserver {
                                     userMessage.setStyle("-fx-fill: #3ba53a");
                                     userMessage.setText("Voter successfully registered.");
                                 } else {
-                                    userMessage.setText(transactionReceipt.getStatus());
+                                    userMessage.setStyle("-fx-fill: #ff5f5f");
+                                    throw new RuntimeException(TRANSACTION_FAILED_ERROR_MESSAGE);
                                 }
                             } catch (Exception e) {
-                                userMessage.setText(TRANSACTION_FAILED_ERROR_MESSAGE);
+                                userMessage.setStyle("-fx-fill: #ff5f5f");
+                                throw new RuntimeException(TRANSACTION_FAILED_ERROR_MESSAGE);
                             }
                         }
                     })
                     .exceptionally(exception -> {
-                        userMessage.setText(TRANSACTION_FAILED_ERROR_MESSAGE);
+                        userMessage.setText(exception.getCause().getMessage());
                         return null;
                     });
-        } else if (isEmpty(address) || isEmpty(addressAgain) || isEmpty(ssn)) {
+        } else if (isEmpty(address) || isEmpty(addressAgain)) {
             userMessage.setText(ALL_FIELDS_MANDATORY_ERROR_MESSAGE);
         } else if (!StringUtils.equals(address, addressAgain)) {
             userMessage.setText(ADDRESSES_NOT_MATCHING_ERROR_MESSAGE);
+        } else if (isEmpty(ssn)) {
+            userMessage.setText("Please insert the social security number.");
         }
     }
 

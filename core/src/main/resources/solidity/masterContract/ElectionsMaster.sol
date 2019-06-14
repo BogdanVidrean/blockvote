@@ -66,6 +66,14 @@ contract ElectionsMaster {
         _;
     }
 
+    modifier addressIsNotInUse(address votersAddress) {
+        require(
+            votersAddresses[votersAddress] == 0,
+            "The address is not available"
+        );
+        _;
+    }
+
     function addElection(address electionAddress,
         bytes32 electionName,
         address organizerAddress) public isOrganizer(organizerAddress) {
@@ -73,7 +81,7 @@ contract ElectionsMaster {
         electionsNames.push(electionName);
     }
 
-    function addVoter(string memory socialSecurityNumber, address payable voterAddress) public isOrganizer(msg.sender) isNotVoterAlready(socialSecurityNumber) {
+    function addVoter(string memory socialSecurityNumber, address payable voterAddress) public isOrganizer(msg.sender) isNotVoterAlready(socialSecurityNumber) addressIsNotInUse(voterAddress) {
         address(voterAddress).transfer(votersInitialBalance);
         votersSocialSecurityNumbers[socialSecurityNumber] = voterAddress;
         votersAddresses[voterAddress] = 1;
