@@ -63,8 +63,8 @@
                                     <children>
                                         <VBox id="bottomContainer" alignment="CENTER" minWidth="700.0">
                                             <children>
-                                                <Label id="hiThereText" text="Hi there! Choose your wallet:"
-                                                       textFill="WHITE"/>
+                                                <Label id="hiThereText" fx:id="chooseWalletMessage"
+                                                       text="Hi there! Choose your wallet:" textFill="WHITE"/>
                                                 <ListView fx:id="accountsListView" minHeight="120.0" minWidth="500.0"
                                                           visible="false">
                                                     <VBox.margin>

@@ -46,8 +46,8 @@ public class BootstrapMediator {
         Optional<Process> gethProcessOptional = osInteraction.startLocalNode();
         if (!gethProcessOptional.isPresent()) {
             osInteraction.copyGethToDisk();
+            gethProcessOptional = osInteraction.startLocalNode();
         }
-        gethProcessOptional = osInteraction.startLocalNode();
         if (gethProcessOptional.isPresent()) {
             Process gethProcess = gethProcessOptional.get();
             boolean isCurrentNodeValid = validateCurrentNode(gethProcess);

@@ -91,7 +91,6 @@ public class RegisterVoterController implements LogoutObserver {
                         }
                     })
                     .exceptionally(exception -> {
-                        exception.printStackTrace();
                         runLater(() -> {
                             userMessage.setStyle("-fx-fill: #ff5f5f");
                             userMessage.setText(exception.getCause().getMessage());
