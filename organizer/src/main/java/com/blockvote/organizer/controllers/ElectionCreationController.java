@@ -71,7 +71,10 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
 
     public void setApplicationProperties(Properties applicationProperties) {
         this.applicationProperties = applicationProperties;
+    }
 
+    @FXML
+    public void initialize() {
     }
 
     @FXML
@@ -184,7 +187,6 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
                                     .thenAccept(election -> {
                                         userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #3ba53a");
                                         userMessagge.setText(ELECTION_CREATED_MSG);
-                                        System.out.println(election.getContractAddress());
                                     })
                                     .exceptionally(error -> {
                                         userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff5f5f");
@@ -253,7 +255,7 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
             throw new IllegalArgumentException("The start date and time cannot be in the past.");
         }
         if (endDateTime.isBefore(startDateTime)) {
-            throw new IllegalArgumentException("The end date and time mus tbe after the start date and time.");
+            throw new IllegalArgumentException("The end date and time must be after the start date and time.");
         }
     }
 

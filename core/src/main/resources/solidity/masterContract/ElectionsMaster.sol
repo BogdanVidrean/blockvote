@@ -1,4 +1,4 @@
-pragma solidity ^0.5.4;
+pragma solidity ^0.5.9;
 contract ElectionsMaster {
 
     address private ownerMasterAddress = msg.sender;
@@ -17,6 +17,11 @@ contract ElectionsMaster {
     constructor() public {
         organizersMapping[msg.sender] = 1;
     }
+
+    event ElectionCreated(
+        address indexed electionAddress,
+        bytes32 indexed electionName
+    );
 
     // Modifiers
 
@@ -79,6 +84,7 @@ contract ElectionsMaster {
         address organizerAddress) public isOrganizer(organizerAddress) {
         elections.push(electionAddress);
         electionsNames.push(electionName);
+        emit ElectionCreated(electionAddress, electionName);
     }
 
     function addVoter(string memory socialSecurityNumber, address payable voterAddress) public isOrganizer(msg.sender) isNotVoterAlready(socialSecurityNumber) addressIsNotInUse(voterAddress) {

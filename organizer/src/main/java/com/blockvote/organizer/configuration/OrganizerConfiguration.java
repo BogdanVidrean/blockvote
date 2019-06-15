@@ -168,6 +168,8 @@ public class OrganizerConfiguration {
         final VoteController voteController = new VoteController();
         voteController.setElectionMaster(electionMaster);
         voteController.setElectionsDispatcher(electionsDispatcher);
+        voteController.setWeb3j(web3j);
+        voteController.setApplicationProperties(applicationProperties);
         return voteController;
     }
 
