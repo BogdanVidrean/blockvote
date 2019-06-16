@@ -172,6 +172,7 @@ public class AppPreloaderController extends LoginObservable {
 
     private void clearFields() {
         passwordField.setText("");
+        errorMsg.setText("");
         accountsListView.getSelectionModel().selectFirst();
         accountsListView.getSelectionModel().clearSelection();
     }
