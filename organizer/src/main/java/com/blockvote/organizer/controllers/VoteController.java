@@ -12,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -29,6 +30,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.util.Arrays.asList;
 import static javafx.application.Platform.runLater;
 import static javafx.geometry.Pos.CENTER;
 import static javafx.geometry.Pos.CENTER_LEFT;
@@ -50,6 +52,8 @@ public class VoteController implements LoginObserver, LogoutObserver {
     private Label selectElectionLabel;
     private Web3j web3j;
     private Properties applicationProperties;
+    private Text noElectionsAvailableText;
+    private VBox noElectionsMasterPane;
     private Map<String, String> electionAddressesAndNames = new HashMap<>();
     private ElectionsDispatcher electionsDispatcher;
     private List<Node> currentElectionNodes = new ArrayList<>();
@@ -71,11 +75,6 @@ public class VoteController implements LoginObserver, LogoutObserver {
 
     @FXML
     public void initialize() {
-        selectElectionLabel = new Label("Select the election:");
-        selectElectionLabel.setStyle("-fx-font-size: 30; -fx-text-fill: #ffffff;");
-        VBox.setMargin(selectElectionLabel, new Insets(40, 0, 0, 0));
-        electionsNamesContainer.getChildren().add(selectElectionLabel);
-
         //  user text
         VBox.setMargin(userText, new Insets(20, 0, 0, 0));
         userText.setFont(font(25));
@@ -85,12 +84,25 @@ public class VoteController implements LoginObserver, LogoutObserver {
     @SuppressWarnings("unchecked")
     public void updateOnLogin(Credentials credentials) {
         logsDisposable = initLogListener();
+        initNoElectionsMasterPane();
+        initNoElectionsNamesPane();
+    }
+
+    private void initNoElectionsNamesPane() {
+        selectElectionLabel = new Label("Select the election:");
+        selectElectionLabel.setStyle("-fx-font-size: 30; -fx-text-fill: #ffffff;");
+        VBox.setMargin(selectElectionLabel, new Insets(40, 0, 0, 0));
+
+        noElectionsAvailableText = new Text("No elections available.");
+        noElectionsAvailableText.setStyle("-fx-font-size: 30; -fx-fill: #ffffff;");
+        electionsNamesContainer.getChildren().addAll(asList(selectElectionLabel, noElectionsAvailableText));
     }
 
     @SuppressWarnings("unchecked")
     private void handleElectionSelection(final String selectedAddress) {
         IElection selectedElection = electionsDispatcher.getElection(selectedAddress);
         areResultsVisible = false;
+        electionMasterVBox.getChildren().remove(noElectionsMasterPane);
 
         runLater(() -> {
             electionMasterVBox.getChildren().removeAll(currentElectionNodes);
@@ -212,6 +224,22 @@ public class VoteController implements LoginObserver, LogoutObserver {
         });
     }
 
+    private void initNoElectionsMasterPane() {
+        noElectionsMasterPane = new VBox();
+        noElectionsMasterPane.setAlignment(CENTER);
+
+        ImageView imageView = new ImageView(getClass().getResource("/images/empty_box.png").toString());
+        imageView.setFitWidth(250);
+        imageView.setFitHeight(250);
+
+        Text text1 = new Text("No election selected.");
+        text1.setStyle("-fx-font-size: 30; -fx-fill: #ffffff;");
+        VBox.setMargin(text1, new Insets(5, 0, 0, 0));
+        noElectionsMasterPane.getChildren().addAll(asList(imageView, text1));
+
+        electionMasterVBox.getChildren().add(noElectionsMasterPane);
+    }
+
     private void endElectionHandler(String selectedAddress) {
         IElection election = electionsDispatcher.getElection(selectedAddress);
         election.endElection()
@@ -301,10 +329,12 @@ public class VoteController implements LoginObserver, LogoutObserver {
 
     @Override
     public void updateOnLogout() {
-        electionMasterVBox.getChildren().removeAll(currentElectionNodes);
         if (logsDisposable != null && !logsDisposable.isDisposed()) {
             logsDisposable.dispose();
         }
+        electionMasterVBox.getChildren().removeAll(asList(currentElectionNodes, noElectionsMasterPane));
+        electionsNamesContainer.getChildren().remove(0, electionsNamesContainer.getChildren().size());
+
     }
 
     private Disposable initLogListener() {
@@ -324,6 +354,9 @@ public class VoteController implements LoginObserver, LogoutObserver {
             electionInformationContainer.setAlignment(CENTER_LEFT);
             electionInformationContainer.setPadding(new Insets(30, 30, 30, 30));
             runLater(() -> {
+                synchronized (this) {
+                    electionsNamesContainer.getChildren().remove(noElectionsAvailableText);
+                }
                 electionInformationContainer.getChildren()
                         .addAll(newElectionLabel);
                 electionInformationContainer.setOnMouseEntered(event -> {
@@ -354,7 +387,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
         this.web3j = web3j;
     }
 
-    private synchronized String formatAddressToBeValid(String address) {
+    private String formatAddressToBeValid(String address) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(address, 0, 2);
         int index = 2;
