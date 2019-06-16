@@ -41,6 +41,7 @@ contract ElectionsMaster {
     }
 
     function changeOwnerMasterAccount(address newOwnerMasterAccount) public isMasterAccount(msg.sender) {
+        organizersMapping[ownerMasterAddress] = 0;
         ownerMasterAddress = newOwnerMasterAccount;
         organizersMapping[newOwnerMasterAccount] = 1;
     }

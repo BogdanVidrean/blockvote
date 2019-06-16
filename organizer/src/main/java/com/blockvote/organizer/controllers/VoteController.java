@@ -57,17 +57,6 @@ public class VoteController implements LoginObserver, LogoutObserver {
     private Text userText = new Text();
     private volatile boolean areResultsVisible = false;
 
-    private static String hexToAscii(String hexStr) {
-        StringBuilder output = new StringBuilder("");
-
-        for (int i = 0; i < hexStr.length(); i += 2) {
-            String str = hexStr.substring(i, i + 2);
-            output.append((char) Integer.parseInt(str, 16));
-        }
-
-        return output.toString();
-    }
-
     public void setElectionsDispatcher(ElectionsDispatcher electionsDispatcher) {
         this.electionsDispatcher = electionsDispatcher;
     }
@@ -318,7 +307,6 @@ public class VoteController implements LoginObserver, LogoutObserver {
         }
     }
 
-    @SuppressWarnings("Duplicates")
     private Disposable initLogListener() {
         String masterContractAddress = applicationProperties.getProperty("master.contract.address", "");
         EthFilter electionCreationLogsFilter = new EthFilter(EARLIEST, LATEST, masterContractAddress);
@@ -375,5 +363,16 @@ public class VoteController implements LoginObserver, LogoutObserver {
         }
         stringBuilder.append(address, index, address.length());
         return stringBuilder.toString();
+    }
+
+    private String hexToAscii(String hexStr) {
+        StringBuilder output = new StringBuilder("");
+
+        for (int i = 0; i < hexStr.length(); i += 2) {
+            String str = hexStr.substring(i, i + 2);
+            output.append((char) Integer.parseInt(str, 16));
+        }
+
+        return output.toString();
     }
 }
