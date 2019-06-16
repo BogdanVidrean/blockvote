@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static java.lang.Integer.parseInt;
+import static java.lang.Math.min;
 import static java.math.BigInteger.valueOf;
 import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
@@ -198,7 +199,7 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
                         userMessagge.setText(e.getMessage());
                     }
                 } else {
-                    userMessagge.setText("All fields are mandatory.");
+                    userMessagge.setText("All fields are mandatory, name and options can have a maximum length of 32.");
                 }
             });
             extraStuffToBeDeletedAtLogout.add(doneButton);
@@ -235,9 +236,10 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
 
     private boolean validateElectionInfo(TextField nameField, List<Node> optionsCollection,
                                          DateTimePicker startDateTimePicker, DateTimePicker endDateTimePicker) {
-        return !isEmpty(nameField.getText()) &&
+        return !isEmpty(nameField.getText()) && nameField.getText().length() <= 32 &&
                 optionsCollection.stream()
-                        .reduce(true, (aBoolean, node2) -> aBoolean && !isEmpty(((TextField) (((HBox) node2).getChildren().get(1))).getText()),
+                        .reduce(true, (aBoolean, node2) -> aBoolean && !isEmpty(((TextField) (((HBox) node2).getChildren().get(1))).getText()) &&
+                                        ((TextField) (((HBox) node2).getChildren().get(1))).getText().length() <= 32,
                                 (aBoolean, aBoolean2) -> aBoolean && aBoolean2);
     }
 
@@ -262,7 +264,7 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
     private Bytes32 stringToBytes32(String string) {
         byte[] byteValue = string.getBytes();
         byte[] byteValueLen32 = new byte[32];
-        System.arraycopy(byteValue, 0, byteValueLen32, 0, byteValue.length);
+        System.arraycopy(byteValue, 0, byteValueLen32, 0, min(byteValue.length, 32));
         return new Bytes32(byteValueLen32);
     }
 
