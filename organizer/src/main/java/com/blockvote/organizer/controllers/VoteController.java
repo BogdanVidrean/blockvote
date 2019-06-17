@@ -155,8 +155,8 @@ public class VoteController implements LoginObserver, LogoutObserver {
 
                         IElection selectedElectionObject = electionsDispatcher.getElection(selectedAddress);
                         try {
-                            long endTime = selectedElectionObject.getStartTime().send().longValue() * 1000;
-                            long startTime = selectedElectionObject.getEndTime().send().longValue() * 1000;
+                            long endTime = selectedElectionObject.getEndTime().send().longValue() * 1000;
+                            long startTime = selectedElectionObject.getStartTime().send().longValue() * 1000;
 
                             // aici setam handler-ul cu timpii pentru election-ul curent
                             voteButton.setOnMousePressed(event -> vote(selectedAddress, startTime, endTime));
@@ -310,7 +310,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
             }
             if (selectedOptionsCounter > 1 || selectedOptionsCounter == 0) {
                 userText.setStyle("-fx-fill: #ff6060");
-                userText.setText("Only one option can be selected.");
+                userText.setText("Select one option.");
             } else {
                 IElection selectedElection = electionsDispatcher.getElection(selectedAddress);
                 selectedElection.vote(BigInteger.valueOf(selectedOption))
@@ -341,28 +341,42 @@ public class VoteController implements LoginObserver, LogoutObserver {
 
     private boolean validateElectionVoteTime(long startTime, long endTime) {
         long currentTimeStamp = new Date().getTime();
-        return currentTimeStamp >= startTime && currentTimeStamp <= endTime;
+        return currentTimeStamp >= startTime && currentTimeStamp < endTime;
     }
 
     @SuppressWarnings("unchecked")
     private void getResults(String selectedAddress) {
         if (!areResultsVisible) {
             IElection election = electionsDispatcher.getElection(selectedAddress);
-            AtomicInteger atomicInteger = new AtomicInteger();
-            election.getResults()
+            election.isElectionMarkedOver()
                     .sendAsync()
-                    .thenAccept(list -> runLater(() -> list.forEach(result -> {
-                        areResultsVisible = true;
-                        Pair<CheckBox, Label> checkBoxLabelPair = options.get(atomicInteger.getAndIncrement());
-                        if (checkBoxLabelPair != null) {
-                            Label label = checkBoxLabelPair.getValue();
-                            label.setText(label.getText() + " - " + result + " votes");
+                    .thenApplyAsync(isElectionMarkedOver -> {
+                        if (!isElectionMarkedOver) {
+                            throw new RuntimeException("This results are not available yet.");
+                        } else {
+                            try {
+                                return election.getResults().send();
+                            } catch (Exception e) {
+                                throw new RuntimeException(e.getMessage());
+                            }
                         }
-                    })))
+                    })
+                    .thenAccept(results -> {
+                        AtomicInteger atomicInteger = new AtomicInteger();
+                        runLater(() -> results.forEach(result -> {
+                            userText.setText("");
+                            areResultsVisible = true;
+                            Pair<CheckBox, Label> checkBoxLabelPair = options.get(atomicInteger.getAndIncrement());
+                            if (checkBoxLabelPair != null) {
+                                Label label = checkBoxLabelPair.getValue();
+                                label.setText(label.getText() + " - " + result + " votes");
+                            }
+                        }));
+                    })
                     .exceptionally(ex -> {
                         runLater(() -> {
                             userText.setStyle("-fx-fill: #ff6060");
-                            userText.setText("Failed to retrieve the results.");
+                            userText.setText(ex.getCause().getMessage());
                         });
                         return null;
                     });

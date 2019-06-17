@@ -162,8 +162,8 @@ public class VoteController implements LoginObserver, LogoutObserver {
 
                         IElection selectedElectionObject = electionsDispatcher.getElection(selectedAddress);
                         try {
-                            long endTime = selectedElectionObject.getStartTime().send().longValue() * 1000;
-                            long startTime = selectedElectionObject.getEndTime().send().longValue() * 1000;
+                            long endTime = selectedElectionObject.getEndTime().send().longValue() * 1000;
+                            long startTime = selectedElectionObject.getStartTime().send().longValue() * 1000;
 
                             // adding handler with start and end timestamp
                             voteButton.setOnMousePressed(event -> vote(selectedAddress, startTime, endTime));
@@ -281,28 +281,42 @@ public class VoteController implements LoginObserver, LogoutObserver {
 
     private boolean validateElectionVoteTime(long startTime, long endTime) {
         long currentTimeStamp = new Date().getTime();
-        return currentTimeStamp >= startTime && currentTimeStamp <= endTime;
+        return currentTimeStamp >= startTime && currentTimeStamp < endTime;
     }
 
     @SuppressWarnings("unchecked")
     private void getResults(String selectedAddress) {
         if (!areResultsVisible) {
             IElection election = electionsDispatcher.getElection(selectedAddress);
-            AtomicInteger atomicInteger = new AtomicInteger();
-            election.getResults()
+            election.isElectionMarkedOver()
                     .sendAsync()
-                    .thenAccept(list -> runLater(() -> list.forEach(result -> {
-                        areResultsVisible = true;
-                        Pair<CheckBox, Label> checkBoxLabelPair = options.get(atomicInteger.getAndIncrement());
-                        if (checkBoxLabelPair != null) {
-                            Label label = checkBoxLabelPair.getValue();
-                            label.setText(label.getText() + " - " + result + " votes");
+                    .thenApplyAsync(isElectionMarkedOver -> {
+                        if (!isElectionMarkedOver) {
+                            throw new RuntimeException("This results are not available yet.");
+                        } else {
+                            try {
+                                return election.getResults().send();
+                            } catch (Exception e) {
+                                throw new RuntimeException(e.getMessage());
+                            }
                         }
-                    })))
+                    })
+                    .thenAccept(results -> {
+                        AtomicInteger atomicInteger = new AtomicInteger();
+                        runLater(() -> results.forEach(result -> {
+                            userText.setText("");
+                            areResultsVisible = true;
+                            Pair<CheckBox, Label> checkBoxLabelPair = options.get(atomicInteger.getAndIncrement());
+                            if (checkBoxLabelPair != null) {
+                                Label label = checkBoxLabelPair.getValue();
+                                label.setText(label.getText() + " - " + result + " votes");
+                            }
+                        }));
+                    })
                     .exceptionally(ex -> {
                         runLater(() -> {
                             userText.setStyle("-fx-fill: #ff6060");
-                            userText.setText("Something went wrong.");
+                            userText.setText(ex.getCause().getMessage());
                         });
                         return null;
                     });
