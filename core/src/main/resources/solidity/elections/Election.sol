@@ -105,4 +105,8 @@ contract Election {
     function getEndTime() public view returns (uint) {
         return endTime;
     }
+
+    function isElectionMarkedOver() public view returns (bool) {
+        return isOver;
+    }
 }

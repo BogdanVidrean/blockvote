@@ -118,6 +118,9 @@ public class VoteController implements LoginObserver, LogoutObserver {
         electionMasterVBox.getChildren().remove(noElectionsMasterPane);
 
         runLater(() -> {
+            //  clear existing user text
+            userText.setText("");
+
             electionMasterVBox.getChildren().removeAll(currentElectionNodes);
             currentElectionNodes = new ArrayList<>();
 
@@ -143,6 +146,10 @@ public class VoteController implements LoginObserver, LogoutObserver {
 
             currentElectionNodes.add(electionAddressContainer);
 
+            Button voteButton = new Button("VOTE");
+            VBox.setMargin(voteButton, new Insets(50, 0, 0, 0));
+            voteButton.setPrefWidth(250);
+
             //  Election options
 
             selectedElection.getOptions()
@@ -157,6 +164,10 @@ public class VoteController implements LoginObserver, LogoutObserver {
                         try {
                             long endTime = selectedElectionObject.getStartTime().send().longValue() * 1000;
                             long startTime = selectedElectionObject.getEndTime().send().longValue() * 1000;
+
+                            // adding handler with start and end timestamp
+                            voteButton.setOnMousePressed(event -> vote(selectedAddress, startTime, endTime));
+
                             Label startLabel = new Label("Starts at: " + new Date(endTime).toString());
                             Label endLabel = new Label("Ends at: " + new Date(startTime).toString());
                             startLabel.setStyle("-fx-text-fill: #3ba53a");
@@ -205,11 +216,8 @@ public class VoteController implements LoginObserver, LogoutObserver {
                             currentElectionNodes.add(currentOptionHbox);
                         });
 
-                        Button button = new Button("VOTE");
-                        VBox.setMargin(button, new Insets(50, 0, 0, 0));
-                        button.setOnMousePressed(event -> vote(selectedAddress));
-                        button.setPrefWidth(250);
-                        currentElectionNodes.add(button);
+                        // acum adaugam butonul de vote, dupa ce am setat handler-ul cu informatiile de la election
+                        currentElectionNodes.add(voteButton);
 
                         Button resultsButton = new Button("SEE RESULTS");
                         VBox.setMargin(resultsButton, new Insets(20, 0, 0, 0));
@@ -229,41 +237,51 @@ public class VoteController implements LoginObserver, LogoutObserver {
         });
     }
 
-    private void vote(String selectedAddress) {
-        int selectedOption = -1;
-        int selectedOptionsCounter = 0;
-        for (Map.Entry<Integer, Pair<CheckBox, Label>> entry : options.entrySet()) {
-            CheckBox currentOptionCheckbox = entry.getValue().getKey();
-            if (currentOptionCheckbox.isSelected()) {
-                selectedOption = entry.getKey();
-                selectedOptionsCounter++;
+    private void vote(String selectedAddress, long startTime, long endTime) {
+        if (validateElectionVoteTime(startTime, endTime)) {
+            int selectedOption = -1;
+            int selectedOptionsCounter = 0;
+            for (Map.Entry<Integer, Pair<CheckBox, Label>> entry : options.entrySet()) {
+                CheckBox currentOptionCheckbox = entry.getValue().getKey();
+                if (currentOptionCheckbox.isSelected()) {
+                    selectedOption = entry.getKey();
+                    selectedOptionsCounter++;
+                }
             }
-        }
-        if (selectedOptionsCounter > 1 || selectedOptionsCounter == 0) {
-            userText.setStyle("-fx-fill: #ff6060");
-            userText.setText("Select one option.");
-        } else {
-            IElection selectedElection = electionsDispatcher.getElection(selectedAddress);
-            selectedElection.vote(BigInteger.valueOf(selectedOption))
-                    .sendAsync()
-                    .thenRun(() -> runLater(() -> {
-                        userText.setStyle("-fx-fill: #ff5f5f");
-                        userText.setText("Transaction successfully registered.");
-                    }))
-                    .thenAccept(transactionReceipt -> {
-                        runLater(() -> {
-                            userText.setStyle("-fx-fill: #3ba53a");
-                            userText.setText("Vote successfully registered.");
-                        });
-                    })
-                    .exceptionally(ex -> {
-                        runLater(() -> {
+            if (selectedOptionsCounter > 1 || selectedOptionsCounter == 0) {
+                userText.setStyle("-fx-fill: #ff6060");
+                userText.setText("Select one option.");
+            } else {
+                IElection selectedElection = electionsDispatcher.getElection(selectedAddress);
+                selectedElection.vote(BigInteger.valueOf(selectedOption))
+                        .sendAsync()
+                        .thenRun(() -> runLater(() -> {
                             userText.setStyle("-fx-fill: #ff5f5f");
-                            userText.setText("Something went wrong.");
+                            userText.setText("Transaction successfully registered.");
+                        }))
+                        .thenAccept(transactionReceipt -> {
+                            runLater(() -> {
+                                userText.setStyle("-fx-fill: #3ba53a");
+                                userText.setText("Vote successfully registered.");
+                            });
+                        })
+                        .exceptionally(ex -> {
+                            runLater(() -> {
+                                userText.setStyle("-fx-fill: #ff5f5f");
+                                userText.setText("Something went wrong.");
+                            });
+                            return null;
                         });
-                        return null;
-                    });
+            }
+        } else {
+            userText.setStyle("-fx-fill: #ff6060");
+            userText.setText("This election is not active.");
         }
+    }
+
+    private boolean validateElectionVoteTime(long startTime, long endTime) {
+        long currentTimeStamp = new Date().getTime();
+        return currentTimeStamp >= startTime && currentTimeStamp <= endTime;
     }
 
     @SuppressWarnings("unchecked")

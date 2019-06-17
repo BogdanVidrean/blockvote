@@ -21,4 +21,6 @@ public interface IElection {
     RemoteCall<BigInteger> getStartTime();
 
     RemoteCall<BigInteger> getEndTime();
+
+    RemoteCall<Boolean> isElectionMarkedOver();
 }
