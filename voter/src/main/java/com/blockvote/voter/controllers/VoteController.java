@@ -55,7 +55,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
     private Disposable logsDisposable;
     private Map<String, String> electionAddressesAndNames = new HashMap<>();
     private ElectionsDispatcher electionsDispatcher;
-    private Text noElectionsAvailableText;
+    private Label noElectionsAvailableText;
     private List<Node> currentElectionNodes = new ArrayList<>();
     private Map<Integer, Pair<CheckBox, Label>> options = new HashMap<>();
     private Text userText = new Text();
@@ -105,8 +105,8 @@ public class VoteController implements LoginObserver, LogoutObserver {
         selectElectionLabel.setStyle("-fx-font-size: 30; -fx-text-fill: #ffffff;");
         VBox.setMargin(selectElectionLabel, new Insets(40, 0, 0, 0));
 
-        noElectionsAvailableText = new Text("No elections available.");
-        noElectionsAvailableText.setStyle("-fx-font-size: 30; -fx-fill: #ffffff;");
+        noElectionsAvailableText = new Label("No elections available.");
+        noElectionsAvailableText.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff;");
         electionsNamesContainer.getChildren().addAll(asList(selectElectionLabel, noElectionsAvailableText));
     }
 

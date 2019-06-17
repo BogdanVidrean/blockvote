@@ -84,7 +84,7 @@
                                                                <ImageView fitHeight="23.0" fitWidth="19.0"
                                                                           pickOnBounds="true" preserveRatio="true">
                                                                    <image>
-                                                                       <Image url="@../../../../../organizer/src/main/resources/images/copy-content.png"/>
+                                                                       <Image url="@../images/copy-content.png"/>
                                                                    </image>
                                                                </ImageView>
                                                            </graphic>

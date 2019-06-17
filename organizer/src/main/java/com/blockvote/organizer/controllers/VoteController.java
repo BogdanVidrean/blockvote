@@ -52,7 +52,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
     private Label selectElectionLabel;
     private Web3j web3j;
     private Properties applicationProperties;
-    private Text noElectionsAvailableText;
+    private Label noElectionsAvailableText;
     private VBox noElectionsMasterPane;
     private Map<String, String> electionAddressesAndNames = new HashMap<>();
     private ElectionsDispatcher electionsDispatcher;
@@ -93,8 +93,8 @@ public class VoteController implements LoginObserver, LogoutObserver {
         selectElectionLabel.setStyle("-fx-font-size: 30; -fx-text-fill: #ffffff;");
         VBox.setMargin(selectElectionLabel, new Insets(40, 0, 0, 0));
 
-        noElectionsAvailableText = new Text("No elections available.");
-        noElectionsAvailableText.setStyle("-fx-font-size: 30; -fx-fill: #ffffff;");
+        noElectionsAvailableText = new Label("No elections available.");
+        noElectionsAvailableText.setStyle("-fx-font-size: 20; -fx-fill: #ffffff;");
         electionsNamesContainer.getChildren().addAll(asList(selectElectionLabel, noElectionsAvailableText));
     }
 

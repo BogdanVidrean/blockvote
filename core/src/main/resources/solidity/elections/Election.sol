@@ -27,7 +27,7 @@ contract Election {
     uint private endTime;
     bool private isOver;
 
-    constructor(address masterContractAddress, bytes32 nameOfElection, bytes32[] memory initialOptions, uint electionStartTime, uint electionEndTime) public {
+    constructor(address masterContractAddress, bytes32 nameOfElection, bytes32[] memory initialOptions, uint electionStartTime, uint electionEndTime) public areTimestampsValid(startTime, endTime) {
         electionMaster = ElectionMaster(masterContractAddress);
         bool canDeploy = electionMaster.canAddressDeployContract(msg.sender);
         require(canDeploy == true, "Organizer permissions required to deploy a contract.");
@@ -41,6 +41,12 @@ contract Election {
         startTime = electionStartTime;
         endTime = electionEndTime;
         isOver = false;
+    }
+
+    modifier areTimestampsValid(uint startTimeToValidate, uint endTimeToValidate) {
+        require(now < startTimeToValidate, "The election cannot start in the past");
+        require(startTimeToValidate < endTimeToValidate, "The start time of the election must be before the end time.");
+        _;
     }
 
     modifier personAbleToVote(uint8 optionId) {
