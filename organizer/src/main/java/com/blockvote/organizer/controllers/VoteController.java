@@ -164,8 +164,8 @@ public class VoteController implements LoginObserver, LogoutObserver {
                             voteButton.setOnMousePressed(event -> vote(selectedAddress, startTime, endTime));
                             endElection.setOnMousePressed(event -> endElectionHandler(selectedAddress, endTime));
 
-                            Label startLabel = new Label("Starts at: " + new Date(endTime).toString());
-                            Label endLabel = new Label("Ends at: " + new Date(startTime).toString());
+                            Label startLabel = new Label("Starts at: " + new Date(startTime).toString());
+                            Label endLabel = new Label("Ends at: " + new Date(endTime).toString());
                             startLabel.setStyle("-fx-text-fill: #3ba53a");
                             endLabel.setStyle("-fx-text-fill: #ff6060");
                             electionStartAndEndTimeContainer.getChildren().add(startLabel);
@@ -314,6 +314,10 @@ public class VoteController implements LoginObserver, LogoutObserver {
                 userText.setStyle("-fx-fill: #ff6060");
                 userText.setText("Select one option.");
             } else {
+                runLater(() -> {
+                    userText.setStyle("-fx-fill: #fff");
+                    userText.setText("Transaction successfully registered.");
+                });
                 electionMaster.canAddressVote(currentUserCredentials.getAddress())
                         .sendAsync()
                         .thenAccept(canUserVote -> {
@@ -326,10 +330,6 @@ public class VoteController implements LoginObserver, LogoutObserver {
                                 IElection selectedElection = electionsDispatcher.getElection(selectedAddress);
                                 selectedElection.vote(BigInteger.valueOf(selectedOption.get()))
                                         .sendAsync()
-                                        .thenRun(() -> runLater(() -> {
-                                            userText.setStyle("-fx-fill: #fff");
-                                            userText.setText("Transaction successfully registered.");
-                                        }))
                                         .thenAccept(transactionReceipt -> {
                                             runLater(() -> {
                                                 userText.setStyle("-fx-fill: #3ba53a");
@@ -346,6 +346,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
                             }
                         })
                         .exceptionally(ex -> {
+                            ex.printStackTrace();
                             userText.setStyle("-fx-fill: #ff6060");
                             userText.setText(ex.getCause().getMessage());
                             return null;
