@@ -31,6 +31,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.synchronizedList;
 import static javafx.application.Platform.runLater;
 import static javafx.geometry.Pos.CENTER;
 import static javafx.geometry.Pos.CENTER_LEFT;
@@ -56,7 +57,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
     private Map<String, String> electionAddressesAndNames = new HashMap<>();
     private ElectionsDispatcher electionsDispatcher;
     private Label noElectionsAvailableText;
-    private List<Node> currentElectionNodes = new ArrayList<>();
+    private List<Node> currentElectionNodes = synchronizedList(new ArrayList<>());
     private Map<Integer, Pair<CheckBox, Label>> options = new HashMap<>();
     private Text userText = new Text();
     private volatile boolean areResultsVisible = false;
@@ -239,7 +240,8 @@ public class VoteController implements LoginObserver, LogoutObserver {
             }
         }
         if (selectedOptionsCounter > 1 || selectedOptionsCounter == 0) {
-
+            userText.setStyle("-fx-fill: #ff6060");
+            userText.setText("Select one option.");
         } else {
             IElection selectedElection = electionsDispatcher.getElection(selectedAddress);
             selectedElection.vote(BigInteger.valueOf(selectedOption))
@@ -280,7 +282,10 @@ public class VoteController implements LoginObserver, LogoutObserver {
                         }
                     })))
                     .exceptionally(ex -> {
-
+                        runLater(() -> {
+                            userText.setStyle("-fx-fill: #ff6060");
+                            userText.setText("Something went wrong.");
+                        });
                         return null;
                     });
         }
@@ -291,7 +296,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
         if (logsDisposable != null && !logsDisposable.isDisposed()) {
             logsDisposable.dispose();
         }
-        electionMasterVBox.getChildren().removeAll(asList(currentElectionNodes, noElectionsMasterPane));
+        electionMasterVBox.getChildren().remove(0, electionMasterVBox.getChildren().size());
         electionsNamesContainer.getChildren().remove(0, electionsNamesContainer.getChildren().size());
     }
 

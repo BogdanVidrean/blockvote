@@ -94,7 +94,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
         VBox.setMargin(selectElectionLabel, new Insets(40, 0, 0, 0));
 
         noElectionsAvailableText = new Label("No elections available.");
-        noElectionsAvailableText.setStyle("-fx-font-size: 20; -fx-fill: #ffffff;");
+        noElectionsAvailableText.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff;");
         electionsNamesContainer.getChildren().addAll(asList(selectElectionLabel, noElectionsAvailableText));
     }
 
@@ -147,7 +147,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
                             Label startLabel = new Label("Starts at: " + new Date(endTime).toString());
                             Label endLabel = new Label("Ends at: " + new Date(startTime).toString());
                             startLabel.setStyle("-fx-text-fill: #3ba53a");
-                            endLabel.setStyle("-fx-text-fill: #ff5f5f");
+                            endLabel.setStyle("-fx-text-fill: #ff6060");
                             electionStartAndEndTimeContainer.getChildren().add(startLabel);
                             electionStartAndEndTimeContainer.getChildren().add(endLabel);
                             currentElectionNodes.add(electionStartAndEndTimeContainer);
@@ -158,10 +158,10 @@ public class VoteController implements LoginObserver, LogoutObserver {
                                 statusLabel.setStyle("-fx-text-fill: #3ba53a");
                             } else if (currentTime < startTime) {
                                 statusLabel.setText("Not started yet");
-                                statusLabel.setStyle("-fx-text-fill: #ff5f5f");
+                                statusLabel.setStyle("-fx-text-fill: #ff6060");
                             } else if (currentTime > endTime) {
                                 statusLabel.setText("Ended");
-                                statusLabel.setStyle("-fx-text-fill: #ff5f5f");
+                                statusLabel.setStyle("-fx-text-fill: #ff6060");
                             }
                             currentElectionNodes.add(statusLabel);
                         } catch (Exception e) {
@@ -252,14 +252,14 @@ public class VoteController implements LoginObserver, LogoutObserver {
                         });
                     } else {
                         runLater(() -> {
-                            userText.setStyle("-fx-fill: #ff5f5f");
+                            userText.setStyle("-fx-fill: #ff6060");
                             userText.setText("the transaction failed.");
                         });
                     }
                 })
                 .exceptionally(ex -> {
                     runLater(() -> {
-                        userText.setStyle("-fx-fill: #ff5f5f");
+                        userText.setStyle("-fx-fill: #ff6060");
                         userText.setText("The transaction failed.");
                     });
                     return null;
@@ -281,13 +281,14 @@ public class VoteController implements LoginObserver, LogoutObserver {
             }
         }
         if (selectedOptionsCounter > 1 || selectedOptionsCounter == 0) {
-
+            userText.setStyle("-fx-fill: #ff6060");
+            userText.setText("Only one option can be selected.");
         } else {
             IElection selectedElection = electionsDispatcher.getElection(selectedAddress);
             selectedElection.vote(BigInteger.valueOf(selectedOption))
                     .sendAsync()
                     .thenRun(() -> runLater(() -> {
-                        userText.setStyle("-fx-fill: #ff5f5f");
+                        userText.setStyle("-fx-fill: #fff");
                         userText.setText("Transaction successfully registered.");
                     }))
                     .thenAccept(transactionReceipt -> {
@@ -298,7 +299,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
                     })
                     .exceptionally(ex -> {
                         runLater(() -> {
-                            userText.setStyle("-fx-fill: #ff5f5f");
+                            userText.setStyle("-fx-fill: #ff6060");
                             userText.setText("Something went wrong.");
                         });
                         return null;
@@ -322,6 +323,10 @@ public class VoteController implements LoginObserver, LogoutObserver {
                         }
                     })))
                     .exceptionally(ex -> {
+                        runLater(() -> {
+                            userText.setStyle("-fx-fill: #ff6060");
+                            userText.setText("Failed to retrieve the results.");
+                        });
                         return null;
                     });
         }
@@ -332,7 +337,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
         if (logsDisposable != null && !logsDisposable.isDisposed()) {
             logsDisposable.dispose();
         }
-        electionMasterVBox.getChildren().removeAll(asList(currentElectionNodes, noElectionsMasterPane));
+        electionMasterVBox.getChildren().remove(0, electionMasterVBox.getChildren().size());
         electionsNamesContainer.getChildren().remove(0, electionsNamesContainer.getChildren().size());
 
     }

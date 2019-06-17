@@ -190,15 +190,17 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
                                         userMessagge.setText(ELECTION_CREATED_MSG);
                                     })
                                     .exceptionally(error -> {
-                                        userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff5f5f");
-                                        userMessagge.setText("Something bad happened..");
+                                        userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff6060");
+                                        userMessagge.setText("Something bad happened.");
                                         return null;
                                     });
                         }
                     } catch (IllegalArgumentException e) {
+                        userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff6060");
                         userMessagge.setText(e.getMessage());
                     }
                 } else {
+                    userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff6060");
                     userMessagge.setText("All fields are mandatory, name and options can have a maximum length of 32.");
                 }
             });

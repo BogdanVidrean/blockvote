@@ -43,7 +43,7 @@ public class RegisterVoterController implements LogoutObserver {
         final String ssn = ssnTextField.getText();
         final String address = addressTextField.getText();
         final String addressAgain = addressTextFieldAgain.getText();
-        userMessage.setStyle("-fx-fill: #ff5f5f");
+        userMessage.setStyle("-fx-fill: #ff6060");
         if (!isEmpty(address) && !isEmpty(addressAgain) && !isEmpty(ssn) && StringUtils.equals(address, addressAgain)) {
             userMessage.setStyle("-fx-fill: #ffffff");
             userMessage.setText("Transaction initiated successfully.");
@@ -92,7 +92,7 @@ public class RegisterVoterController implements LogoutObserver {
                     })
                     .exceptionally(exception -> {
                         runLater(() -> {
-                            userMessage.setStyle("-fx-fill: #ff5f5f");
+                            userMessage.setStyle("-fx-fill: #ff6060");
                             userMessage.setText(exception.getCause().getMessage());
                         });
                         return null;
@@ -109,12 +109,12 @@ public class RegisterVoterController implements LogoutObserver {
     @FXML
     private void verifySSNStatus(MouseEvent mouseEvent) {
         final String ssn = ssnTextField.getText();
-        userMessage.setStyle("-fx-fill: #ff5f5f");
+        userMessage.setStyle("-fx-fill: #ff6060");
         if (!isEmpty(ssn)) {
             electionMaster.canSsnVote(ssn)
                     .sendAsync()
                     .thenAccept(canVote -> runLater(() -> {
-                        userMessage.setStyle(canVote ? "-fx-fill: #3ba53a" : "-fx-fill: #c98a2e");
+                        userMessage.setStyle(canVote ? "-fx-fill: #3ba53a" : "-fx-fill: #ff6060");
                         userMessage.setText(canVote ? ADDRESSES_CAN_VOTE_MESSAGE : ADDRESSES_CANNOT_VOTE_MESSAGE);
                     }))
                     .exceptionally(error -> {
