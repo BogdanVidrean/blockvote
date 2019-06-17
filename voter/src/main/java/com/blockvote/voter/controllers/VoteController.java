@@ -52,6 +52,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
     private Label selectElectionLabel;
     private VBox noElectionsMasterPane;
     private Web3j web3j;
+    private Credentials currentUserCredentials;
     private Properties applicationProperties;
     private Disposable logsDisposable;
     private Map<String, String> electionAddressesAndNames = new HashMap<>();
@@ -99,6 +100,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
         logsDisposable = initLogListener();
         initNoElectionsMasterPane();
         initNoElectionsNamesPane();
+        this.currentUserCredentials = credentials;
     }
 
     private void initNoElectionsNamesPane() {
@@ -239,12 +241,12 @@ public class VoteController implements LoginObserver, LogoutObserver {
 
     private void vote(String selectedAddress, long startTime, long endTime) {
         if (validateElectionVoteTime(startTime, endTime)) {
-            int selectedOption = -1;
+            final AtomicInteger selectedOption = new AtomicInteger(-1);
             int selectedOptionsCounter = 0;
             for (Map.Entry<Integer, Pair<CheckBox, Label>> entry : options.entrySet()) {
                 CheckBox currentOptionCheckbox = entry.getValue().getKey();
                 if (currentOptionCheckbox.isSelected()) {
-                    selectedOption = entry.getKey();
+                    selectedOption.set(entry.getKey());
                     selectedOptionsCounter++;
                 }
             }
@@ -252,24 +254,40 @@ public class VoteController implements LoginObserver, LogoutObserver {
                 userText.setStyle("-fx-fill: #ff6060");
                 userText.setText("Select one option.");
             } else {
-                IElection selectedElection = electionsDispatcher.getElection(selectedAddress);
-                selectedElection.vote(BigInteger.valueOf(selectedOption))
+                electionMaster.canAddressVote(currentUserCredentials.getAddress())
                         .sendAsync()
-                        .thenRun(() -> runLater(() -> {
-                            userText.setStyle("-fx-fill: #ff5f5f");
-                            userText.setText("Transaction successfully registered.");
-                        }))
-                        .thenAccept(transactionReceipt -> {
-                            runLater(() -> {
-                                userText.setStyle("-fx-fill: #3ba53a");
-                                userText.setText("Vote successfully registered.");
-                            });
+                        .thenAccept(canUserVote -> {
+                            if (!canUserVote) {
+                                runLater(() -> {
+                                    userText.setStyle("-fx-fill: #ff6060");
+                                    userText.setText("Register your address in order to vote.");
+                                });
+                            } else {
+                                IElection selectedElection = electionsDispatcher.getElection(selectedAddress);
+                                selectedElection.vote(BigInteger.valueOf(selectedOption.get()))
+                                        .sendAsync()
+                                        .thenRun(() -> runLater(() -> {
+                                            userText.setStyle("-fx-fill: #fff");
+                                            userText.setText("Transaction successfully registered.");
+                                        }))
+                                        .thenAccept(transactionReceipt -> {
+                                            runLater(() -> {
+                                                userText.setStyle("-fx-fill: #3ba53a");
+                                                userText.setText("Vote successfully registered.");
+                                            });
+                                        })
+                                        .exceptionally(ex -> {
+                                            runLater(() -> {
+                                                userText.setStyle("-fx-fill: #ff6060");
+                                                userText.setText("Something went wrong.");
+                                            });
+                                            return null;
+                                        });
+                            }
                         })
                         .exceptionally(ex -> {
-                            runLater(() -> {
-                                userText.setStyle("-fx-fill: #ff5f5f");
-                                userText.setText("Something went wrong.");
-                            });
+                            userText.setStyle("-fx-fill: #ff6060");
+                            userText.setText(ex.getCause().getMessage());
                             return null;
                         });
             }
@@ -286,6 +304,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
 
     @SuppressWarnings("unchecked")
     private void getResults(String selectedAddress) {
+        userText.setText("");
         if (!areResultsVisible) {
             IElection election = electionsDispatcher.getElection(selectedAddress);
             election.isElectionMarkedOver()
