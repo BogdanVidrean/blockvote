@@ -14,6 +14,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.effect.GaussianBlur;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
@@ -170,7 +172,19 @@ public class AppPreloaderController extends LoginObservable {
 
     private void clearFields() {
         passwordField.setText("");
+        errorMsg.setText("");
         accountsListView.getSelectionModel().selectFirst();
         accountsListView.getSelectionModel().clearSelection();
+    }
+
+    @FXML
+    public void copySelectedAddressToClipboard(MouseEvent mouseEvent) {
+        String selectedAddress = accountsListView.getSelectionModel().getSelectedItem();
+        if (selectedAddress != null) {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent clipboardContent = new ClipboardContent();
+            clipboardContent.putString("0x" + selectedAddress);
+            clipboard.setContent(clipboardContent);
+        }
     }
 }

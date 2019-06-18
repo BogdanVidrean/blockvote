@@ -20,16 +20,17 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
             </rowConstraints>
             <children>
-                <ScrollPane id="electionsScrollPane" fx:id="electionsScrollPane" prefHeight="400.0" prefWidth="278.0"
-                            stylesheets="@../css/vote.css">
+                <ScrollPane id="electionsScrollPane" fx:id="electionsScrollPane" fitToHeight="true" fitToWidth="true"
+                            prefHeight="400.0" prefWidth="278.0" stylesheets="@../css/vote.css">
                     <content>
                         <VBox fx:id="electionMasterVBox" alignment="CENTER"
                               minWidth="${electionsScrollPane.viewportBounds.width}" prefHeight="200.0"
                               prefWidth="100.0"/>
                     </content>
                 </ScrollPane>
-                <ScrollPane id="electionNamesScrollPane" fx:id="electionNamesScrollPane" prefHeight="400.0"
-                            prefWidth="199.0" stylesheets="@../css/vote.css" GridPane.columnIndex="1">
+                <ScrollPane id="electionNamesScrollPane" fx:id="electionNamesScrollPane" fitToHeight="true"
+                            fitToWidth="true" prefHeight="400.0" prefWidth="199.0" stylesheets="@../css/vote.css"
+                            GridPane.columnIndex="1">
                     <content>
                         <VBox id="electionsNamesContainer" fx:id="electionsNamesContainer"
                               minWidth="${electionNamesScrollPane.viewportBounds.width}" prefHeight="200.0"

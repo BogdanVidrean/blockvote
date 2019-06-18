@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static java.lang.Integer.parseInt;
+import static java.lang.Math.min;
 import static java.math.BigInteger.valueOf;
 import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
@@ -71,7 +72,10 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
 
     public void setApplicationProperties(Properties applicationProperties) {
         this.applicationProperties = applicationProperties;
+    }
 
+    @FXML
+    public void initialize() {
     }
 
     @FXML
@@ -184,19 +188,20 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
                                     .thenAccept(election -> {
                                         userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #3ba53a");
                                         userMessagge.setText(ELECTION_CREATED_MSG);
-                                        System.out.println(election.getContractAddress());
                                     })
                                     .exceptionally(error -> {
-                                        userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff5f5f");
-                                        userMessagge.setText("Something bad happened..");
+                                        userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff6060");
+                                        userMessagge.setText("Something bad happened.");
                                         return null;
                                     });
                         }
                     } catch (IllegalArgumentException e) {
+                        userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff6060");
                         userMessagge.setText(e.getMessage());
                     }
                 } else {
-                    userMessagge.setText("All fields are mandatory.");
+                    userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff6060");
+                    userMessagge.setText("All fields are mandatory, name and options can have a maximum length of 32.");
                 }
             });
             extraStuffToBeDeletedAtLogout.add(doneButton);
@@ -233,9 +238,10 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
 
     private boolean validateElectionInfo(TextField nameField, List<Node> optionsCollection,
                                          DateTimePicker startDateTimePicker, DateTimePicker endDateTimePicker) {
-        return !isEmpty(nameField.getText()) &&
+        return !isEmpty(nameField.getText()) && nameField.getText().length() <= 32 &&
                 optionsCollection.stream()
-                        .reduce(true, (aBoolean, node2) -> aBoolean && !isEmpty(((TextField) (((HBox) node2).getChildren().get(1))).getText()),
+                        .reduce(true, (aBoolean, node2) -> aBoolean && !isEmpty(((TextField) (((HBox) node2).getChildren().get(1))).getText()) &&
+                                        ((TextField) (((HBox) node2).getChildren().get(1))).getText().length() <= 32,
                                 (aBoolean, aBoolean2) -> aBoolean && aBoolean2);
     }
 
@@ -253,14 +259,14 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
             throw new IllegalArgumentException("The start date and time cannot be in the past.");
         }
         if (endDateTime.isBefore(startDateTime)) {
-            throw new IllegalArgumentException("The end date and time mus tbe after the start date and time.");
+            throw new IllegalArgumentException("The end date and time must be after the start date and time.");
         }
     }
 
     private Bytes32 stringToBytes32(String string) {
         byte[] byteValue = string.getBytes();
         byte[] byteValueLen32 = new byte[32];
-        System.arraycopy(byteValue, 0, byteValueLen32, 0, byteValue.length);
+        System.arraycopy(byteValue, 0, byteValueLen32, 0, min(byteValue.length, 32));
         return new Bytes32(byteValueLen32);
     }
 

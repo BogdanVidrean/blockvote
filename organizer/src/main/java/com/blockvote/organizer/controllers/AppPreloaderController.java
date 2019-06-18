@@ -9,9 +9,12 @@ import com.blockvote.core.os.OsInteraction;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.effect.GaussianBlur;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
@@ -38,6 +41,8 @@ import static org.web3j.crypto.WalletUtils.loadCredentials;
 
 public class AppPreloaderController extends LoginObservable {
 
+    @FXML
+    private Label chooseWalletMessage;
     @FXML
     private Text errorMsg;
     @FXML
@@ -90,13 +95,15 @@ public class AppPreloaderController extends LoginObservable {
     }
 
     private void loadAvailableAccountWallets() {
+        accountsListView.setItems(accountsObsList);
         List<File> accounts = osInteraction.loadAvailableAccounts();
         if (accounts.size() != 0) {
             accountFilesMap.putAll(accounts.stream().collect(toMap(f -> formatAddressFromKeystoreFileName(f.getName()),
                     identity())));
             accountsListView.setVisible(true);
             accountsObsList.addAll(accounts.stream().map(f -> formatAddressFromKeystoreFileName(f.getName())).collect(toList()));
-            accountsListView.setItems(accountsObsList);
+        } else {
+            chooseWalletMessage.setText("No wallets available. Create a new one.");
         }
     }
 
@@ -127,6 +134,10 @@ public class AppPreloaderController extends LoginObservable {
                                 } else {
                                     runLater(() -> errorMsg.setText("Access denied."));
                                 }
+                            })
+                            .exceptionally(ex -> {
+                                runLater(() -> errorMsg.setText("Failed to connect to master contract."));
+                                return null;
                             });
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -155,6 +166,7 @@ public class AppPreloaderController extends LoginObservable {
             accountFilesMap.put(formatAddressFromKeystoreFileName(newAddressFileName), newWalletFile);
             accountsObsList.add(formatAddressFromKeystoreFileName(newAddressFileName));
             accountsListView.refresh();
+            accountsListView.setVisible(true);
             rootAnchorPane.setEffect(null);
         });
 
@@ -165,7 +177,19 @@ public class AppPreloaderController extends LoginObservable {
 
     private void clearFields() {
         passwordField.setText("");
+        errorMsg.setText("");
         accountsListView.getSelectionModel().selectFirst();
         accountsListView.getSelectionModel().clearSelection();
+    }
+
+    @FXML
+    public void copySelectedAddressToClipboard(MouseEvent mouseEvent) {
+        String selectedAddress = accountsListView.getSelectionModel().getSelectedItem();
+        if (selectedAddress != null) {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent clipboardContent = new ClipboardContent();
+            clipboardContent.putString("0x" + selectedAddress);
+            clipboard.setContent(clipboardContent);
+        }
     }
 }

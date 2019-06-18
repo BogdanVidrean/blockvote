@@ -69,6 +69,12 @@ public class ElectionProxy implements IElection {
         return election.getEndTime();
     }
 
+    @Override
+    public RemoteCall<Boolean> isElectionMarkedOver() {
+        checkIfInstanceNull();
+        return election.isElectionMarkedOver();
+    }
+
     private void checkIfInstanceNull() {
         if (election == null) {
             synchronized (this) {

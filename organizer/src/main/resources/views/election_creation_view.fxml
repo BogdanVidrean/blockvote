@@ -9,45 +9,49 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" id="rootAnchor" fx:id="rootAnchor" prefHeight="400.0" prefWidth="600.0"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" id="rootAnchor" fx:id="rootAnchor"
             stylesheets="@../css/create_election.css" xmlns="http://javafx.com/javafx/10.0.1"
             fx:controller="com.blockvote.organizer.controllers.ElectionCreationController">
-   <children>
-      <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" prefHeight="400.0" prefWidth="660.0"
-                  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                  AnchorPane.topAnchor="0.0">
-         <content>
-            <VBox id="scrollPane" fx:id="vboxContainer" alignment="CENTER" prefHeight="400.0" prefWidth="660.0">
-               <children>
-                  <Text fx:id="userMessagge" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="error-text">
-                     <VBox.margin>
-                        <Insets bottom="10.0"/>
-                     </VBox.margin>
-                  </Text>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="menu-text"
-                        text="INSERT THE NUMBER OF OPTIONS FOR THE ELECTION">
-                     <font>
-                        <Font name="System Bold" size="13.0"/>
-                     </font>
-                  </Text>
-                  <HBox alignment="CENTER" prefHeight="8.0" prefWidth="600.0">
-                     <children>
-                        <TextField fx:id="numerOfOptionsField" alignment="CENTER" prefHeight="27.0" prefWidth="184.0">
-                           <HBox.margin>
-                              <Insets top="20.0"/>
-                           </HBox.margin>
-                        </TextField>
-                     </children>
-                  </HBox>
-                  <Button fx:id="createButton" mnemonicParsing="false" onMousePressed="#createElection"
-                          prefHeight="39.0" prefWidth="159.0" text="CREATE" textAlignment="CENTER">
-                     <VBox.margin>
-                        <Insets top="20.0"/>
-                     </VBox.margin>
-                  </Button>
-               </children>
-            </VBox>
-         </content>
-      </ScrollPane>
+    <children>
+        <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+              AnchorPane.topAnchor="0.0">
+            <children>
+                <HBox alignment="CENTER" style="-fx-background-color: #3FE5FF;">
+                    <children>
+                        <Text fx:id="userMessagge" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="error-text"/>
+                    </children>
+                </HBox>
+                <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true">
+                    <content>
+                        <VBox id="scrollPane" fx:id="vboxContainer" alignment="CENTER">
+                            <children>
+                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="menu-text"
+                                      text="INSERT THE NUMBER OF OPTIONS FOR THE ELECTION">
+                                    <font>
+                                        <Font name="System Bold" size="13.0"/>
+                                    </font>
+                                </Text>
+                                <HBox alignment="CENTER" prefHeight="8.0" prefWidth="600.0">
+                                    <children>
+                                        <TextField fx:id="numerOfOptionsField" alignment="CENTER" prefHeight="27.0"
+                                                   prefWidth="184.0">
+                                            <HBox.margin>
+                                                <Insets top="20.0"/>
+                                            </HBox.margin>
+                                        </TextField>
+                                    </children>
+                                </HBox>
+                                <Button fx:id="createButton" mnemonicParsing="false" onMousePressed="#createElection"
+                                        prefHeight="39.0" prefWidth="159.0" text="CREATE" textAlignment="CENTER">
+                                    <VBox.margin>
+                                        <Insets top="20.0"/>
+                                    </VBox.margin>
+                                </Button>
+                            </children>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+            </children>
+        </VBox>
    </children>
 </AnchorPane>
