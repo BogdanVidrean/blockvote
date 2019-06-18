@@ -7,6 +7,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import java.util.Properties;
 
 import static com.blockvote.core.os.Commons.DEFAULT_BOOTSTRAP_SERVER_URL;
+import static com.mashape.unirest.http.Unirest.delete;
 import static com.mashape.unirest.http.Unirest.get;
 import static com.mashape.unirest.http.Unirest.put;
 
@@ -28,6 +29,12 @@ public class BootstrapService {
 
     public HttpResponse<JsonNode> getNodes() throws UnirestException {
         return get(bootstrapServerUrl)
+                .asJson();
+    }
+
+    public HttpResponse<JsonNode> removeNode(String enode) throws UnirestException {
+        return delete(bootstrapServerUrl)
+                .queryString("enode", enode)
                 .asJson();
     }
 }

@@ -22,6 +22,7 @@ import java.util.concurrent.CountDownLatch;
 
 import static com.blockvote.core.os.Commons.CHAIN_ID;
 import static java.lang.Long.parseLong;
+import static java.lang.Runtime.getRuntime;
 import static java.lang.Thread.sleep;
 import static java.util.concurrent.CompletableFuture.runAsync;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
@@ -32,6 +33,7 @@ public class BootstrapMediator {
     private final OsInteraction osInteraction;
     private final BootstrapService bootstrapService;
     private final AdminService adminService;
+    private volatile Process gethProcess;
     private volatile String enode;
 
     public BootstrapMediator(OsInteraction osInteraction,
@@ -57,6 +59,8 @@ public class BootstrapMediator {
             getEnodeAddress();
             retrieveNodesList();
             registerCurrentNode();
+            addShutdownListener();
+            this.gethProcess = gethProcess;
             return gethProcess;
         } else {
             throw new BootstrapException();
@@ -102,6 +106,16 @@ public class BootstrapMediator {
                     ex.printStackTrace();
                     return null;
                 });
+    }
+
+    private void removeCurrentNode() {
+        if (enode != null) {
+            try {
+                bootstrapService.removeNode(enode);
+            } catch (UnirestException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void getEnodeAddress() {
@@ -199,4 +213,14 @@ public class BootstrapMediator {
         }
         return null;
     }
+
+    private void addShutdownListener() {
+        getRuntime().addShutdownHook(new Thread(() -> {
+            removeCurrentNode();
+            if (gethProcess != null && gethProcess.isAlive()) {
+                gethProcess.destroy();
+            }
+        }));
+    }
+
 }
