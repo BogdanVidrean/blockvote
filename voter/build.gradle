@@ -76,7 +76,7 @@ task executableJarLinux(type: Jar, dependsOn: assemble) {
     with jar
 }
 
-task javaPackager(type: Exec, dependsOn: assemble) {
+task javaPackagerMacOsEmbeddedRuntime(type: Exec, dependsOn: executableJarMacOs) {
     workingDir project.projectDir
     //  Working config for creating a bundle with jre
     commandLine = [

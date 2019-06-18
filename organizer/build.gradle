@@ -77,3 +77,33 @@ dependencies {
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
+
+task javaPackager(type: Exec, dependsOn: assemble) {
+    workingDir project.projectDir
+    //  Working config for creating a bundle with jre
+    commandLine = [
+            'javaPackager',
+            '-deploy',
+            '-nosign',
+            '-title', project.name,
+            '-name', project.name,
+            '-native', 'image',
+            '-outdir', "${buildDir}/distribution",
+            '-outfile', project.name,
+            '-srcfiles', "${buildDir}/libs/voter-1.0-SNAPSHOT.jar",
+            '-srcdir', ".",
+            '-appclass', mainClass
+    ]
+    //  Working params for dmg installer
+//    commandLine = [
+//            'javaPackager',
+//            '-deploy',
+//            '-nosign',
+//            '-appclass', mainClass,
+//            '-native', 'dmg',
+//            '-outdir', "${buildDir}/distribution",
+//            '-outfile', project.name,
+//            '-srcfiles', "${buildDir}/libs/blockvote-1.0-SNAPSHOT.jar",
+//            '-srcdir', "."
+//    ]
+}
