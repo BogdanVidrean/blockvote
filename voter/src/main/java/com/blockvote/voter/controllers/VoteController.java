@@ -36,6 +36,7 @@ import static javafx.application.Platform.runLater;
 import static javafx.geometry.Pos.CENTER;
 import static javafx.geometry.Pos.CENTER_LEFT;
 import static javafx.geometry.Pos.TOP_LEFT;
+import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
 import static javafx.scene.text.Font.font;
 import static org.apache.commons.lang3.tuple.Pair.of;
 import static org.web3j.protocol.core.DefaultBlockParameterName.EARLIEST;
@@ -130,6 +131,8 @@ public class VoteController implements LoginObserver, LogoutObserver {
             HBox electionNameContainer = new HBox();
             VBox.setMargin(electionNameContainer, new Insets(30, 0, 0, 0));
             electionNameContainer.setAlignment(CENTER);
+            electionNameContainer.setPrefHeight(USE_COMPUTED_SIZE);
+            electionNameContainer.setPrefWidth(USE_COMPUTED_SIZE);
 
             String selectedElectionName = electionAddressesAndNames.get(selectedAddress);
             Label electionNameLabel = new Label(selectedElectionName != null ? selectedElectionName : "");
@@ -358,12 +361,12 @@ public class VoteController implements LoginObserver, LogoutObserver {
         AtomicInteger electionIndex = new AtomicInteger(1);
         return web3j.ethLogFlowable(electionCreationLogsFilter).subscribe(log -> {
             List<String> topics = log.getTopics();
-            String newElectionName = hexToAscii(topics.get(2).substring(2));
             String newElectionAddress = formatAddressToBeValid(topics.get(1));
+            String newElectionName = electionMaster.getElectionName(newElectionAddress).send();
             electionAddressesAndNames.put(newElectionAddress, newElectionName);
             int size = electionIndex.getAndIncrement();
             Label newElectionLabel = new Label("#" + size + "\t" + newElectionName);
-            newElectionLabel.setStyle("-fx-font-size: 15; -fx-text-fill: #ffffff;");
+            newElectionLabel.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff;");
 
             VBox electionInformationContainer = new VBox();
             electionInformationContainer.setAlignment(CENTER_LEFT);

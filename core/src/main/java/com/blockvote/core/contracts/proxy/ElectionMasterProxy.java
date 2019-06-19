@@ -33,7 +33,7 @@ public class ElectionMasterProxy implements IElectionMaster {
     }
 
     @Override
-    public RemoteCall<TransactionReceipt> addElection(String electionAddress, byte[] electionName, String organizerAddress) {
+    public RemoteCall<TransactionReceipt> addElection(String electionAddress, String electionName, String organizerAddress) {
         checkIfInstanceNull();
         return electionsMaster.addElection(electionAddress, electionName, organizerAddress);
     }
@@ -93,9 +93,9 @@ public class ElectionMasterProxy implements IElectionMaster {
     }
 
     @Override
-    public RemoteCall<List> getElectionNames() {
+    public RemoteCall<String> getElectionName(String eleciotnAddress) {
         checkIfInstanceNull();
-        return electionsMaster.getElectionNames();
+        return electionsMaster.getElectionName(eleciotnAddress);
     }
 
     @Override

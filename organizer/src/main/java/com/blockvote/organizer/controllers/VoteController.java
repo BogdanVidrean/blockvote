@@ -418,8 +418,8 @@ public class VoteController implements LoginObserver, LogoutObserver {
         AtomicInteger electionIndex = new AtomicInteger(1);
         return web3j.ethLogFlowable(electionCreationLogsFilter).subscribe(log -> {
             List<String> topics = log.getTopics();
-            String newElectionName = hexToAscii(topics.get(2).substring(2));
             String newElectionAddress = formatAddressToBeValid(topics.get(1));
+            String newElectionName = electionMaster.getElectionName(newElectionAddress).send();
             electionAddressesAndNames.put(newElectionAddress, newElectionName);
             int size = electionIndex.getAndIncrement();
             Label newElectionLabel = new Label("#" + size + "\t" + newElectionName);

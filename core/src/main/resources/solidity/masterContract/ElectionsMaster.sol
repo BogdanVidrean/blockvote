@@ -4,7 +4,7 @@ contract ElectionsMaster {
     address private ownerMasterAddress = msg.sender;
 
     address[] private elections;
-    bytes32[] private electionsNames;
+    mapping(address => string) private electionsNames;
 
     mapping(address => uint8) private organizersMapping;
 
@@ -20,7 +20,7 @@ contract ElectionsMaster {
 
     event ElectionCreated(
         address indexed electionAddress,
-        bytes32 indexed electionName
+        string indexed electionName
     );
 
     // Modifiers
@@ -81,10 +81,10 @@ contract ElectionsMaster {
     }
 
     function addElection(address electionAddress,
-        bytes32 electionName,
+        string memory electionName,
         address organizerAddress) public isOrganizer(organizerAddress) {
         elections.push(electionAddress);
-        electionsNames.push(electionName);
+        electionsNames[electionAddress] = electionName;
         emit ElectionCreated(electionAddress, electionName);
     }
 
@@ -110,8 +110,8 @@ contract ElectionsMaster {
         return elections;
     }
 
-    function getElectionNames() public view returns (bytes32[] memory) {
-        return electionsNames;
+    function getElectionName(address eleciotnAddress) public view returns (string memory) {
+        return electionsNames[eleciotnAddress];
     }
 
     function canAddressDeployContract(address organizerAddress) public view returns(bool) {
