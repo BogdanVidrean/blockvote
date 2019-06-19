@@ -92,16 +92,4 @@ task javaPackagerMacOsEmbeddedRuntime(type: Exec, dependsOn: executableJarMacOs)
             '-srcdir', ".",
             '-appclass', mainClass
     ]
-    //  Working params for dmg installer
-//    commandLine = [
-//            'javaPackager',
-//            '-deploy',
-//            '-nosign',
-//            '-appclass', mainClass,
-//            '-native', 'dmg',
-//            '-outdir', "${buildDir}/distribution",
-//            '-outfile', project.name,
-//            '-srcfiles', "${buildDir}/libs/blockvote-1.0-SNAPSHOT.jar",
-//            '-srcdir', "."
-//    ]
 }

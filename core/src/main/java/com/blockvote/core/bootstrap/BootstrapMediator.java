@@ -1,9 +1,8 @@
 package com.blockvote.core.bootstrap;
 
 import com.blockvote.core.exceptions.BootstrapException;
+import com.blockvote.core.gethRpcServices.AdminService;
 import com.blockvote.core.os.OsInteraction;
-import com.blockvote.core.services.AdminService;
-import com.blockvote.core.services.BootstrapService;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.json.JSONObject;
 

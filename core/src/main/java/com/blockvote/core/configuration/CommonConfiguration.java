@@ -1,12 +1,12 @@
 package com.blockvote.core.configuration;
 
+import com.blockvote.core.bootstrap.BootstrapService;
 import com.blockvote.core.contracts.dispatcher.ElectionsDispatcher;
 import com.blockvote.core.contracts.dispatcher.ElectionsDispatcherImpl;
 import com.blockvote.core.contracts.interfaces.IElectionMaster;
 import com.blockvote.core.contracts.proxy.ElectionMasterProxy;
-import com.blockvote.core.services.AdminService;
-import com.blockvote.core.services.BootstrapService;
-import com.blockvote.core.services.MiningService;
+import com.blockvote.core.gethRpcServices.AdminService;
+import com.blockvote.core.gethRpcServices.MiningService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.web3j.protocol.Web3j;

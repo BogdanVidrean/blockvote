@@ -1,7 +1,7 @@
 package com.blockvote.organizer.controllers;
 
+import com.blockvote.core.gethRpcServices.MiningService;
 import com.blockvote.core.observer.LogoutObservable;
-import com.blockvote.core.services.MiningService;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import javafx.fxml.FXML;
 import javafx.scene.Node;

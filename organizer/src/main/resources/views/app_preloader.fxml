@@ -115,7 +115,7 @@
                                                                 <Text fill="WHITE"
                                                                       onMousePressed="#showCreateWalletModal"
                                                                       strokeType="OUTSIDE" strokeWidth="0.0"
-                                                                      styleClass="udnerlinedText" text="CREATE WALLET">
+                                                                      styleClass="udnerlinedText" text="CREATE ADDRESS">
                                                                     <font>
                                                                         <Font name="System Bold" size="14.0"/>
                                                                     </font>

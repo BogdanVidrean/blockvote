@@ -1,12 +1,12 @@
 package com.blockvote.organizer.configuration;
 
 import com.blockvote.core.bootstrap.BootstrapMediator;
+import com.blockvote.core.bootstrap.BootstrapService;
 import com.blockvote.core.contracts.dispatcher.ElectionsDispatcher;
 import com.blockvote.core.contracts.interfaces.IElectionMaster;
+import com.blockvote.core.gethRpcServices.AdminService;
+import com.blockvote.core.gethRpcServices.MiningService;
 import com.blockvote.core.os.OsInteraction;
-import com.blockvote.core.services.AdminService;
-import com.blockvote.core.services.BootstrapService;
-import com.blockvote.core.services.MiningService;
 import com.blockvote.organizer.controllers.AppPreloaderController;
 import com.blockvote.organizer.controllers.CreateAccountController;
 import com.blockvote.organizer.controllers.ElectionCreationController;
