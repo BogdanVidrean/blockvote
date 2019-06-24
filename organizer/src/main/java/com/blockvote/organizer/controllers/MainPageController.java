@@ -96,11 +96,11 @@ public class MainPageController extends LogoutObservable {
             // start mining
             supplyAsync(() -> {
                 try {
-                    miningToggle.setDisable(true);
+                    runLater(() -> miningToggle.setDisable(true));
                     return miningService.startMining();
                 } catch (UnirestException e) {
-                    e.printStackTrace();
-                    miningToggle.setDisable(false);
+//                    e.printStackTrace();
+                    runLater(() -> miningToggle.setDisable(false));
                     throw new RuntimeException("Failed to connect to the node.");
                 }
             })
@@ -112,8 +112,8 @@ public class MainPageController extends LogoutObservable {
                         });
                     })
                     .exceptionally(ex -> {
-                        miningToggle.setDisable(false);
-                        ex.printStackTrace();
+                        runLater(() -> miningToggle.setDisable(false));
+//                        ex.printStackTrace();
                         runLater(() -> miningToggle.fire());
                         return null;
                     });
@@ -121,22 +121,24 @@ public class MainPageController extends LogoutObservable {
             //  stop mining
             supplyAsync(() -> {
                 try {
-                    miningToggle.setDisable(true);
+                    runLater(() -> miningToggle.setDisable(true));
                     return miningService.stopMinig();
                 } catch (UnirestException e) {
-                    e.printStackTrace();
-                    miningToggle.setDisable(false);
+//                    e.printStackTrace();
+                    runLater(() -> miningToggle.setDisable(false));
                     throw new RuntimeException("Failed to connect to the node.");
                 }
             })
                     .thenAccept(jsonNodeHttpResponse -> {
-                        miningToggle.setDisable(false);
-                        miningToggle.setStyle("-fx-background-color: #ff6060;");
-                        runLater(() -> miningToggle.setText("OFF"));
+                        runLater(() -> {
+                            miningToggle.setStyle("-fx-background-color: #ff6060;");
+                            miningToggle.setDisable(false);
+                            miningToggle.setText("OFF");
+                        });
                     })
                     .exceptionally(ex -> {
-                        miningToggle.setDisable(false);
-                        ex.printStackTrace();
+                        runLater(() -> miningToggle.setDisable(false));
+//                        ex.printStackTrace();
                         return null;
                     });
         }
