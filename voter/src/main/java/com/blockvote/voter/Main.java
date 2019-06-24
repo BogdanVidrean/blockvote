@@ -16,6 +16,7 @@ public class Main extends Application {
     }
 
     public void start(Stage primaryStage) {
+        System.setProperty("log4j.configurationFile", "log4j2.xml");
         final ApplicationContext applicationContext = new AnnotationConfigApplicationContext(VoterConfiguration.class);
         final Scene preloaderScene = (Scene) applicationContext.getBean("appPreloaderScene");
         final AppPreloaderController appPreloaderController = applicationContext.getBean(AppPreloaderController.class);

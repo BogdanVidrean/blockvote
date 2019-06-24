@@ -17,6 +17,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.request.EthFilter;
@@ -43,6 +45,8 @@ import static org.web3j.protocol.core.DefaultBlockParameterName.EARLIEST;
 import static org.web3j.protocol.core.DefaultBlockParameterName.LATEST;
 
 public class VoteController implements LoginObserver, LogoutObserver {
+
+    private static final Logger log = LogManager.getLogger(VoteController.class);
 
     @FXML
     private VBox electionMasterVBox;
@@ -289,8 +293,11 @@ public class VoteController implements LoginObserver, LogoutObserver {
                             }
                         })
                         .exceptionally(ex -> {
-                            userText.setStyle("-fx-fill: #ff6060");
-                            userText.setText(ex.getCause().getMessage());
+                            runLater(() -> {
+                                userText.setStyle("-fx-fill: #ff6060");
+                                userText.setText(ex.getCause().getMessage());
+                            });
+                            log.error(ex);
                             return null;
                         });
             }
