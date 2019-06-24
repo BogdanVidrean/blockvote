@@ -440,4 +440,10 @@ public class VoteController implements LoginObserver, LogoutObserver {
 
         return output.toString();
     }
+
+    public void destroyOnExit() {
+        if (logsDisposable != null) {
+            logsDisposable.dispose();
+        }
+    }
 }

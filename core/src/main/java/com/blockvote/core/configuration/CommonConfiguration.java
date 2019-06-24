@@ -42,17 +42,17 @@ public class CommonConfiguration {
     }
 
     @Bean
-    public IElectionMaster electionsMaster() {
+    public IElectionMaster electionsMaster(Web3j web3j) {
         ElectionMasterProxy electionMasterProxy = new ElectionMasterProxy();
-        electionMasterProxy.setWeb3j(web3j());
+        electionMasterProxy.setWeb3j(web3j);
         electionMasterProxy.setApplicationProperties(applicationProperties());
         return electionMasterProxy;
     }
 
     @Bean
-    public ElectionsDispatcher electionsDispatcher() {
+    public ElectionsDispatcher electionsDispatcher(Web3j web3j) {
         ElectionsDispatcherImpl electionsDispatcher = new ElectionsDispatcherImpl();
-        electionsDispatcher.setWeb3j(web3j());
+        electionsDispatcher.setWeb3j(web3j);
         return electionsDispatcher;
     }
 
