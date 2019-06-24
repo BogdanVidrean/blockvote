@@ -4,6 +4,8 @@ import com.blockvote.core.exceptions.BootstrapException;
 import com.blockvote.core.gethRpcServices.AdminService;
 import com.blockvote.core.os.OsInteraction;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -28,6 +30,7 @@ import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 public class BootstrapMediator {
 
+    private static final Logger log = LogManager.getLogger(BootstrapMediator.class);
     private static final CountDownLatch GETH_INIT_COUNT_DOWN_LATCH = new CountDownLatch(1);
     private final OsInteraction osInteraction;
     private final BootstrapService bootstrapService;
@@ -78,7 +81,7 @@ public class BootstrapMediator {
             }
         })
                 .exceptionally(ex -> {
-                    ex.printStackTrace();
+                    log.error("Failed to register the current node.", ex);
                     return null;
                 });
     }
@@ -102,7 +105,7 @@ public class BootstrapMediator {
                     }
                 })
                 .exceptionally(ex -> {
-                    ex.printStackTrace();
+                    log.error("Failed to retrieve the list of the nodes.", ex);
                     return null;
                 });
     }
@@ -112,7 +115,7 @@ public class BootstrapMediator {
             try {
                 bootstrapService.removeNode(enode);
             } catch (UnirestException e) {
-                e.printStackTrace();
+                log.error("Failed to remove the current node.", e);
             }
         }
     }
@@ -129,7 +132,7 @@ public class BootstrapMediator {
                         currentAttempt--;
                         sleep(300);
                     } catch (InterruptedException ex) {
-                        ex.printStackTrace();
+                        log.error("Failed to retrieve the current node address.", ex);
                     }
                 }
             }
@@ -150,7 +153,7 @@ public class BootstrapMediator {
                 })
                 .exceptionally(ex -> {
                     GETH_INIT_COUNT_DOWN_LATCH.countDown();
-                    ex.printStackTrace();
+                    log.error("Failed to retrieve the current node address.", ex);
                     return null;
                 });
     }
@@ -173,7 +176,7 @@ public class BootstrapMediator {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Failed to validate geth client.", e);
         }
         return actualChainId == CHAIN_ID;
     }
@@ -215,10 +218,10 @@ public class BootstrapMediator {
 
     private void addShutdownListener() {
         getRuntime().addShutdownHook(new Thread(() -> {
-            removeCurrentNode();
             if (gethProcess != null && gethProcess.isAlive()) {
                 gethProcess.destroy();
             }
+            removeCurrentNode();
         }));
     }
 
