@@ -341,16 +341,17 @@ public class VoteController implements LoginObserver, LogoutObserver {
                                             });
                                         })
                                         .exceptionally(ex -> {
+                                            log.error("Failed to vote for the elction with the address: " + selectedAddress, ex);
                                             runLater(() -> {
                                                 userText.setStyle("-fx-fill: #ff6060");
-                                                userText.setText("Something went wrong.");
+                                                userText.setText("Something went wrong, check the logs.");
                                             });
                                             return null;
                                         });
                             }
                         })
                         .exceptionally(ex -> {
-                            log.error(ex);
+                            log.error("Failed to vote for the election with the address: " + selectedAddress, ex);
                             runLater(() -> {
                                 userText.setStyle("-fx-fill: #ff6060");
                                 userText.setText(ex.getCause().getMessage());

@@ -16,6 +16,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.web3j.abi.datatypes.generated.Bytes32;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
@@ -43,6 +45,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 public class ElectionCreationController implements LoginObserver, LogoutObserver {
 
+    private static final Logger log = LogManager.getLogger(ElectionCreationController.class);
     private static final String NOT_VALID_OPTIONS_NR_PROVIDED_ERROR_MSG = "The provided value is not valid.";
     private static final String TRANSACTION_SUCCESSFULLY_SENT_MSG = "Transaction successfully registered.";
     private static final String ELECTION_CREATED_MSG = "The election was successfully created.";
@@ -190,8 +193,11 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
                                         userMessagge.setText(ELECTION_CREATED_MSG);
                                     })
                                     .exceptionally(error -> {
-                                        userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff6060");
-                                        userMessagge.setText("Something bad happened.");
+                                        log.error("Failed to create the election", error);
+                                        runLater(() -> {
+                                            userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff6060");
+                                            userMessagge.setText("Something bad happened, check the logs.");
+                                        });
                                         return null;
                                     });
                         }

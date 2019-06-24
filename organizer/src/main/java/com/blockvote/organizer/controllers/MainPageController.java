@@ -10,11 +10,15 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static javafx.application.Platform.runLater;
 
 public class MainPageController extends LogoutObservable {
+
+    private static final Logger log = LogManager.getLogger(MainPageController.class);
 
     @FXML
     private ToggleButton miningToggle;
@@ -112,6 +116,7 @@ public class MainPageController extends LogoutObservable {
                         });
                     })
                     .exceptionally(ex -> {
+                        log.error("Failed to start mining.", ex);
                         runLater(() -> miningToggle.setDisable(false));
 //                        ex.printStackTrace();
                         runLater(() -> miningToggle.fire());
@@ -137,6 +142,7 @@ public class MainPageController extends LogoutObservable {
                         });
                     })
                     .exceptionally(ex -> {
+                        log.error("Failed to stop mining.", ex);
                         runLater(() -> miningToggle.setDisable(false));
 //                        ex.printStackTrace();
                         return null;

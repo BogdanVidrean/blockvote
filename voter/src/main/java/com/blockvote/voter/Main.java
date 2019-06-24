@@ -24,4 +24,9 @@ public class Main extends Application {
         primaryStage.setScene(preloaderScene);
         primaryStage.show();
     }
+
+    @Override
+    public void stop() {
+
+    }
 }

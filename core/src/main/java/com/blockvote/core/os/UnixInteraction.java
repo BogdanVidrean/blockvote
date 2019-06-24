@@ -1,5 +1,8 @@
 package com.blockvote.core.os;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +32,8 @@ import static org.apache.commons.io.FileUtils.deleteDirectory;
 
 public class UnixInteraction implements OsInteraction {
 
+    private static final Logger log = LogManager.getLogger(UnixInteraction.class);
+
     @Override
     public Optional<Process> startLocalNode() {
         String[] args = new String[]{"./geth", "--datadir", NODE_PATH,
@@ -40,7 +45,7 @@ public class UnixInteraction implements OsInteraction {
         try {
             return of(builder.start());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Failed to start local node.", e);
         }
         return empty();
     }

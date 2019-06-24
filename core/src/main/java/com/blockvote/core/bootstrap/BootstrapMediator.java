@@ -218,7 +218,7 @@ public class BootstrapMediator {
 
     private void addShutdownListener() {
         getRuntime().addShutdownHook(new Thread(() -> {
-            if (gethProcess != null && gethProcess.isAlive()) {
+            if (gethProcess != null) {
                 gethProcess.destroy();
             }
             removeCurrentNode();
