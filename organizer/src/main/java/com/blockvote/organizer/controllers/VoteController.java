@@ -453,7 +453,9 @@ public class VoteController implements LoginObserver, LogoutObserver {
 
                 //  Click handler
                 electionInformationContainer.setOnMousePressed(event -> handleElectionSelection(newElectionAddress));
-                electionsNamesContainer.getChildren().add(electionInformationContainer);
+                synchronized (this) {
+                    electionsNamesContainer.getChildren().add(electionInformationContainer);
+                }
             });
         });
     }
