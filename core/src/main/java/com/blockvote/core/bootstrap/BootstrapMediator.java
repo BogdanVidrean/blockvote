@@ -3,7 +3,7 @@ package com.blockvote.core.bootstrap;
 import com.blockvote.core.exceptions.BootstrapException;
 import com.blockvote.core.gethRpcServices.AdminService;
 import com.blockvote.core.os.OsInteraction;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import kong.unirest.UnirestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;

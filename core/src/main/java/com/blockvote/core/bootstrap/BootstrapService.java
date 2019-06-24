@@ -1,15 +1,15 @@
 package com.blockvote.core.bootstrap;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
+import kong.unirest.UnirestException;
 
 import java.util.Properties;
 
 import static com.blockvote.core.os.Commons.DEFAULT_BOOTSTRAP_SERVER_URL;
-import static com.mashape.unirest.http.Unirest.delete;
-import static com.mashape.unirest.http.Unirest.get;
-import static com.mashape.unirest.http.Unirest.put;
+import static kong.unirest.Unirest.delete;
+import static kong.unirest.Unirest.get;
+import static kong.unirest.Unirest.put;
 
 public class BootstrapService {
 

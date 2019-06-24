@@ -1,13 +1,13 @@
 package com.blockvote.core.gethRpcServices;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
+import kong.unirest.UnirestException;
 
 import static com.blockvote.core.os.Commons.RPC_HOST;
 import static com.blockvote.core.os.Commons.RPC_PORT;
 import static com.blockvote.core.os.Commons.RPC_PROTOCOL;
-import static com.mashape.unirest.http.Unirest.post;
+import static kong.unirest.Unirest.post;
 
 public class AdminService {
 

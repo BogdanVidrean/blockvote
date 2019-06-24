@@ -2,7 +2,6 @@ package com.blockvote.voter.controllers;
 
 import com.blockvote.core.gethRpcServices.MiningService;
 import com.blockvote.core.observer.LogoutObservable;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -10,6 +9,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import kong.unirest.UnirestException;
 
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static javafx.application.Platform.runLater;
