@@ -25,6 +25,7 @@ import org.web3j.protocol.Web3j;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 
 import static com.blockvote.core.os.OsInteraction.UNIX;
 import static com.blockvote.core.os.OsInteractionFactory.createOsInteraction;
@@ -41,6 +42,7 @@ public class OrganizerConfiguration {
     private final BootstrapService bootstrapService;
     private final AdminService adminService;
     private final Properties applicationProperties;
+    private final ExecutorService executorService;
 
     public OrganizerConfiguration(
             IElectionMaster electionMaster,
@@ -49,7 +51,8 @@ public class OrganizerConfiguration {
             MiningService miningService,
             BootstrapService bootstrapService,
             AdminService adminService,
-            Properties applicationProperties) {
+            Properties applicationProperties,
+            ExecutorService executorService) {
         this.electionMaster = electionMaster;
         this.web3j = web3j;
         this.electionsDispatcher = electionsDispatcher;
@@ -57,6 +60,7 @@ public class OrganizerConfiguration {
         this.bootstrapService = bootstrapService;
         this.adminService = adminService;
         this.applicationProperties = applicationProperties;
+        this.executorService = executorService;
     }
 
     @PostConstruct
@@ -81,7 +85,7 @@ public class OrganizerConfiguration {
 
     @Bean
     public BootstrapMediator bootstrapMediator() {
-        return new BootstrapMediator(osInteraction(), bootstrapService, adminService);
+        return new BootstrapMediator(osInteraction(), bootstrapService, adminService, executorService);
     }
 
     @Bean

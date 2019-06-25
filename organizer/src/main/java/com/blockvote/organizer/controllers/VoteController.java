@@ -189,7 +189,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
                             }
                             currentElectionNodes.add(statusLabel);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            log.error("Failed to select an election.", e);
                         }
 
                         AtomicInteger optionsCounter = new AtomicInteger();

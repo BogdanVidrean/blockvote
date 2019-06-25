@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Arrays.asList;
@@ -67,6 +68,11 @@ public class VoteController implements LoginObserver, LogoutObserver {
     private Map<Integer, Pair<CheckBox, Label>> options = new HashMap<>();
     private Text userText = new Text();
     private volatile boolean areResultsVisible = false;
+    private ExecutorService executorService;
+
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 
     public void setElectionsDispatcher(ElectionsDispatcher electionsDispatcher) {
         this.electionsDispatcher = electionsDispatcher;
@@ -198,7 +204,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
                             }
                             currentElectionNodes.add(statusLabel);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            log.error("Failed to create elections details.", e);
                         }
 
                         AtomicInteger optionsCounter = new AtomicInteger();
@@ -330,7 +336,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
                                 throw new RuntimeException(e.getMessage());
                             }
                         }
-                    })
+                    }, executorService)
                     .thenAccept(results -> {
                         AtomicInteger atomicInteger = new AtomicInteger();
                         runLater(() -> results.forEach(result -> {
@@ -344,8 +350,8 @@ public class VoteController implements LoginObserver, LogoutObserver {
                         }));
                     })
                     .exceptionally(ex -> {
+                        log.error("Failed to vote for the election with the address: " + selectedAddress, ex);
                         runLater(() -> {
-                            ex.printStackTrace();
                             userText.setStyle("-fx-fill: #ff6060");
                             userText.setText(ex.getCause().getMessage());
                         });

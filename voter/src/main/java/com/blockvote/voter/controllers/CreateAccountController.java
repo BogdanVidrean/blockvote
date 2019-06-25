@@ -5,6 +5,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.web3j.crypto.CipherException;
 
 import java.io.IOException;
@@ -20,6 +22,8 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.web3j.crypto.WalletUtils.generateNewWalletFile;
 
 public class CreateAccountController extends Observable {
+
+    private static final Logger log = LogManager.getLogger(CreateAccountController.class);
 
     @FXML
     private Text errorMsg;
@@ -62,7 +66,7 @@ public class CreateAccountController extends Observable {
                     clearFields();
                     createAccountStage.close();
                 } catch (CipherException | InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchProviderException | IOException e) {
-                    e.printStackTrace();
+                    log.error("Failed to generate new f=wallet.", e);
                 }
             } else {
                 errorMsg.setText("Passwords don't match.");

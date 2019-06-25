@@ -19,6 +19,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
 
@@ -40,6 +42,8 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.web3j.crypto.WalletUtils.loadCredentials;
 
 public class AppPreloaderController extends LoginObservable {
+
+    private static final Logger log = LogManager.getLogger(AppPreloaderController.class);
 
     @FXML
     private Label chooseWalletMessage;
@@ -89,8 +93,7 @@ public class AppPreloaderController extends LoginObservable {
             bootstrapMediator.bootstrap();
             loadAvailableAccountWallets();
         } catch (BootstrapException e) {
-            // TODO: Some retry mechanism
-            e.printStackTrace();
+            log.error("Failed to bootstrap.", e);
         }
     }
 
@@ -140,7 +143,7 @@ public class AppPreloaderController extends LoginObservable {
                                 return null;
                             });
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error("Failed to load credentials.", e);
                 } catch (CipherException e) {
                     errorMsg.setText("The password is not correct.");
                 }

@@ -17,18 +17,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 
 import static com.blockvote.core.os.Commons.BLOCKVOTE_PROPERTIES_LOCATION;
 import static com.blockvote.core.os.Commons.RPC_HOST;
 import static com.blockvote.core.os.Commons.RPC_PORT;
 import static com.blockvote.core.os.Commons.RPC_PROTOCOL;
 import static java.nio.file.Paths.get;
+import static java.util.concurrent.Executors.newCachedThreadPool;
 import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 import static org.web3j.protocol.Web3j.build;
 
 @Configuration
 @SuppressWarnings("SpringFacetCodeInspection")
 public class CommonConfiguration {
+
+    @Bean
+    public ExecutorService executorService() {
+        return newCachedThreadPool();
+    }
 
     @Bean
     public HttpService httpService() {

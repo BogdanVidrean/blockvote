@@ -20,6 +20,7 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 
 import static com.blockvote.core.os.Commons.CHAIN_ID;
 import static java.lang.Long.parseLong;
@@ -35,15 +36,18 @@ public class BootstrapMediator {
     private final OsInteraction osInteraction;
     private final BootstrapService bootstrapService;
     private final AdminService adminService;
+    private final ExecutorService executorService;
     private volatile Process gethProcess;
     private volatile String enode;
 
     public BootstrapMediator(OsInteraction osInteraction,
                              BootstrapService bootstrapService,
-                             AdminService adminService) {
+                             AdminService adminService,
+                             ExecutorService executorService) {
         this.osInteraction = osInteraction;
         this.bootstrapService = bootstrapService;
         this.adminService = adminService;
+        this.executorService = executorService;
     }
 
     public Process bootstrap() throws BootstrapException {
@@ -79,7 +83,7 @@ public class BootstrapMediator {
             } catch (UnirestException | InterruptedException e) {
                 throw new RuntimeException(e.getMessage());
             }
-        })
+        }, executorService)
                 .exceptionally(ex -> {
                     log.error("Failed to register the current node.", ex);
                     return null;
@@ -94,7 +98,7 @@ public class BootstrapMediator {
             } catch (UnirestException | InterruptedException e) {
                 throw new RuntimeException(e.getMessage());
             }
-        })
+        }, executorService)
                 .thenAcceptAsync(listHttpResponse -> {
                     for (Object o : listHttpResponse.getBody().getArray()) {
                         try {
@@ -103,7 +107,7 @@ public class BootstrapMediator {
                             throw new RuntimeException(e.getMessage());
                         }
                     }
-                })
+                }, executorService)
                 .exceptionally(ex -> {
                     log.error("Failed to retrieve the list of the nodes.", ex);
                     return null;
@@ -137,7 +141,7 @@ public class BootstrapMediator {
                 }
             }
             throw new RuntimeException("Failed to retrieve node info.");
-        })
+        }, executorService)
                 .thenAcceptAsync(jsonNodeHttpResponse -> {
                     JSONObject nodeInfoNode = (JSONObject) jsonNodeHttpResponse.getBody().getObject().get("result");
                     String enode = (String) nodeInfoNode.get("enode");
@@ -150,7 +154,7 @@ public class BootstrapMediator {
                     } catch (SocketException | UnknownHostException e) {
                         throw new RuntimeException(e.getMessage());
                     }
-                })
+                }, executorService)
                 .exceptionally(ex -> {
                     GETH_INIT_COUNT_DOWN_LATCH.countDown();
                     log.error("Failed to retrieve the current node address.", ex);

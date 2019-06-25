@@ -14,11 +14,13 @@ import org.web3j.protocol.http.HttpService;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.concurrent.ExecutorService;
 
 public class Main extends Application {
     private VoteController voteController;
     private Web3j web3j;
     private HttpService httpService;
+    private ExecutorService executorService;
 
     public static void main(String[] args) {
         launch(args);
@@ -32,6 +34,7 @@ public class Main extends Application {
         voteController = applicationContext.getBean(VoteController.class);
         web3j = applicationContext.getBean(Web3j.class);
         httpService = applicationContext.getBean(HttpService.class);
+        executorService = applicationContext.getBean(ExecutorService.class);
 
         final Scene preloaderScene = (Scene) applicationContext.getBean("appPreloaderScene");
         final AppPreloaderController appPreloaderController = applicationContext.getBean(AppPreloaderController.class);
@@ -59,6 +62,9 @@ public class Main extends Application {
             } catch (IOException | IllegalAccessException | NoSuchFieldException e) {
                 e.printStackTrace();
             }
+        }
+        if (executorService != null) {
+            executorService.shutdown();
         }
     }
 }

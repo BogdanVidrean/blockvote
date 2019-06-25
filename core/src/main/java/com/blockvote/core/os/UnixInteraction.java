@@ -63,7 +63,7 @@ public class UnixInteraction implements OsInteraction {
             Process process = builder.start();
             process.waitFor();
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            log.error("Failed to create local node.", e);
         }
     }
 
@@ -72,7 +72,7 @@ public class UnixInteraction implements OsInteraction {
         try {
             deleteDirectory(new File(NODE_PATH));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Failed to delete local node.", e);
         }
     }
 
@@ -96,7 +96,7 @@ public class UnixInteraction implements OsInteraction {
             Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rwxr-xr-x");
             setPosixFilePermissions(get(destination.toUri()), permissions);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Failed to copy geht to disk.", e);
         }
     }
 }
