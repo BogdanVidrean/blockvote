@@ -17,7 +17,6 @@ import java.util.Set;
 import static com.blockvote.core.os.Commons.DEFAULT_PORT;
 import static com.blockvote.core.os.Commons.GENESIS_DISK_LOCATION;
 import static com.blockvote.core.os.Commons.GETH_DISK_LOCATION;
-import static com.blockvote.core.os.Commons.GETH_OUTPUT_FILE;
 import static com.blockvote.core.os.Commons.KEYSTORE_PATH;
 import static com.blockvote.core.os.Commons.NETWORK_ID;
 import static com.blockvote.core.os.Commons.NODE_PATH;
@@ -42,7 +41,6 @@ public class UnixInteraction implements OsInteraction {
                 "eth,web3,personal,net,miner,admin,debug", "--rpcport", valueOf(RPC_PORT), "--rpccorsdomain", "*"};
         ProcessBuilder builder = new ProcessBuilder();
         builder.command(args);
-        builder.redirectError(get(GETH_OUTPUT_FILE).toFile());
         builder.directory(get(GETH_DISK_LOCATION).toFile());
         try {
             return of(builder.start());

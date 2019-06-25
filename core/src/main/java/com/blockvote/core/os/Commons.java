@@ -30,6 +30,4 @@ public abstract class Commons {
             .toAbsolutePath().toString();
     public static final String BLOCKVOTE_PROPERTIES_LOCATION = get(APPDATA_PATH, "blockvote.properties")
             .toAbsolutePath().toString();
-    public static final String GETH_OUTPUT_FILE = get(GETH_DISK_LOCATION, "geth_output.txt")
-            .toAbsolutePath().toString();
 }

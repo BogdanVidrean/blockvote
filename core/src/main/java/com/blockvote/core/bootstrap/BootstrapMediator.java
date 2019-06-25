@@ -9,9 +9,8 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -23,11 +22,9 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
 import static com.blockvote.core.os.Commons.CHAIN_ID;
-import static com.blockvote.core.os.Commons.GETH_OUTPUT_FILE;
 import static java.lang.Long.parseLong;
 import static java.lang.Runtime.getRuntime;
 import static java.lang.Thread.sleep;
-import static java.nio.file.Paths.get;
 import static java.util.concurrent.CompletableFuture.runAsync;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
@@ -164,27 +161,23 @@ public class BootstrapMediator {
     private boolean validateCurrentNode(Process gethProcess) {
         BufferedReader in = null;
         long actualChainId = 0;
+        in = new BufferedReader(new InputStreamReader(gethProcess.getErrorStream()));
+        String line;
+        boolean found = false;
         try {
-            in = new BufferedReader(new FileReader(get(GETH_OUTPUT_FILE).toFile()));
-            String line;
-            boolean found = false;
-            try {
-                while (((line = in.readLine()) != null) && !found) {
-                    if (line.contains("ChainID:")) {
-                        String chainIDString = line.substring(line.indexOf("ChainID") + 8, line.indexOf("Homestead"));
-                        chainIDString = chainIDString.replaceAll(" ", "");
-                        actualChainId = parseLong(chainIDString);
-                        found = true;
-                    }
-                    if (line.toLowerCase().contains("datadir already used by another process")) {
-                        return true;
-                    }
+            while (((line = in.readLine()) != null) && !found) {
+                if (line.contains("ChainID:")) {
+                    String chainIDString = line.substring(line.indexOf("ChainID") + 8, line.indexOf("Homestead"));
+                    chainIDString = chainIDString.replaceAll(" ", "");
+                    actualChainId = parseLong(chainIDString);
+                    found = true;
                 }
-            } catch (IOException e) {
-                log.error("Failed to validate geth client.", e);
+                if (line.toLowerCase().contains("datadir already used by another process")) {
+                    return true;
+                }
             }
-        } catch (FileNotFoundException e) {
-            return false;
+        } catch (IOException e) {
+            log.error("Failed to validate geth client.", e);
         }
         return actualChainId == CHAIN_ID;
     }
@@ -227,16 +220,7 @@ public class BootstrapMediator {
     private void addShutdownListener() {
         getRuntime().addShutdownHook(new Thread(() -> {
             if (gethProcess != null) {
-                int attempts = 5;
-                while (attempts > 0 && gethProcess.isAlive()) {
-                    gethProcess.destroy();
-                    attempts--;
-                    try {
-                        sleep(400);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+                gethProcess.destroy();
             }
             removeCurrentNode();
         }));
