@@ -31,7 +31,6 @@ contract Election {
         electionMaster = ElectionMaster(masterContractAddress);
         bool canDeploy = electionMaster.canAddressDeployContract(msg.sender);
         require(canDeploy == true, "Organizer permissions required to deploy a contract.");
-        electionMaster.addElection(address(this), nameOfElection, msg.sender);
 
         electionName = nameOfElection;
         for (uint8 i = 0; i < initialOptions.length; i++) {
@@ -41,6 +40,7 @@ contract Election {
         startTime = electionStartTime;
         endTime = electionEndTime;
         isOver = false;
+        electionMaster.addElection(address(this), nameOfElection, msg.sender);
     }
 
     modifier areTimestampsValid(uint startTimeToValidate, uint endTimeToValidate) {

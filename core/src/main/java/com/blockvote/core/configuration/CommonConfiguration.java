@@ -7,17 +7,11 @@ import com.blockvote.core.contracts.interfaces.IElectionMaster;
 import com.blockvote.core.contracts.proxy.ElectionMasterProxy;
 import com.blockvote.core.gethRpcServices.AdminService;
 import com.blockvote.core.gethRpcServices.MiningService;
-import kong.unirest.Unirest;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 
-import javax.annotation.PostConstruct;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,16 +29,6 @@ import static org.web3j.protocol.Web3j.build;
 @Configuration
 @SuppressWarnings("SpringFacetCodeInspection")
 public class CommonConfiguration {
-
-    @PostConstruct
-    public void post() {
-        Unirest.config()
-                .reset()
-                .connectTimeout(10)
-                .socketTimeout(10)
-                .httpClient(closeableHttpClient())
-                .asyncClient(closeableHttpAsyncClient());
-    }
 
     @Bean
     public HttpService httpService() {
@@ -105,15 +89,4 @@ public class CommonConfiguration {
         }
         return applicationProperties;
     }
-
-    @Bean
-    public CloseableHttpClient closeableHttpClient() {
-        return HttpClients.createDefault();
-    }
-
-    @Bean
-    public CloseableHttpAsyncClient closeableHttpAsyncClient() {
-        return HttpAsyncClients.createDefault();
-    }
-
 }

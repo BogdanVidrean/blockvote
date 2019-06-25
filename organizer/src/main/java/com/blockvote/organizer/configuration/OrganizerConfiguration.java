@@ -17,8 +17,6 @@ import com.blockvote.organizer.controllers.VoteController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -43,8 +41,6 @@ public class OrganizerConfiguration {
     private final BootstrapService bootstrapService;
     private final AdminService adminService;
     private final Properties applicationProperties;
-    private final CloseableHttpClient closeableHttpClient;
-    private final CloseableHttpAsyncClient closeableHttpAsyncClient;
 
     public OrganizerConfiguration(
             IElectionMaster electionMaster,
@@ -53,8 +49,7 @@ public class OrganizerConfiguration {
             MiningService miningService,
             BootstrapService bootstrapService,
             AdminService adminService,
-            Properties applicationProperties, CloseableHttpClient closeableHttpClient,
-            CloseableHttpAsyncClient closeableHttpAsyncClient) {
+            Properties applicationProperties) {
         this.electionMaster = electionMaster;
         this.web3j = web3j;
         this.electionsDispatcher = electionsDispatcher;
@@ -62,8 +57,6 @@ public class OrganizerConfiguration {
         this.bootstrapService = bootstrapService;
         this.adminService = adminService;
         this.applicationProperties = applicationProperties;
-        this.closeableHttpClient = closeableHttpClient;
-        this.closeableHttpAsyncClient = closeableHttpAsyncClient;
     }
 
     @PostConstruct

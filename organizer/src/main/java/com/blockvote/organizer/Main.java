@@ -7,8 +7,6 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import okhttp3.OkHttpClient;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.web3j.protocol.Web3j;
@@ -20,8 +18,6 @@ import java.lang.reflect.Field;
 public class Main extends Application {
     private VoteController voteController;
     private Web3j web3j;
-    private CloseableHttpAsyncClient closeableHttpAsyncClient;
-    private CloseableHttpClient closeableHttpClient;
     private HttpService httpService;
 
     public static void main(String[] args) {
@@ -35,8 +31,6 @@ public class Main extends Application {
 
         voteController = applicationContext.getBean(VoteController.class);
         web3j = applicationContext.getBean(Web3j.class);
-        closeableHttpAsyncClient = applicationContext.getBean(CloseableHttpAsyncClient.class);
-        closeableHttpClient = applicationContext.getBean(CloseableHttpClient.class);
         httpService = applicationContext.getBean(HttpService.class);
 
         final Scene preloaderScene = (Scene) applicationContext.getBean("appPreloaderScene");
@@ -54,13 +48,6 @@ public class Main extends Application {
         if (web3j != null) {
             web3j.shutdown();
         }
-//        Unirest.shutDown();
-//        try {
-//            closeableHttpClient.close();
-//            closeableHttpAsyncClient.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
         if (httpService != null) {
             try {
                 httpService.close();

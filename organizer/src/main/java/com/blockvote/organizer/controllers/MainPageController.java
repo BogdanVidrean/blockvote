@@ -105,7 +105,7 @@ public class MainPageController extends LogoutObservable {
                 } catch (UnirestException e) {
 //                    e.printStackTrace();
                     runLater(() -> miningToggle.setDisable(false));
-                    throw new RuntimeException("Failed to connect to the node.");
+                    throw new RuntimeException("Failed to connect to the node.", e);
                 }
             })
                     .thenAccept(jsonNodeHttpResponse -> {
@@ -131,7 +131,7 @@ public class MainPageController extends LogoutObservable {
                 } catch (UnirestException e) {
 //                    e.printStackTrace();
                     runLater(() -> miningToggle.setDisable(false));
-                    throw new RuntimeException("Failed to connect to the node.");
+                    throw new RuntimeException("Failed to connect to the node.", e);
                 }
             })
                     .thenAccept(jsonNodeHttpResponse -> {
