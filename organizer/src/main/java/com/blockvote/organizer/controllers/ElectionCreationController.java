@@ -177,7 +177,7 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
                                     web3j, credentials,
                                     new DefaultGasProvider(),
                                     masterContractAddress,
-                                    nameField.getText(),
+                                    stringToBytes32(nameField.getText()),
                                     optionsCollection.stream()
                                             .map(node -> {
                                                 HBox hBox = (HBox) node;
@@ -244,7 +244,7 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
 
     private boolean validateElectionInfo(TextField nameField, List<Node> optionsCollection,
                                          DateTimePicker startDateTimePicker, DateTimePicker endDateTimePicker) {
-        return !isEmpty(nameField.getText()) &&
+        return !isEmpty(nameField.getText()) && nameField.getText().length() <= 32 &&
                 optionsCollection.stream()
                         .reduce(true, (aBoolean, node2) -> aBoolean && !isEmpty(((TextField) (((HBox) node2).getChildren().get(1))).getText()) &&
                                         ((TextField) (((HBox) node2).getChildren().get(1))).getText().length() <= 32,

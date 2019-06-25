@@ -2,12 +2,12 @@ pragma solidity ^0.5.9;
 
 contract ElectionMaster {
     function addElection(address electionAddress,
-        string memory electionName,
+        bytes32 electionName,
         address organizerAddress) public {}
 
-    function canAddressDeployContract(address organizerAddress) public view returns(bool) {}
+    function canAddressDeployContract(address organizerAddress) public view returns (bool) {}
 
-    function canAddressVote(address votersAddress) public view returns(bool) {}
+    function canAddressVote(address votersAddress) public view returns (bool) {}
 }
 
 contract Election {
@@ -22,12 +22,12 @@ contract Election {
     Option[] private options;
     uint128[] private votes;
     mapping(address => uint8) private voters;
-    string private electionName;
+    bytes32 private electionName;
     uint private startTime;
     uint private endTime;
     bool private isOver;
 
-    constructor(address masterContractAddress, string memory nameOfElection, bytes32[] memory initialOptions, uint electionStartTime, uint electionEndTime) public areTimestampsValid(electionStartTime, electionEndTime) {
+    constructor(address masterContractAddress, bytes32 nameOfElection, bytes32[] memory initialOptions, uint electionStartTime, uint electionEndTime) public areTimestampsValid(electionStartTime, electionEndTime) {
         electionMaster = ElectionMaster(masterContractAddress);
         bool canDeploy = electionMaster.canAddressDeployContract(msg.sender);
         require(canDeploy == true, "Organizer permissions required to deploy a contract.");
@@ -90,7 +90,7 @@ contract Election {
         return votes;
     }
 
-    function canAddressVote(address votersAddress) public view returns(bool) {
+    function canAddressVote(address votersAddress) public view returns (bool) {
         return electionMaster.canAddressVote(votersAddress);
     }
 

@@ -21,7 +21,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.methods.request.EthFilter;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -33,14 +32,14 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.IntStream.range;
 import static javafx.application.Platform.runLater;
 import static javafx.geometry.Pos.CENTER;
 import static javafx.geometry.Pos.CENTER_LEFT;
 import static javafx.geometry.Pos.TOP_LEFT;
 import static javafx.scene.text.Font.font;
 import static org.apache.commons.lang3.tuple.Pair.of;
-import static org.web3j.protocol.core.DefaultBlockParameterName.EARLIEST;
-import static org.web3j.protocol.core.DefaultBlockParameterName.LATEST;
 
 public class VoteController implements LoginObserver, LogoutObserver {
 
@@ -88,10 +87,63 @@ public class VoteController implements LoginObserver, LogoutObserver {
     @Override
     @SuppressWarnings("unchecked")
     public void updateOnLogin(Credentials credentials) {
-        logsDisposable = initLogListener();
         initNoElectionsMasterPane();
         initNoElectionsNamesPane();
+        initElections();
         this.currentUserCredentials = credentials;
+    }
+
+    private void initElections() {
+        electionMaster.getElectionAddresses()
+                .sendAsync()
+                .thenAcceptAsync(electionsAddresses -> {
+                    try {
+                        List<byte[]> electionsNames = electionMaster.getElectionNames().send();
+
+                        electionsNamesContainer.getChildren().addAll(range(0, electionsAddresses.size())
+                                .boxed()
+                                .map(i -> {
+                                    electionAddressesAndNames.put((String) electionsAddresses.get(i), new String(electionsNames.get(i)));
+
+                                    Label newElectionLabel = new Label("#" + (i + 1) + "\t" + new String(electionsNames.get(i)));
+                                    newElectionLabel.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff;");
+
+                                    VBox electionInformationContainer = new VBox();
+                                    electionInformationContainer.setAlignment(CENTER_LEFT);
+                                    electionInformationContainer.setPadding(new Insets(30, 30, 30, 30));
+                                    electionInformationContainer.getChildren()
+                                            .addAll(newElectionLabel);
+
+                                    electionInformationContainer.setOnMouseEntered(event -> {
+                                        electionInformationContainer.setStyle("-fx-background-color: #5bb8ff; -fx-cursor: hand");
+                                    });
+
+                                    electionInformationContainer.setOnMouseExited(event -> {
+                                        if (i % 2 == 0) {
+                                            electionInformationContainer.setStyle("-fx-background-color: #4CEAEB");
+                                        } else {
+                                            electionInformationContainer.setStyle("-fx-background-color: #39d8eb");
+                                        }
+                                    });
+                                    if (i % 2 == 0) {
+                                        electionInformationContainer.setStyle("-fx-background-color: #4CEAEB");
+                                    } else {
+                                        electionInformationContainer.setStyle("-fx-background-color: #39d8eb");
+                                    }
+
+                                    //  Click handler
+                                    electionInformationContainer.setOnMousePressed(event -> handleElectionSelection((String) electionsAddresses.get(i)));
+                                    return electionInformationContainer;
+                                })
+                                .collect(toList()));
+                    } catch (Exception e) {
+                        log.error("Failed to retrieve elections.", e);
+                    }
+                })
+                .exceptionally(ex -> {
+                    log.error("Failed to retrieve elections.", ex);
+                    return null;
+                });
     }
 
     private void initNoElectionsNamesPane() {
@@ -417,54 +469,6 @@ public class VoteController implements LoginObserver, LogoutObserver {
         electionMasterVBox.getChildren().remove(0, electionMasterVBox.getChildren().size());
         electionsNamesContainer.getChildren().remove(0, electionsNamesContainer.getChildren().size());
 
-    }
-
-    private Disposable initLogListener() {
-        String masterContractAddress = applicationProperties.getProperty("master.contract.address", "");
-        EthFilter electionCreationLogsFilter = new EthFilter(EARLIEST, LATEST, masterContractAddress);
-        AtomicInteger electionIndex = new AtomicInteger(1);
-        return web3j.ethLogFlowable(electionCreationLogsFilter).subscribe(log -> {
-            List<String> topics = log.getTopics();
-            String newElectionAddress = formatAddressToBeValid(topics.get(1));
-            String newElectionName = electionMaster.getElectionName(newElectionAddress).send();
-            electionAddressesAndNames.put(newElectionAddress, newElectionName);
-            int size = electionIndex.getAndIncrement();
-            Label newElectionLabel = new Label("#" + size + "\t" + newElectionName);
-            newElectionLabel.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff;");
-
-            VBox electionInformationContainer = new VBox();
-            electionInformationContainer.setAlignment(CENTER_LEFT);
-            electionInformationContainer.setPadding(new Insets(30, 30, 30, 30));
-            runLater(() -> {
-                synchronized (this) {
-                    electionsNamesContainer.getChildren().remove(noElectionsAvailableText);
-                }
-                electionInformationContainer.getChildren()
-                        .addAll(newElectionLabel);
-                electionInformationContainer.setOnMouseEntered(event -> {
-                    electionInformationContainer.setStyle("-fx-background-color: #5bb8ff; -fx-cursor: hand");
-                });
-
-                electionInformationContainer.setOnMouseExited(event -> {
-                    if (size % 2 == 0) {
-                        electionInformationContainer.setStyle("-fx-background-color: #4CEAEB");
-                    } else {
-                        electionInformationContainer.setStyle("-fx-background-color: #39d8eb");
-                    }
-                });
-                if (size % 2 == 0) {
-                    electionInformationContainer.setStyle("-fx-background-color: #4CEAEB");
-                } else {
-                    electionInformationContainer.setStyle("-fx-background-color: #39d8eb");
-                }
-
-                //  Click handler
-                electionInformationContainer.setOnMousePressed(event -> handleElectionSelection(newElectionAddress));
-                synchronized (this) {
-                    electionsNamesContainer.getChildren().add(electionInformationContainer);
-                }
-            });
-        });
     }
 
     public void setWeb3j(Web3j web3j) {
