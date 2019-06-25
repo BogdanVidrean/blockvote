@@ -68,6 +68,7 @@ public class VoterConfiguration {
 
         //  logout observers
         mainPageController().addObserver(voteController());
+        mainPageController().addObserver(checkEligibilityController());
 
         //login observers
         appPreloaderController().addObserver(voteController());

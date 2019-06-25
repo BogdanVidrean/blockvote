@@ -69,6 +69,13 @@ public class MainPageController extends LogoutObservable {
         borderPane.setCenter(homeNode);
         notifyObservers();
         primaryStage.setScene(appPreloaderScene);
+        if (miningToggle.isSelected()) {
+            miningService.stopMinig();
+            miningToggle.fire();
+            miningToggle.setDisable(false);
+            miningToggle.setStyle("-fx-background-color: #ff6060;");
+            miningToggle.setText("OFF");
+        }
     }
 
     @FXML

@@ -1,6 +1,7 @@
 package com.blockvote.voter.controllers;
 
 import com.blockvote.core.contracts.interfaces.IElectionMaster;
+import com.blockvote.core.observer.LogoutObserver;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -8,7 +9,7 @@ import javafx.scene.text.Text;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
-public class CheckEligibilityController {
+public class CheckEligibilityController implements LogoutObserver {
 
     @FXML
     private Text userMessage;
@@ -45,5 +46,11 @@ public class CheckEligibilityController {
         } else {
             userMessage.setText("Insert the Social Security Number in the field.");
         }
+    }
+
+    @Override
+    public void updateOnLogout() {
+        userMessage.setText("");
+        ssnTextField.setText("");
     }
 }

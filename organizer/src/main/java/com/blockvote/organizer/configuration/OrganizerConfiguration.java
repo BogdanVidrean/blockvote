@@ -76,6 +76,7 @@ public class OrganizerConfiguration {
         // logout observers
         mainPageController().addObserver(electionCreationController());
         mainPageController().addObserver(voteController());
+        mainPageController().addObserver(registerVoterController());
     }
 
     @Bean
