@@ -12,7 +12,7 @@ contract ElectionsMaster {
 
     mapping(address => uint8) private votersAddresses;
 
-    uint private constant votersInitialBalance = 5;
+    uint private constant votersInitialBalance = 10000000000000000000;
 
     constructor() public {
         organizersMapping[msg.sender] = 1;

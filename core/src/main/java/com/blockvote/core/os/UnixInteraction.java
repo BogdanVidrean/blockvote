@@ -38,7 +38,8 @@ public class UnixInteraction implements OsInteraction {
     public Optional<Process> startLocalNode() {
         String[] args = new String[]{"./geth", "--datadir", NODE_PATH,
                 "--networkid", valueOf(NETWORK_ID), "--port", valueOf(DEFAULT_PORT), "--rpc", "--rpcapi",
-                "eth,web3,personal,net,miner,admin,debug", "--rpcport", valueOf(RPC_PORT), "--rpccorsdomain", "*"};
+                "eth,web3,personal,net,miner,admin,debug", "--rpcport", valueOf(RPC_PORT), "--rpcaddr", "127.0.0.1",
+                "--rpccorsdomain", "*", "--gcmode", "archive"};
         ProcessBuilder builder = new ProcessBuilder();
         builder.command(args);
         builder.directory(get(GETH_DISK_LOCATION).toFile());
