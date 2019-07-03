@@ -346,6 +346,7 @@ public class VoteController implements LoginObserver, LogoutObserver {
                         }
                     })
                     .exceptionally(ex -> {
+                        log.error("Failed to end the election.", ex);
                         runLater(() -> {
                             userText.setStyle("-fx-fill: #ff6060");
                             userText.setText(ex.getCause().getMessage());

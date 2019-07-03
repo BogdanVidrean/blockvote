@@ -288,5 +288,6 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
         vboxContainer.getChildren().removeAll(optionsCollection);
         vboxContainer.getChildren().removeAll(extraStuffToBeDeletedAtLogout);
         numerOfOptionsField.setText("");
+        userMessagge.setText("");
     }
 }

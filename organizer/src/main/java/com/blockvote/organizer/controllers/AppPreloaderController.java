@@ -19,6 +19,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.web3j.crypto.CipherException;
@@ -104,7 +105,9 @@ public class AppPreloaderController extends LoginObservable {
             accountFilesMap.putAll(accounts.stream().collect(toMap(f -> formatAddressFromKeystoreFileName(f.getName()),
                     identity())));
             accountsListView.setVisible(true);
-            accountsObsList.addAll(accounts.stream().map(f -> formatAddressFromKeystoreFileName(f.getName())).collect(toList()));
+            accountsObsList.addAll(accounts.stream().map(f -> formatAddressFromKeystoreFileName(f.getName()))
+                    .filter(s -> !StringUtils.equals(s, ".DS_Store"))
+                    .collect(toList()));
         } else {
             chooseWalletMessage.setText("No wallets available. Create a new one.");
         }

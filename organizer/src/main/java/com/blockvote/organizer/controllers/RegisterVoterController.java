@@ -7,6 +7,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import static java.math.BigInteger.valueOf;
@@ -14,6 +16,8 @@ import static javafx.application.Platform.runLater;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 public class RegisterVoterController implements LogoutObserver {
+
+    private static final Logger log = LogManager.getLogger(RegisterVoterController.class);
 
     private static final String TRANSACTION_FAILED_ERROR_MESSAGE = "The process failed.";
     private static final String ALL_FIELDS_MANDATORY_ERROR_MESSAGE = "Please insert the address twice.";
@@ -56,7 +60,7 @@ public class RegisterVoterController implements LogoutObserver {
                             try {
                                 return electionMaster.canAddressVote(address).send();
                             } catch (Exception e) {
-                                throw new RuntimeException(TRANSACTION_FAILED_ERROR_MESSAGE);
+                                throw new RuntimeException(e);
                             }
                         }
                     })
@@ -67,7 +71,7 @@ public class RegisterVoterController implements LogoutObserver {
                             try {
                                 return electionMaster.getBalance().send();
                             } catch (Exception e) {
-                                throw new RuntimeException(TRANSACTION_FAILED_ERROR_MESSAGE);
+                                throw new RuntimeException(e);
                             }
                         }
                     })
@@ -86,11 +90,12 @@ public class RegisterVoterController implements LogoutObserver {
                                     throw new RuntimeException(TRANSACTION_FAILED_ERROR_MESSAGE);
                                 }
                             } catch (Exception e) {
-                                throw new RuntimeException(TRANSACTION_FAILED_ERROR_MESSAGE);
+                                throw new RuntimeException(e);
                             }
                         }
                     })
                     .exceptionally(exception -> {
+                        log.error("Failed to check eligibility or register.", exception);
                         runLater(() -> {
                             userMessage.setStyle("-fx-fill: #ff6060");
                             userMessage.setText(exception.getCause().getMessage());
