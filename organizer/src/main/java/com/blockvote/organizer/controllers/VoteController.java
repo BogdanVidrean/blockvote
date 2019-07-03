@@ -87,6 +87,19 @@ public class VoteController implements LoginObserver, LogoutObserver {
     @Override
     @SuppressWarnings("unchecked")
     public void updateOnLogin(Credentials credentials) {
+        selectElectionLabel = new Label("Select the election:");
+        selectElectionLabel.setStyle("-fx-font-size: 30; -fx-text-fill: #ffffff;");
+        VBox.setMargin(selectElectionLabel, new Insets(40, 0, 0, 0));
+
+        Button refreshElectionsButton = new Button("REFRESH");
+        refreshElectionsButton.setOnMousePressed(event -> {
+            electionsNamesContainer.getChildren().remove(2, electionsNamesContainer.getChildren().size());
+            initNoElectionsNamesPane();
+            initElections();
+        });
+
+        electionsNamesContainer.getChildren().addAll(asList(selectElectionLabel, refreshElectionsButton));
+
         initNoElectionsMasterPane();
         initNoElectionsNamesPane();
         initElections();
@@ -100,42 +113,47 @@ public class VoteController implements LoginObserver, LogoutObserver {
                     try {
                         List<byte[]> electionsNames = electionMaster.getElectionNames().send();
 
-                        electionsNamesContainer.getChildren().addAll(range(0, electionsAddresses.size())
-                                .boxed()
-                                .map(i -> {
-                                    electionAddressesAndNames.put((String) electionsAddresses.get(i), new String(electionsNames.get(i)));
+                        runLater(() -> {
+                            if (electionsNames.size() > 0 && noElectionsAvailableText != null) {
+                                electionsNamesContainer.getChildren().remove(noElectionsAvailableText);
+                            }
+                            electionsNamesContainer.getChildren().addAll(range(0, electionsAddresses.size())
+                                    .boxed()
+                                    .map(i -> {
+                                        electionAddressesAndNames.put((String) electionsAddresses.get(i), new String(electionsNames.get(i)));
 
-                                    Label newElectionLabel = new Label("#" + (i + 1) + "\t" + new String(electionsNames.get(i)));
-                                    newElectionLabel.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff;");
+                                        Label newElectionLabel = new Label("#" + (i + 1) + "\t" + new String(electionsNames.get(i)));
+                                        newElectionLabel.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff;");
 
-                                    VBox electionInformationContainer = new VBox();
-                                    electionInformationContainer.setAlignment(CENTER_LEFT);
-                                    electionInformationContainer.setPadding(new Insets(30, 30, 30, 30));
-                                    electionInformationContainer.getChildren()
-                                            .addAll(newElectionLabel);
+                                        VBox electionInformationContainer = new VBox();
+                                        electionInformationContainer.setAlignment(CENTER_LEFT);
+                                        electionInformationContainer.setPadding(new Insets(30, 30, 30, 30));
+                                        electionInformationContainer.getChildren()
+                                                .addAll(newElectionLabel);
 
-                                    electionInformationContainer.setOnMouseEntered(event -> {
-                                        electionInformationContainer.setStyle("-fx-background-color: #5bb8ff; -fx-cursor: hand");
-                                    });
+                                        electionInformationContainer.setOnMouseEntered(event -> {
+                                            electionInformationContainer.setStyle("-fx-background-color: #5bb8ff; -fx-cursor: hand");
+                                        });
 
-                                    electionInformationContainer.setOnMouseExited(event -> {
+                                        electionInformationContainer.setOnMouseExited(event -> {
+                                            if (i % 2 == 0) {
+                                                electionInformationContainer.setStyle("-fx-background-color: #4CEAEB");
+                                            } else {
+                                                electionInformationContainer.setStyle("-fx-background-color: #39d8eb");
+                                            }
+                                        });
                                         if (i % 2 == 0) {
                                             electionInformationContainer.setStyle("-fx-background-color: #4CEAEB");
                                         } else {
                                             electionInformationContainer.setStyle("-fx-background-color: #39d8eb");
                                         }
-                                    });
-                                    if (i % 2 == 0) {
-                                        electionInformationContainer.setStyle("-fx-background-color: #4CEAEB");
-                                    } else {
-                                        electionInformationContainer.setStyle("-fx-background-color: #39d8eb");
-                                    }
 
-                                    //  Click handler
-                                    electionInformationContainer.setOnMousePressed(event -> handleElectionSelection((String) electionsAddresses.get(i)));
-                                    return electionInformationContainer;
-                                })
-                                .collect(toList()));
+                                        //  Click handler
+                                        electionInformationContainer.setOnMousePressed(event -> handleElectionSelection((String) electionsAddresses.get(i)));
+                                        return electionInformationContainer;
+                                    })
+                                    .collect(toList()));
+                        });
                     } catch (Exception e) {
                         log.error("Failed to retrieve elections.", e);
                     }
@@ -147,13 +165,9 @@ public class VoteController implements LoginObserver, LogoutObserver {
     }
 
     private void initNoElectionsNamesPane() {
-        selectElectionLabel = new Label("Select the election:");
-        selectElectionLabel.setStyle("-fx-font-size: 30; -fx-text-fill: #ffffff;");
-        VBox.setMargin(selectElectionLabel, new Insets(40, 0, 0, 0));
-
         noElectionsAvailableText = new Label("No elections available.");
         noElectionsAvailableText.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff;");
-        electionsNamesContainer.getChildren().addAll(asList(selectElectionLabel, noElectionsAvailableText));
+        electionsNamesContainer.getChildren().add(noElectionsAvailableText);
     }
 
     @SuppressWarnings("unchecked")
