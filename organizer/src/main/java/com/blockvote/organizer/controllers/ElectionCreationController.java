@@ -91,147 +91,155 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
         });
         try {
             final int numberOfOptions = parseInt(numerOfOptionsField.getText());
-            if (vboxContainer.getAlignment() == CENTER) {
-                vboxContainer.setAlignment(CENTER);
-            }
+            if (numberOfOptions <= 1) {
+                runLater(() -> {
+                    userMessagge.setText("There must be at least 2 options.");
+                    createButton.setVisible(true);
+                    createButton.setDisable(false);
+                });
+            } else {
+                if (vboxContainer.getAlignment() == CENTER) {
+                    vboxContainer.setAlignment(CENTER);
+                }
 
-            Label electionNameLabel = new Label("INSERT THE NAME OF THIS ELECTION");
-            electionNameLabel.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff");
-            electionNameLabel.setUnderline(true);
-            vboxContainer.getChildren().add(electionNameLabel);
-            extraStuffToBeDeletedAtLogout.add(electionNameLabel);
+                Label electionNameLabel = new Label("INSERT THE NAME OF THIS ELECTION");
+                electionNameLabel.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff");
+                electionNameLabel.setUnderline(true);
+                vboxContainer.getChildren().add(electionNameLabel);
+                extraStuffToBeDeletedAtLogout.add(electionNameLabel);
 
-            TextField nameField = new TextField();
-            nameField.setStyle("-fx-font-size: 20; -fx-fill: #ffffff; -fx-border-insets: 15");
-            extraStuffToBeDeletedAtLogout.add(nameField);
+                TextField nameField = new TextField();
+                nameField.setStyle("-fx-font-size: 20; -fx-fill: #ffffff; -fx-border-insets: 15");
+                extraStuffToBeDeletedAtLogout.add(nameField);
 
 
-            HBox nameHbox = new HBox();
-            nameHbox.setAlignment(CENTER);
-            nameHbox.getChildren().add(nameField);
-            nameField.setAlignment(CENTER);
-            vboxContainer.getChildren().add(nameHbox);
-            extraStuffToBeDeletedAtLogout.add(nameHbox);
+                HBox nameHbox = new HBox();
+                nameHbox.setAlignment(CENTER);
+                nameHbox.getChildren().add(nameField);
+                nameField.setAlignment(CENTER);
+                vboxContainer.getChildren().add(nameHbox);
+                extraStuffToBeDeletedAtLogout.add(nameHbox);
 
-            //Time And Date Container
-            HBox timeAndDateContainer = new HBox();
-            timeAndDateContainer.setAlignment(CENTER);
-            vboxContainer.getChildren().add(timeAndDateContainer);
-            extraStuffToBeDeletedAtLogout.add(timeAndDateContainer);
+                //Time And Date Container
+                HBox timeAndDateContainer = new HBox();
+                timeAndDateContainer.setAlignment(CENTER);
+                vboxContainer.getChildren().add(timeAndDateContainer);
+                extraStuffToBeDeletedAtLogout.add(timeAndDateContainer);
 
-            //Start date
-            Label startDateAndTimeLabel = new Label("Start Time");
-            startDateAndTimeLabel.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff");
-            setMargin(startDateAndTimeLabel, new Insets(0, 30, 0, 20));
-            timeAndDateContainer.getChildren().add(startDateAndTimeLabel);
+                //Start date
+                Label startDateAndTimeLabel = new Label("Start Time");
+                startDateAndTimeLabel.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff");
+                setMargin(startDateAndTimeLabel, new Insets(0, 30, 0, 20));
+                timeAndDateContainer.getChildren().add(startDateAndTimeLabel);
 
-            DateTimePicker startDateTimePicker = new DateTimePicker();
-            timeAndDateContainer.getChildren().add(startDateTimePicker);
+                DateTimePicker startDateTimePicker = new DateTimePicker();
+                timeAndDateContainer.getChildren().add(startDateTimePicker);
 //            extraStuffToBeDeletedAtLogout.add(startDateTimePicker);
 
-            //End date
-            Label endDateAndTimeLabel = new Label("End Time");
-            endDateAndTimeLabel.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff");
-            timeAndDateContainer.getChildren().add(endDateAndTimeLabel);
-            setMargin(endDateAndTimeLabel, new Insets(0, 30, 0, 30));
+                //End date
+                Label endDateAndTimeLabel = new Label("End Time");
+                endDateAndTimeLabel.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff");
+                timeAndDateContainer.getChildren().add(endDateAndTimeLabel);
+                setMargin(endDateAndTimeLabel, new Insets(0, 30, 0, 30));
 
-            DateTimePicker endDateTimePicker = new DateTimePicker();
-            timeAndDateContainer.getChildren().add(endDateTimePicker);
+                DateTimePicker endDateTimePicker = new DateTimePicker();
+                timeAndDateContainer.getChildren().add(endDateTimePicker);
 //            extraStuffToBeDeletedAtLogout.add(endDateTimePicker);
 
 
-            Platform.runLater(() -> {
-                startDateTimePicker.setDateTimeValue(now());
-                endDateTimePicker.setDateTimeValue(now());
-            });
+                Platform.runLater(() -> {
+                    startDateTimePicker.setDateTimeValue(now());
+                    endDateTimePicker.setDateTimeValue(now());
+                });
 
-            optionsCollection = range(0, numberOfOptions)
-                    .boxed()
-                    .map(i -> {
-                        HBox hBox = new HBox();
-                        hBox.setAlignment(CENTER);
+                optionsCollection = range(0, numberOfOptions)
+                        .boxed()
+                        .map(i -> {
+                            HBox hBox = new HBox();
+                            hBox.setAlignment(CENTER);
 
-                        Label label = new Label("Option #" + (i + 1));
-                        TextField textField = new TextField();
+                            Label label = new Label("Option #" + (i + 1));
+                            TextField textField = new TextField();
 
-                        label.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff");
-                        textField.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff; -fx-border-insets: 30");
+                            label.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff");
+                            textField.setStyle("-fx-font-size: 20; -fx-text-fill: #ffffff; -fx-border-insets: 30");
 
-                        hBox.getChildren().addAll(asList(label, textField));
-                        return hBox;
-                    })
-                    .collect(toList());
-            vboxContainer.getChildren().addAll(optionsCollection);
+                            hBox.getChildren().addAll(asList(label, textField));
+                            return hBox;
+                        })
+                        .collect(toList());
+                vboxContainer.getChildren().addAll(optionsCollection);
 
-            Button doneButton = new Button("DONE");
-            doneButton.setStyle("-fx-border-insets: 30;");
-            doneButton.setOnMousePressed(event -> {
-                if (validateElectionInfo(nameField, optionsCollection, startDateTimePicker, endDateTimePicker)) {
-                    try {
-                        String masterContractAddress = applicationProperties.getProperty("master.contract.address");
-                        if (masterContractAddress != null) {
-                            validateDateAndTime(startDateTimePicker, endDateTimePicker);
-                            userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #fff");
-                            userMessagge.setText(TRANSACTION_SUCCESSFULLY_SENT_MSG);
-                            requireNonNull(Election.deploy(
-                                    web3j, credentials,
-                                    new DefaultGasProvider(),
-                                    masterContractAddress,
-                                    stringToBytes32(nameField.getText()),
-                                    optionsCollection.stream()
-                                            .map(node -> {
-                                                HBox hBox = (HBox) node;
-                                                TextField textField = (TextField) hBox.getChildren().get(1);
-                                                return stringToBytes32(textField.getText());
-                                            })
-                                            .collect(toList()),
-                                    valueOf(startDateTimePicker.getDateTimeValue().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC")).toInstant().getEpochSecond()),
-                                    valueOf(endDateTimePicker.getDateTimeValue().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC")).toInstant().getEpochSecond())))
-                                    .sendAsync()
-                                    .thenAccept(election -> {
-                                        userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #3ba53a");
-                                        userMessagge.setText(ELECTION_CREATED_MSG);
-                                    })
-                                    .exceptionally(error -> {
-                                        log.error("Failed to create the election", error);
-                                        runLater(() -> {
-                                            userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff6060");
-                                            userMessagge.setText("Something bad happened, check the logs.");
+                Button doneButton = new Button("DONE");
+                doneButton.setStyle("-fx-border-insets: 30;");
+                doneButton.setOnMousePressed(event -> {
+                    if (validateElectionInfo(nameField, optionsCollection, startDateTimePicker, endDateTimePicker)) {
+                        try {
+                            String masterContractAddress = applicationProperties.getProperty("master.contract.address");
+                            if (masterContractAddress != null) {
+                                validateDateAndTime(startDateTimePicker, endDateTimePicker);
+                                userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #fff");
+                                userMessagge.setText(TRANSACTION_SUCCESSFULLY_SENT_MSG);
+                                requireNonNull(Election.deploy(
+                                        web3j, credentials,
+                                        new DefaultGasProvider(),
+                                        masterContractAddress,
+                                        stringToBytes32(nameField.getText()),
+                                        optionsCollection.stream()
+                                                .map(node -> {
+                                                    HBox hBox = (HBox) node;
+                                                    TextField textField = (TextField) hBox.getChildren().get(1);
+                                                    return stringToBytes32(textField.getText());
+                                                })
+                                                .collect(toList()),
+                                        valueOf(startDateTimePicker.getDateTimeValue().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC")).toInstant().getEpochSecond()),
+                                        valueOf(endDateTimePicker.getDateTimeValue().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC")).toInstant().getEpochSecond())))
+                                        .sendAsync()
+                                        .thenAccept(election -> {
+                                            userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #3ba53a");
+                                            userMessagge.setText(ELECTION_CREATED_MSG);
+                                        })
+                                        .exceptionally(error -> {
+                                            log.error("Failed to create the election", error);
+                                            runLater(() -> {
+                                                userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff6060");
+                                                userMessagge.setText("Something bad happened, check the logs.");
+                                            });
+                                            return null;
                                         });
-                                        return null;
-                                    });
+                            }
+                        } catch (IllegalArgumentException e) {
+                            userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff6060");
+                            userMessagge.setText(e.getMessage());
                         }
-                    } catch (IllegalArgumentException e) {
+                    } else {
                         userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff6060");
-                        userMessagge.setText(e.getMessage());
+                        userMessagge.setText("All fields are mandatory, name and options can have a maximum length of 32.");
                     }
-                } else {
-                    userMessagge.setStyle("-fx-font-size: 20; -fx-fill: #ff6060");
-                    userMessagge.setText("All fields are mandatory, name and options can have a maximum length of 32.");
-                }
-            });
-            extraStuffToBeDeletedAtLogout.add(doneButton);
+                });
+                extraStuffToBeDeletedAtLogout.add(doneButton);
 
-            Button closeButton = new Button("CLOSE");
-            closeButton.setStyle("-fx-border-insets: 30;");
+                Button closeButton = new Button("CLOSE");
+                closeButton.setStyle("-fx-border-insets: 30;");
 
-            HBox hBox = new HBox();
-            hBox.setAlignment(CENTER);
-            hBox.getChildren().add(doneButton);
-            hBox.getChildren().add(closeButton);
-            vboxContainer.getChildren().add(hBox);
-            extraStuffToBeDeletedAtLogout.add(hBox);
+                HBox hBox = new HBox();
+                hBox.setAlignment(CENTER);
+                hBox.getChildren().add(doneButton);
+                hBox.getChildren().add(closeButton);
+                vboxContainer.getChildren().add(hBox);
+                extraStuffToBeDeletedAtLogout.add(hBox);
 
-            closeButton.setOnMousePressed(event -> runLater(() -> {
-                vboxContainer.getChildren().removeAll(optionsCollection);
-                vboxContainer.getChildren().removeAll(extraStuffToBeDeletedAtLogout);
+                closeButton.setOnMousePressed(event -> runLater(() -> {
+                    vboxContainer.getChildren().removeAll(optionsCollection);
+                    vboxContainer.getChildren().removeAll(extraStuffToBeDeletedAtLogout);
 
-                createButton.setVisible(true);
-                createButton.setDisable(false);
+                    createButton.setVisible(true);
+                    createButton.setDisable(false);
 
-                userMessagge.setText("");
-            }));
-            extraStuffToBeDeletedAtLogout.add(closeButton);
+                    userMessagge.setText("");
+                }));
+                extraStuffToBeDeletedAtLogout.add(closeButton);
+            }
         } catch (NumberFormatException e) {
             userMessagge.setText(NOT_VALID_OPTIONS_NR_PROVIDED_ERROR_MSG);
             runLater(() -> {
