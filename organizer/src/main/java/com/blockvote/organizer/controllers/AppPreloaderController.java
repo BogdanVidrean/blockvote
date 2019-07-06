@@ -99,15 +99,19 @@ public class AppPreloaderController extends LoginObservable {
     }
 
     private void loadAvailableAccountWallets() {
+        accountsObsList.clear();
+        accountFilesMap.clear();
         accountsListView.setItems(accountsObsList);
         List<File> accounts = osInteraction.loadAvailableAccounts();
         if (accounts.size() != 0) {
             accountFilesMap.putAll(accounts.stream().collect(toMap(f -> formatAddressFromKeystoreFileName(f.getName()),
                     identity())));
-            accountsListView.setVisible(true);
-            accountsObsList.addAll(accounts.stream().map(f -> formatAddressFromKeystoreFileName(f.getName()))
-                    .filter(s -> !StringUtils.equals(s, ".DS_Store"))
-                    .collect(toList()));
+            runLater(() -> {
+                accountsListView.setVisible(true);
+                accountsObsList.addAll(accounts.stream().map(f -> formatAddressFromKeystoreFileName(f.getName()))
+                        .filter(s -> !StringUtils.equals(s, ".DS_Store"))
+                        .collect(toList()));
+            });
         } else {
             chooseWalletMessage.setText("No wallets available. Create a new one.");
         }
@@ -197,5 +201,10 @@ public class AppPreloaderController extends LoginObservable {
             clipboardContent.putString("0x" + selectedAddress);
             clipboard.setContent(clipboardContent);
         }
+    }
+
+    @FXML
+    public void refreshAddresses(MouseEvent mouseEvent) {
+        loadAvailableAccountWallets();
     }
 }
