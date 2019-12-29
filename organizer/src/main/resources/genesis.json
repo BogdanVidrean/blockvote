@@ -5,7 +5,12 @@
     "eip155Block": 0,
     "eip158Block": 0,
     "byzantiumBlock": 0,
-    "constantinopleBlock": 0
+    "constantinopleBlock": 0,
+    "istanbul": {
+      "epoch": 30000,
+      "policy": 0
+    },
+    "isQuorum": true
   },
   "difficulty": "400",
   "gasLimit": "3141592000000",

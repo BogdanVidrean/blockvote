@@ -1,4 +1,4 @@
-pragma solidity ^0.5.9;
+pragma solidity ^0.6.0;
 contract ElectionsMaster {
 
     address private ownerMasterAddress = msg.sender;
@@ -31,13 +31,13 @@ contract ElectionsMaster {
     }
 
     modifier isOrganizer(address senderAddress) {
-        require(organizersMapping[senderAddress] != 0, "Organizer privilleges required");
+        require(organizersMapping[senderAddress] != 0, "Organizer privileges required");
         _;
     }
 
     // Master Account API
 
-    function () external payable {
+    receive() external payable {
     }
 
     function changeOwnerMasterAccount(address newOwnerMasterAccount) public isMasterAccount(msg.sender) {
@@ -89,7 +89,7 @@ contract ElectionsMaster {
     }
 
     function addVoter(string memory socialSecurityNumber, address payable voterAddress) public isOrganizer(msg.sender) isNotVoterAlready(socialSecurityNumber) addressIsNotInUse(voterAddress) {
-        address(voterAddress).transfer(votersInitialBalance);
+        voterAddress.transfer(votersInitialBalance);
         votersSocialSecurityNumbers[socialSecurityNumber] = voterAddress;
         votersAddresses[voterAddress] = 1;
     }
