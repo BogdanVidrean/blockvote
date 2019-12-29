@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity ^0.5.15;
 contract ElectionsMaster {
 
     address private ownerMasterAddress = msg.sender;
@@ -37,7 +37,7 @@ contract ElectionsMaster {
 
     // Master Account API
 
-    receive() external payable {
+    function() external payable {
     }
 
     function changeOwnerMasterAccount(address newOwnerMasterAccount) public isMasterAccount(msg.sender) {

@@ -184,12 +184,12 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
                                         web3j, credentials,
                                         new DefaultGasProvider(),
                                         masterContractAddress,
-                                        stringToBytes32(nameField.getText()),
+                                        nameField.getText().getBytes(),
                                         optionsCollection.stream()
                                                 .map(node -> {
                                                     HBox hBox = (HBox) node;
                                                     TextField textField = (TextField) hBox.getChildren().get(1);
-                                                    return stringToBytes32(textField.getText());
+                                                    return textField.getText().getBytes();
                                                 })
                                                 .collect(toList()),
                                         valueOf(startDateTimePicker.getDateTimeValue().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC")).toInstant().getEpochSecond()),
