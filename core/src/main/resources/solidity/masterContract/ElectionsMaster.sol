@@ -1,4 +1,4 @@
-pragma solidity ^0.5.15;
+pragma solidity ^0.5.9;
 contract ElectionsMaster {
 
     address private ownerMasterAddress = msg.sender;

@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import org.web3j.abi.datatypes.generated.Bytes32;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
+import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.gas.DefaultGasProvider;
 import tornadofx.control.DateTimePicker;
 
@@ -181,15 +182,17 @@ public class ElectionCreationController implements LoginObserver, LogoutObserver
                                 userMessagge.setStyle("-fx-font-size: 20;-fx-fill: #fff");
                                 userMessagge.setText(TRANSACTION_SUCCESSFULLY_SENT_MSG);
                                 requireNonNull(Election.deploy(
-                                        web3j, credentials,
+                                        web3j,
+//                                        credentials,
+                                        new RawTransactionManager(web3j, credentials),
                                         new DefaultGasProvider(),
                                         masterContractAddress,
-                                        nameField.getText().getBytes(),
+                                        stringToBytes32(nameField.getText()).getValue(),
                                         optionsCollection.stream()
                                                 .map(node -> {
                                                     HBox hBox = (HBox) node;
                                                     TextField textField = (TextField) hBox.getChildren().get(1);
-                                                    return textField.getText().getBytes();
+                                                    return stringToBytes32(textField.getText()).getValue();
                                                 })
                                                 .collect(toList()),
                                         valueOf(startDateTimePicker.getDateTimeValue().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC")).toInstant().getEpochSecond()),

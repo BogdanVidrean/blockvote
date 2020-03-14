@@ -1,4 +1,4 @@
-pragma solidity ^0.5.15;
+pragma solidity ^0.5.9;
 
 contract ElectionMaster {
     function addElection(address electionAddress,
