@@ -93,7 +93,7 @@ public class AppPreloaderController extends LoginObservable {
         try {
             bootstrapMediator.bootstrap();
             loadAvailableAccountWallets();
-        } catch (BootstrapException e) {
+        } catch (BootstrapException | IOException e) {
             log.error("Failed to bootstrap.", e);
         }
     }

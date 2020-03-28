@@ -50,7 +50,7 @@ public class BootstrapMediator {
         this.executorService = executorService;
     }
 
-    public Process bootstrap() throws BootstrapException {
+    public Process bootstrap() throws BootstrapException, IOException {
         Optional<Process> gethProcessOptional = osInteraction.startLocalNode();
         if (!gethProcessOptional.isPresent()) {
             osInteraction.copyGethToDisk();
@@ -186,7 +186,7 @@ public class BootstrapMediator {
         return actualChainId == CHAIN_ID;
     }
 
-    private void recreateCorrectNode(Process gethProcess) {
+    private void recreateCorrectNode(Process gethProcess) throws IOException {
         while (gethProcess.isAlive()) {
             gethProcess.destroy();
         }

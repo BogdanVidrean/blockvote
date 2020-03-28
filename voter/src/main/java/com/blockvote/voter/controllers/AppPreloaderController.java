@@ -98,7 +98,7 @@ public class AppPreloaderController extends LoginObservable {
         try {
             bootstrapMediator.bootstrap();
             loadAvailableAccountWallets();
-        } catch (BootstrapException e) {
+        } catch (BootstrapException | IOException e) {
             // TODO: Some retry mechanism
             log.error("Failed to bootstrap the node", e);
         }

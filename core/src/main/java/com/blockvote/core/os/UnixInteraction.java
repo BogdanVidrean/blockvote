@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ServerSocket;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -14,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.blockvote.core.os.Commons.DEFAULT_PORT;
 import static com.blockvote.core.os.Commons.GENESIS_DISK_LOCATION;
 import static com.blockvote.core.os.Commons.GETH_DISK_LOCATION;
 import static com.blockvote.core.os.Commons.KEYSTORE_PATH;
@@ -35,9 +35,9 @@ public class UnixInteraction implements OsInteraction {
     private static final Logger log = LogManager.getLogger(UnixInteraction.class);
 
     @Override
-    public Optional<Process> startLocalNode() {
+    public Optional<Process> startLocalNode() throws IOException {
         String[] args = new String[]{"./geth", "--datadir", NODE_PATH,
-                "--networkid", valueOf(NETWORK_ID), "--port", valueOf(DEFAULT_PORT), "--rpc", "--rpcapi",
+                "--networkid", valueOf(NETWORK_ID), "--port", valueOf(getAvailablePort()), "--rpc", "--rpcapi",
                 "eth,web3,personal,net,miner,admin,debug", "--rpcport", valueOf(RPC_PORT), "--rpcaddr", "127.0.0.1",
                 "--rpccorsdomain", "*", "--gcmode", "archive"/*, "--allow-insecure-unlock"*/};
         ProcessBuilder builder = new ProcessBuilder();
@@ -49,6 +49,14 @@ public class UnixInteraction implements OsInteraction {
             log.error("Failed to start local node.", e);
         }
         return empty();
+    }
+
+    private int getAvailablePort() throws IOException {
+        try (
+                ServerSocket socket = new ServerSocket(0)
+        ) {
+            return socket.getLocalPort();
+        }
     }
 
     @Override
