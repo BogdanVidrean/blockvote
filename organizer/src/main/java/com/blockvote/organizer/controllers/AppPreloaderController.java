@@ -3,7 +3,6 @@ package com.blockvote.organizer.controllers;
 import com.blockvote.core.bootstrap.BootstrapMediator;
 import com.blockvote.core.contracts.interfaces.IElectionMaster;
 import com.blockvote.core.contracts.proxy.ElectionMasterProxy;
-import com.blockvote.core.exceptions.BootstrapException;
 import com.blockvote.core.observer.LoginObservable;
 import com.blockvote.core.os.OsInteraction;
 import javafx.collections.ObservableList;
@@ -33,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.blockvote.core.os.Commons.KEYSTORE_PATH;
+import static java.lang.Runtime.getRuntime;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -91,9 +91,16 @@ public class AppPreloaderController extends LoginObservable {
     @FXML
     public void initialize() {
         try {
-            bootstrapMediator.bootstrap();
+            int gethProcessPid = bootstrapMediator.bootstrap();
             loadAvailableAccountWallets();
-        } catch (BootstrapException e) {
+            getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    getRuntime().exec("kill -s TERM " + gethProcessPid);
+                } catch (IOException e) {
+                    log.error("Failed to kill geth process.", e);
+                }
+            }));
+        } catch (IOException e) {
             log.error("Failed to bootstrap.", e);
         }
     }

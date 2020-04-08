@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.concurrent.ExecutorService;
 
+import static java.lang.System.setProperty;
+
 public class Main extends Application {
     private VoteController voteController;
     private Web3j web3j;
@@ -28,7 +30,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        System.setProperty("log4j.configurationFile", "log4j2.xml");
+        setProperty("log4j.configurationFile", "log4j2.xml");
         final ApplicationContext applicationContext = new AnnotationConfigApplicationContext(OrganizerConfiguration.class);
 
         voteController = applicationContext.getBean(VoteController.class);

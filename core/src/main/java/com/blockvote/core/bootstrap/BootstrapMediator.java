@@ -1,16 +1,15 @@
 package com.blockvote.core.bootstrap;
 
-import com.blockvote.core.exceptions.BootstrapException;
 import com.blockvote.core.gethRpcServices.AdminService;
 import com.blockvote.core.os.OsInteraction;
 import kong.unirest.UnirestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.methods.response.EthChainId;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -18,12 +17,11 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
 import static com.blockvote.core.os.Commons.CHAIN_ID;
-import static java.lang.Long.parseLong;
+import static java.lang.Integer.parseInt;
 import static java.lang.Runtime.getRuntime;
 import static java.lang.Thread.sleep;
 import static java.util.concurrent.CompletableFuture.runAsync;
@@ -39,38 +37,31 @@ public class BootstrapMediator {
     private final ExecutorService executorService;
     private volatile Process gethProcess;
     private volatile String enode;
+    private Web3j web3j;
 
     public BootstrapMediator(OsInteraction osInteraction,
                              BootstrapService bootstrapService,
                              AdminService adminService,
-                             ExecutorService executorService) {
+                             ExecutorService executorService,
+                             Web3j web3j) {
         this.osInteraction = osInteraction;
         this.bootstrapService = bootstrapService;
         this.adminService = adminService;
         this.executorService = executorService;
+        this.web3j = web3j;
     }
 
-    public Process bootstrap() throws BootstrapException {
-        Optional<Process> gethProcessOptional = osInteraction.startLocalNode();
-        if (!gethProcessOptional.isPresent()) {
+    public int bootstrap() throws IOException {
+        boolean isGethAvailable = osInteraction.checkIfGethIsAvailable();
+        if (!isGethAvailable) {
             osInteraction.copyGethToDisk();
-            gethProcessOptional = osInteraction.startLocalNode();
         }
-        if (gethProcessOptional.isPresent()) {
-            Process gethProcess = gethProcessOptional.get();
-            boolean isCurrentNodeValid = validateCurrentNode(gethProcess);
-            if (!isCurrentNodeValid) {
-                recreateCorrectNode(gethProcess);
-            }
-            getEnodeAddress();
-            retrieveNodesList();
-            registerCurrentNode();
-            addShutdownListener();
-            this.gethProcess = gethProcess;
-            return gethProcess;
-        } else {
-            throw new BootstrapException();
+        int gethProcessPid = osInteraction.startLocalNode();
+        if (!validateCurrentNode()) {
+            recreateCorrectNode();
+            gethProcessPid = osInteraction.startLocalNode();
         }
+        return gethProcessPid;
     }
 
     private void registerCurrentNode() {
@@ -162,37 +153,28 @@ public class BootstrapMediator {
                 });
     }
 
-    private boolean validateCurrentNode(Process gethProcess) {
-        BufferedReader in = null;
-        long actualChainId = 0;
-        in = new BufferedReader(new InputStreamReader(gethProcess.getErrorStream()));
-        String line;
-        boolean found = false;
-        try {
-            while (((line = in.readLine()) != null) && !found) {
-                if (line.contains("ChainID:")) {
-                    String chainIDString = line.substring(line.indexOf("ChainID") + 8, line.indexOf("Homestead"));
-                    chainIDString = chainIDString.replaceAll(" ", "");
-                    actualChainId = parseLong(chainIDString);
-                    found = true;
-                }
-                if (line.toLowerCase().contains("datadir already used by another process")) {
-                    return true;
-                }
+    private boolean validateCurrentNode() throws IOException {
+        final int maxAllowedAttempts = 5;
+        int currentAttempt = 0;
+        while (currentAttempt < maxAllowedAttempts) {
+            try {
+                sleep(300);
+                final EthChainId ethChainId = web3j.ethChainId().send();
+                return ethChainId != null &&
+                        !ethChainId.hasError() &&
+                        parseInt(ethChainId.getResult().substring(2), 16) == CHAIN_ID;
+            } catch (IOException | InterruptedException e) {
+                log.error("Failed to check the chain id of the Go Ethereum node. Attempt " + (currentAttempt + 1), e);
             }
-        } catch (IOException e) {
-            log.error("Failed to validate geth client.", e);
+            currentAttempt++;
         }
-        return actualChainId == CHAIN_ID;
+        log.error("Failed to check the chain id of the Go Ethereum node.");
+        throw new IOException("Failed to validate the chain id of the node after " + maxAllowedAttempts + " attempts.");
     }
 
-    private void recreateCorrectNode(Process gethProcess) {
-        while (gethProcess.isAlive()) {
-            gethProcess.destroy();
-        }
+    private void recreateCorrectNode() throws IOException {
         osInteraction.deleteNodeFolder();
         osInteraction.createLocalNode();
-        osInteraction.startLocalNode();
     }
 
     @SuppressWarnings("SameParameterValue")
