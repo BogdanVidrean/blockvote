@@ -2,14 +2,13 @@ package com.blockvote.core.os;
 
 import java.io.File;
 import java.util.List;
-import java.util.Optional;
 
 public class WindowsInteraction implements OsInteraction {
 
 
     @Override
-    public Optional<Process> startLocalNode() {
-        return Optional.empty();
+    public int startLocalNode() {
+        return 0;
     }
 
     @Override
@@ -30,5 +29,10 @@ public class WindowsInteraction implements OsInteraction {
     @Override
     public void copyGethToDisk() {
 
+    }
+
+    @Override
+    public boolean checkIfGethIsAvailable() {
+        return false;
     }
 }

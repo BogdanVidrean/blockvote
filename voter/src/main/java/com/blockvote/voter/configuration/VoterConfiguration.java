@@ -82,7 +82,7 @@ public class VoterConfiguration {
 
     @Bean
     public BootstrapMediator bootstrapMediator() {
-        return new BootstrapMediator(osInteraction(), bootstrapService, adminService, executorService);
+        return new BootstrapMediator(osInteraction(), bootstrapService, adminService, executorService, web3j);
     }
 
     @Bean

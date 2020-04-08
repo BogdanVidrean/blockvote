@@ -3,7 +3,6 @@ package com.blockvote.voter.controllers;
 import com.blockvote.core.bootstrap.BootstrapMediator;
 import com.blockvote.core.contracts.interfaces.IElectionMaster;
 import com.blockvote.core.contracts.proxy.ElectionMasterProxy;
-import com.blockvote.core.exceptions.BootstrapException;
 import com.blockvote.core.observer.LoginObservable;
 import com.blockvote.core.os.OsInteraction;
 import javafx.collections.ObservableList;
@@ -98,7 +97,7 @@ public class AppPreloaderController extends LoginObservable {
         try {
             bootstrapMediator.bootstrap();
             loadAvailableAccountWallets();
-        } catch (BootstrapException | IOException e) {
+        } catch (IOException e) {
             // TODO: Some retry mechanism
             log.error("Failed to bootstrap the node", e);
         }
